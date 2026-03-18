@@ -1,0 +1,28 @@
+@import "tailwindcss";
+:root {
+  --select-bg: #ffffff;
+  --select-text: #1f2937;
+  --select-hover: #4a2d58;
+  --select-active: #4a2d58;
+  --select-active-text: #ffffff;
+}
+
+html,
+body {
+  font-family:
+    "Segoe UI",
+    System-UI,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+* {
+  box-sizing: border-box;
+}

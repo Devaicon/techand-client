@@ -1,0 +1,110 @@
+<div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="relative w-full h-[280px] sm:h-[320px] md:h-[360px]">
+                  <Image
+                    src="/contact-page-map.webp"
+                    alt="Office Locations Map"
+                    fill
+                    className="object-cover"
+                  />
+                  {/* Location Markers */}
+                  <div className="absolute inset-0">
+                    {/* UAE Regional Headquarters - Left side with label */}
+                    <div className="absolute top-[35%] left-[18%]">
+                      <div className="relative">
+                        <div className="w-10 h-10 rounded-full bg-[#6b7bc4] flex items-center justify-center shadow-lg">
+                          <MapPin className="w-5 h-5 text-white " />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Label for UAE Headquarters */}
+                    <div className="absolute top-[42%] left-[8%]">
+                      <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md mt-6">
+                        <p className="text-[#4A2D58] text-xs font-semibold uppercase leading-tight tracking-wide">
+                          UAE REGIONAL
+                          <br />
+                          HEADQUARTERS
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Top center pin (purple) */}
+                    <div className="absolute top-[18%] left-[42%]">
+                      <div className="w-9 h-9 rounded-full bg-[#8b7ba8] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Center-left pin (blue) */}
+                    <div className="absolute top-[45%] left-[35%]">
+                      <div className="w-9 h-9 rounded-full bg-[#6b7bc4] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Center pin (purple) */}
+                    <div className="absolute top-[42%] left-[48%]">
+                      <div className="w-8 h-8 rounded-full bg-[#8b7ba8] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Center-bottom pin (blue) */}
+                    <div className="absolute top-[55%] left-[44%]">
+                      <div className="w-9 h-9 rounded-full bg-[#6b7bc4] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Label for Partial Offices in GCC */}
+                    <div className="absolute top-[62%] left-[32%]">
+                      <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md mt-6">
+                        <p className="text-[#4A2D58] text-xs font-semibold uppercase text-center leading-tight tracking-wide">
+                          PARTIAL OFFICES
+                          <br />
+                          IN GCC
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right center-top pin (blue) */}
+                    <div className="absolute top-[32%] left-[62%]">
+                      <div className="w-9 h-9 rounded-full bg-[#6b7bc4] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Right center pins (purple) */}
+                    <div className="absolute top-[58%] left-[65%]">
+                      <div className="w-9 h-9 rounded-full bg-[#8b7ba8] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Right bottom pins (purple/pink) */}
+                    <div className="absolute top-[63%] left-[68%]">
+                      <div className="w-8 h-8 rounded-full bg-[#8b7ba8] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Far right pin (purple) */}
+                    <div className="absolute top-[48%] left-[82%]">
+                      <div className="w-8 h-8 rounded-full bg-[#8b7ba8] flex items-center justify-center shadow-lg">
+                        <MapPin className="w-4 h-4 text-white " />
+                      </div>
+                    </div>
+
+                    {/* Label for Development Centers */}
+                    <div className="absolute top-[68%] left-[62%]">
+                      <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md mt-6">
+                        <p className="text-[#4A2D58] text-xs font-semibold uppercase text-center leading-tight tracking-wide ">
+                          DEVELOPMENT CENTERS
+                          <br />
+                          PAKISTAN & INDIA
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
