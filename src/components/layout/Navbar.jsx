@@ -406,7 +406,7 @@ export default function Navbar() {
               aria-label="Tech& - Go to homepage"
             >
               <Image
-                src="/logo1.png"
+                src="/navbar.png"
                 alt="Tech& Logo"
                 width={124}
                 height={51}
@@ -759,7 +759,6 @@ export default function Navbar() {
                     Learn about our mission and values
                   </p>
                 </div>
-                
               </Link>
 
               <Link

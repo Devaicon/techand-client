@@ -77,7 +77,7 @@ export default function Footer() {
             <Link href="/" className="inline-block mb-4">
               <div className="relative w-42 h-32 mt-8 lg:mt-8 ">
                 <Image
-                  src="/footer-logo1.png"
+                  src="/footer-logo2.svg"
                   alt="Tech& Logo"
                   fill
                   className="object-contain "

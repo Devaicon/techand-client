@@ -333,16 +333,15 @@ export default function Capabilities() {
       <div className="w-full max-w-[1180px] flex flex-col items-center rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden">
         {/* Header */}
         <div className="w-full min-h-[160px] sm:min-h-[180px] md:h-[200px] lg:h-[230px] bg-[rgba(74,45,88,1)] text-white flex flex-col items-center justify-center px-4 py-6">
-          <div className="w-[130px] h-[130px] bg-[#37469E] rounded-tl-[62.98px] rounded-br-[62.98px] rounded-bl-[3.91px] opacity-100 flex items-center justify-center">
-            <Image
-              src="/footer-logo1.png"
-              alt="Capabilities Icon"
-              width={100}
-              height={80}
-              priority
-              className="w-[60px] h-[48px] sm:w-[80px] sm:h-[64px] md:w-[100px] md:h-[80px]"
-            />
-          </div>
+          <Image
+            src="/techand1.png"
+            alt="Capabilities Icon"
+            width={100}
+            height={80}
+            priority
+            className="w-[60px2px] h-[48px] sm:w-[80px] sm:h-[64px] md:w-[100px] md:h-[80px]"
+          />
+
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold text-center my-2">
             Tech& Capabilities
           </h1>

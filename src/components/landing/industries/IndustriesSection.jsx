@@ -115,14 +115,14 @@ const IndustriesSection = () => {
       </div>
 
       {/* Vector decoration under Healthcare card */}
-      {/* <Image
-        src="/vector-1.webp"
+      <Image
+        src="/and.png"
         alt=""
         width={200}
-        height={100}
-        className="absolute bottom-0 right-[40] sm:right-[60] md:right-[80] lg:right-[100] 2xl:right--[13] pointer-events-none z-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] 2xl:w-[450px] h-auto"
+        height={700}
+        className="absolute bottom-0 right-0 -translate-x-3 sm:-translate-x-4 md:-translate-x-5 lg:-translate-x-6 2xl:-translate-x-8 [@media(min-width:2560px)]:right-0 [@media(min-width:2560px)]:-translate-x-8 pointer-events-none z-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] 2xl:w-[450px] h-auto"
         aria-hidden="true"
-      /> */}
+      />
     </section>
   );
 };
