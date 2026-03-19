@@ -745,7 +745,7 @@ export default function Navbar() {
           <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full p-8 px-64">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
               <Link
-                href="/whywithtech&"
+                href="/whywith-techand"
                 className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
               >
                 <div className="text-[#5B6FB6] group-hover:scale-110 transition-transform duration-300 p-3 rounded-full group-hover:bg-[#5B6FB6] group-hover:text-white group-hover:shadow-lg">
@@ -759,6 +759,7 @@ export default function Navbar() {
                     Learn about our mission and values
                   </p>
                 </div>
+                
               </Link>
 
               <Link
@@ -1160,7 +1161,7 @@ export default function Navbar() {
                     {mobileWhyVitaOpen && (
                       <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-slideDown rounded-lg mt-1">
                         <Link
-                          href="/whywithtech&"
+                          href="/whywith-techand"
                           className="flex items-center gap-3 p-3 rounded-md bg-white hover:bg-purple-50 transition-colors"
                           onClick={closeMobileMenu}
                         >
