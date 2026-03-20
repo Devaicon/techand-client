@@ -7,6 +7,7 @@ import Capabilities from "@/components/landing/capabilities/Capabilities";
 import Insights from "@/components/landing/insights/Insights";
 import ContactSection from "@/components/landing/contact-form/ContactSection";
 import TransformationCTASection from "@/components/landing/TransformationCTASection";
+import ComingSoon from "@/components/coming-soon/ComingSoon";
 
 export const metadata = {
   title: "Tech& | Your Technology Partner for Digital Transformation",
@@ -50,6 +51,13 @@ export const metadata = {
 };
 
 export default function Home() {
+  const showComingSoon =
+    process.env.NEXT_PUBLIC_SHOW_COMING_SOON?.toLowerCase() === "true";
+
+  if (showComingSoon) {
+    return <ComingSoon />;
+  }
+
   return (
     <main>
       <Hero />
