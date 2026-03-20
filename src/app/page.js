@@ -7,32 +7,6 @@ import Capabilities from "@/components/landing/capabilities/Capabilities";
 import Insights from "@/components/landing/insights/Insights";
 import ContactSection from "@/components/landing/contact-form/ContactSection";
 import TransformationCTASection from "@/components/landing/TransformationCTASection";
-import ComingSoon from "@/components/coming-soon/ComingSoon";
-
-// Determine if the "Coming Soon" page should be displayed based on environment variable and API response
-const isComingSoonEnabled =
-  process.env.NEXT_PUBLIC_SHOW_COMING_SOON?.toLowerCase() === "true";
-
-const shouldRenderComingSoon = async () => {
-  if (!isComingSoonEnabled) return false;
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiUrl) return false;
-
-  try {
-    const response = await fetch(`${apiUrl}/comingsoon`, { cache: "no-store" });
-    if (!response.ok) return false;
-
-    const data = await response.json();
-    const launchTime = new Date(data?.launchDate).getTime();
-
-    if (Number.isNaN(launchTime)) return false;
-
-    return Date.now() < launchTime;
-  } catch {
-    return false;
-  }
-};
 
 export const metadata = {
   title: "Tech& | Your Technology Partner for Digital Transformation",
@@ -75,13 +49,7 @@ export const metadata = {
   },
 };
 
-export default async function Home() {
-  const showComingSoon = await shouldRenderComingSoon();
-
-  if (showComingSoon) {
-    return <ComingSoon />;
-  }
-
+export default function Home() {
   return (
     <main>
       <Hero />

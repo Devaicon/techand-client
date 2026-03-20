@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import PartnerContactCard from "@/components/layout/PartnerContactCard";
 import Footer from "@/components/layout/Footer";
+import ComingSoon from "@/components/coming-soon/ComingSoon";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -144,7 +145,28 @@ const structuredData = {
   ],
 };
 
-export default function RootLayout({ children }) {
+// If launch date is still in the future, render the global coming-soon page.
+const shouldRenderComingSoon = async () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) return false;
+
+  try {
+    const response = await fetch(`${apiUrl}/comingsoon`, { cache: "no-store" });
+    if (!response.ok) return false;
+
+    const data = await response.json();
+    const launchTime = new Date(data?.launchDate).getTime();
+    if (Number.isNaN(launchTime)) return false;
+
+    return Date.now() < launchTime;
+  } catch {
+    return false;
+  }
+};
+
+export default async function RootLayout({ children }) {
+  const isComingSoon = await shouldRenderComingSoon();
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -159,10 +181,16 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
-        <Navbar />
-        {children}
-        <PartnerContactCard />
-        <Footer />
+        {isComingSoon ? (
+          <ComingSoon />
+        ) : (
+          <>
+            <Navbar />
+            {children}
+            <PartnerContactCard />
+            <Footer />
+          </>
+        )}
         <Analytics />
         <SpeedInsights />
       </body>
