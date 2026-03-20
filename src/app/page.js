@@ -9,6 +9,7 @@ import ContactSection from "@/components/landing/contact-form/ContactSection";
 import TransformationCTASection from "@/components/landing/TransformationCTASection";
 import ComingSoon from "@/components/coming-soon/ComingSoon";
 
+// Determine if the "Coming Soon" page should be displayed based on environment variable and API response
 const isComingSoonEnabled =
   process.env.NEXT_PUBLIC_SHOW_COMING_SOON?.toLowerCase() === "true";
 
