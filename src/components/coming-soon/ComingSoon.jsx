@@ -73,7 +73,7 @@ export default function ComingSoon() {
       <div className={styles.content}>
         <div className={styles.logoWrapper}>
           <Image
-            src="/logo.svg"
+            src="/logo1.png"
             alt="Tech& Logo"
             width={300}
             height={100}
