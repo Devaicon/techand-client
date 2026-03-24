@@ -45,7 +45,7 @@ const FOOTER_SECTIONS = [
   {
     title: "Company",
     links: [
-      { label: "Why With Tech&", href: "/whywithtech&" },
+      { label: "Why Tech&", href: "/whywithtech&" },
       { label: "Contact Us", href: "/contact-us" },
       { label: "Insights", href: "/insights" },
       { label: "What We Do", href: "/whatwedo" },
@@ -77,7 +77,7 @@ export default function Footer() {
             <Link href="/" className="inline-block mb-4">
               <div className="relative w-42 h-32 mt-8 lg:mt-8 ">
                 <Image
-                  src="/footer-logo2.svg"
+                  src="/footer_logo.svg"
                   alt="Tech& Logo"
                   fill
                   className="object-contain "
@@ -169,7 +169,7 @@ export default function Footer() {
           {/* Social Media Icons */}
           <div className="flex items-center gap-4">
             <Link
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/company/techand.ai/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-300 transition-colors"

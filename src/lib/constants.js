@@ -10,7 +10,7 @@ export const SITE_CONFIG = {
   ogImage: "/og-image.webp",
   links: {
     twitter: "https://twitter.com/Tech&",
-    linkedin: "https://www.linkedin.com/company/Tech&",
+    linkedin: "https://www.linkedin.com/company/techand.ai/",
   },
   contact: {
     email: "info@Tech&.com",
@@ -26,7 +26,7 @@ export const NAVIGATION_ITEMS = [
   { href: "/solutions", label: "Solutions" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/insights", label: "Insights" },
-  { href: "/why-with-Tech&", label: "Why With Tech&" },
+  { href: "/why-with-Tech&", label: "Why tech&" },
 ];
 
 /**

@@ -334,7 +334,7 @@ export default function Capabilities() {
         {/* Header */}
         <div className="w-full min-h-[160px] sm:min-h-[180px] md:h-[200px] lg:h-[230px] bg-[rgba(74,45,88,1)] text-white flex flex-col items-center justify-center px-4 py-6">
           <Image
-            src="/techand1.png"
+            src="/capabilities.svg"
             alt="Capabilities Icon"
             width={100}
             height={80}

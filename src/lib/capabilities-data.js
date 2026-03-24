@@ -41,7 +41,7 @@ export const CAPABILITIES_CONFIG = {
           "Improves operational efficiency",
         ],
         additionalContent:
-          "With Tech&’s Dynamics 365 Copilot solutions, businesses enhance productivity and maintain consistent service quality. Customers receive faster support from your business and the company achieves stronger results with improved client trust.",
+          "Tech&’s Dynamics 365 Copilot solutions, businesses enhance productivity and maintain consistent service quality. Customers receive faster support from your business and the company achieves stronger results with improved client trust.",
       },
       {
         id: "azure-openai-service",
@@ -168,7 +168,7 @@ export const CAPABILITIES_CONFIG = {
           "Automate invoicing and payments",
         ],
         additionalContent:
-          "With Tech&’s Finance solutions organizations, consolidate financial operations improve reporting accuracy and optimize cash flow. Teams gain clear visibility into budgets, reduce reconciliation errors and strengthen financial governance for measurable operational and strategic performance.",
+          "tech&’s Finance solutions organizations, consolidate financial operations improve reporting accuracy and optimize cash flow. Teams gain clear visibility into budgets, reduce reconciliation errors and strengthen financial governance for measurable operational and strategic performance.",
       },
       {
         id: "dynamics-365-supply-chain",
@@ -185,7 +185,7 @@ export const CAPABILITIES_CONFIG = {
           "Track shipments and deliveries",
         ],
         additionalContent:
-          "With Tech&’s Supply Chain solutions, companies optimize inventory production and logistics. Resource allocation improves operational bottlenecks are reduced and makes delivery timelines predictable driving measurable efficiency and reliability across supply networks.",
+          "tech&’s Supply Chain solutions, companies optimize inventory production and logistics. Resource allocation improves operational bottlenecks are reduced and makes delivery timelines predictable driving measurable efficiency and reliability across supply networks.",
       },
       {
         id: "dynamics-365-sales",
@@ -202,7 +202,7 @@ export const CAPABILITIES_CONFIG = {
           "Automate routine sales tasks",
         ],
         additionalContent:
-          "With Tech&’s Sales solutions, teams close deals faster improve customer engagement and hit targets. Sales processes are simpler more efficient and help the company grow revenue consistently.",
+          "tech&’s Sales solutions, teams close deals faster improve customer engagement and hit targets. Sales processes are simpler more efficient and help the company grow revenue consistently.",
       },
       {
         id: "dynamics-365-customer-service",
@@ -219,7 +219,7 @@ export const CAPABILITIES_CONFIG = {
           "Service level tracking",
         ],
         additionalContent:
-          "With Tech&’s Customer Service solutions, enterprises manage multichannel support efficiently. Businesses resolve cases faster maintain SLAs and improve customer satisfaction while reducing operational overhead and driving measurable improvements in service performance.",
+          "tech&’s Customer Service solutions, enterprises manage multichannel support efficiently. Businesses resolve cases faster maintain SLAs and improve customer satisfaction while reducing operational overhead and driving measurable improvements in service performance.",
       },
       {
         id: "dynamics-365-field-service",
@@ -236,7 +236,7 @@ export const CAPABILITIES_CONFIG = {
           "Mobile field support",
         ],
         additionalContent:
-          "With Tech&’s Field Service solutions, businesses optimize on-site operations and technician scheduling. Work order completion is faster resource utilization improves and operational reliability increases, resulting in measurable efficiency gains and higher client satisfaction.",
+          "tech&’s Field Service solutions, businesses optimize on-site operations and technician scheduling. Work order completion is faster resource utilization improves and operational reliability increases, resulting in measurable efficiency gains and higher client satisfaction.",
       },
       {
         id: "dynamics-365-project-operations",
@@ -253,7 +253,7 @@ export const CAPABILITIES_CONFIG = {
           "Time and expense management",
         ],
         additionalContent:
-          "With Tech&’s Project Operations solutions, project planning resourcing and budgeting are optimized. Businesses maintain timelines reduce cost overruns and track progress in real-time ensuring measurable improvements in project delivery and operational efficiency.",
+          "tech&’s Project Operations solutions, project planning resourcing and budgeting are optimized. Businesses maintain timelines reduce cost overruns and track progress in real-time ensuring measurable improvements in project delivery and operational efficiency.",
       },
       {
         id: "dynamics-365-human-resources",
@@ -270,7 +270,7 @@ export const CAPABILITIES_CONFIG = {
           "HR analytics and reporting",
         ],
         additionalContent:
-          "With Tech&’s Human Resources solutions, employee data leave and performance management are streamlined. HR processes become consistent and measurable reducing errors improving reporting and enhancing workforce productivity while supporting strategic organizational objectives.",
+          "tech&’s Human Resources solutions, employee data leave and performance management are streamlined. HR processes become consistent and measurable reducing errors improving reporting and enhancing workforce productivity while supporting strategic organizational objectives.",
       },
       {
         id: "dynamics-365-commerce",
@@ -287,7 +287,7 @@ export const CAPABILITIES_CONFIG = {
           "Inventory tracking",
         ],
         additionalContent:
-          "With Tech&’s Commerce solutions, businesses provide better shopping experiences. Businesses and companies manage sales efficiently reduce errors and ensure smooth operations. Customers are satisfied and revenue grows steadily.",
+          "tech&’s Commerce solutions, businesses provide better shopping experiences. Businesses and companies manage sales efficiently reduce errors and ensure smooth operations. Customers are satisfied and revenue grows steadily.",
       },
       {
         id: "dynamics-365-business-central",
@@ -304,7 +304,7 @@ export const CAPABILITIES_CONFIG = {
           "Reporting and insights",
         ],
         additionalContent:
-          "With Tech&’s Business Central solutions, small and mid-sized businesses integrate finance sales and inventory management. Companies achieve operational consistency reduce errors and gain insights for strategic decisions producing measurable improvements in productivity and business growth.",
+          "tech&’s Business Central solutions, small and mid-sized businesses integrate finance sales and inventory management. Companies achieve operational consistency reduce errors and gain insights for strategic decisions producing measurable improvements in productivity and business growth.",
       },
     ],
   },
@@ -329,7 +329,7 @@ export const CAPABILITIES_CONFIG = {
           "High performance and uptime",
         ],
         additionalContent:
-          "With Tech&’s Azure Infrastructure solutions, clients run applications smoothly, scale easily and reduce IT costs. Businesses and companies work efficiently, data stays secure and operations remain reliable, enabling businesses to focus on growth and strategic initiatives.",
+          "tech&’s Azure Infrastructure solutions, clients run applications smoothly, scale easily and reduce IT costs. Businesses and companies work efficiently, data stays secure and operations remain reliable, enabling businesses to focus on growth and strategic initiatives.",
       },
       {
         id: "azure-app-services",
@@ -346,7 +346,7 @@ export const CAPABILITIES_CONFIG = {
           "High performance and reliability",
         ],
         additionalContent:
-          "With Tech&’s App Services solutions, clients launch apps faster, keep users satisfied and reduce downtime. Team members of various businesses manage updates with ease and business operations run smoothly, giving companies the confidence to innovate and scale.",
+          "tech&’s App Services solutions, clients launch apps faster, keep users satisfied and reduce downtime. Team members of various businesses manage updates with ease and business operations run smoothly, giving companies the confidence to innovate and scale.",
       },
       {
         id: "azure-kubernetes-service",
@@ -363,7 +363,7 @@ export const CAPABILITIES_CONFIG = {
           "Reliable cloud deployment",
         ],
         additionalContent:
-          "With Tech&’s Kubernetes solutions, clients deliver applications faster, scale seamlessly and maintain reliable services. Users save time, reduce operational complexity and businesses gain agility to respond to changing market needs.",
+          "tech&’s Kubernetes solutions, clients deliver applications faster, scale seamlessly and maintain reliable services. Users save time, reduce operational complexity and businesses gain agility to respond to changing market needs.",
       },
       {
         id: "azure-virtual-desktop",
@@ -380,7 +380,7 @@ export const CAPABILITIES_CONFIG = {
           "Centralized management",
         ],
         additionalContent:
-          "With Tech&’s Virtual Desktop solutions, clients enable employees to work productively from any location. Security is maintained, collaboration improves and business operations continue smoothly without disruption.",
+          "tech&’s Virtual Desktop solutions, clients enable employees to work productively from any location. Security is maintained, collaboration improves and business operations continue smoothly without disruption.",
       },
       {
         id: "azure-integration-services",
@@ -397,7 +397,7 @@ export const CAPABILITIES_CONFIG = {
           "Reduce manual work",
         ],
         additionalContent:
-          "With Tech&’s Integration Services, clients streamline workflows, improve data sharing and reduce errors. Users and teams can focus on value-added work while operations run efficiently and reliably.",
+          "tech&’s Integration Services, clients streamline workflows, improve data sharing and reduce errors. Users and teams can focus on value-added work while operations run efficiently and reliably.",
       },
       {
         id: "azure-security-identity",
@@ -414,7 +414,7 @@ export const CAPABILITIES_CONFIG = {
           "Monitor risks",
         ],
         additionalContent:
-          "With Tech&’s Security solutions, clients safeguard operations, prevent data breaches and maintain compliance. Businesses can work confidently knowing systems are secure and business continuity is ensured.",
+          "tech&’s Security solutions, clients safeguard operations, prevent data breaches and maintain compliance. Businesses can work confidently knowing systems are secure and business continuity is ensured.",
       },
       {
         id: "azure-devops-cicd",
@@ -431,7 +431,7 @@ export const CAPABILITIES_CONFIG = {
           "Reduce software errors",
         ],
         additionalContent:
-          "With Tech&’s DevOps solutions, clients accelerate software delivery, reduce mistakes and keep projects on schedule. Team members of businesses collaborate effectively and businesses achieve measurable improvements in project and operational performance.",
+          "tech&’s DevOps solutions, clients accelerate software delivery, reduce mistakes and keep projects on schedule. Team members of businesses collaborate effectively and businesses achieve measurable improvements in project and operational performance.",
       },
       {
         id: "cloud-migration-modernization",
@@ -448,7 +448,7 @@ export const CAPABILITIES_CONFIG = {
           "Improve performance",
         ],
         additionalContent:
-          "With Tech&’s Cloud Migration solutions, clients modernize operations, reduce IT costs and increase efficiency. Company users adopt new systems smoothly and business operations remain reliable while supporting long-term growth.",
+          "tech&’s Cloud Migration solutions, clients modernize operations, reduce IT costs and increase efficiency. Company users adopt new systems smoothly and business operations remain reliable while supporting long-term growth.",
       },
     ],
   },
@@ -473,7 +473,7 @@ export const CAPABILITIES_CONFIG = {
           "Share insights across teams",
         ],
         additionalContent:
-          "With Tech&’s Fabric solutions, clients make decisions faster and improve operations. Teams access data easily spot trends and work efficiently. Business results are clearer and performance improves steadily.",
+          "tech&’s Fabric solutions, clients make decisions faster and improve operations. Teams access data easily spot trends and work efficiently. Business results are clearer and performance improves steadily.",
       },
       {
         id: "azure-data-factory",
@@ -490,7 +490,7 @@ export const CAPABILITIES_CONFIG = {
           "Integrate multiple data sources",
         ],
         additionalContent:
-          "With Tech&’s Data Factory solutions, clients manage data efficiently reduce errors and deliver insights faster. Businesses can trust information for decision-making and improve overall performance.",
+          "tech&’s Data Factory solutions, clients manage data efficiently reduce errors and deliver insights faster. Businesses can trust information for decision-making and improve overall performance.",
       },
       {
         id: "azure-synapse-analytics",
@@ -507,7 +507,7 @@ export const CAPABILITIES_CONFIG = {
           "Support business reporting",
         ],
         additionalContent:
-          "With Tech&’s Synapse solutions, businesses gain faster insights and better visibility. Moreover, the team’s track performance clearly improves decisions and achieves business goals efficiently.",
+          "tech&’s Synapse solutions, businesses gain faster insights and better visibility. Moreover, the team’s track performance clearly improves decisions and achieves business goals efficiently.",
       },
       {
         id: "power-bi",
@@ -524,7 +524,7 @@ export const CAPABILITIES_CONFIG = {
           "Share insights across teams",
         ],
         additionalContent:
-          "With Tech&’s Power BI solutions, companies visualize key metrics clearly and monitor performance in real-time. Teams share interactive dashboards, spot trends quickly, and make data-driven decisions that improve operational efficiency and drive measurable business growth.",
+          "tech&’s Power BI solutions, companies visualize key metrics clearly and monitor performance in real-time. Teams share interactive dashboards, spot trends quickly, and make data-driven decisions that improve operational efficiency and drive measurable business growth.",
       },
       {
         id: "onelake",
@@ -541,7 +541,7 @@ export const CAPABILITIES_CONFIG = {
           "Supports analytics and reporting",
         ],
         additionalContent:
-          "With Tech&’s OneLake solutions, businesses unify data storage and access. Teams find and share information quickly, maintain accuracy, and improve collaboration, driving measurable gains in operational performance and business outcomes.",
+          "tech&’s OneLake solutions, businesses unify data storage and access. Teams find and share information quickly, maintain accuracy, and improve collaboration, driving measurable gains in operational performance and business outcomes.",
       },
       {
         id: "azure-sql-managed-databases",
@@ -558,7 +558,7 @@ export const CAPABILITIES_CONFIG = {
           "Easy reporting and analysis",
         ],
         additionalContent:
-          "With Tech&’s SQL solutions, clients keep data organized and accessible. Teams work efficiently to reduce errors and maintain smooth operations. Business decisions are faster and more accurate.",
+          "tech&’s SQL solutions, clients keep data organized and accessible. Teams work efficiently to reduce errors and maintain smooth operations. Business decisions are faster and more accurate.",
       },
       {
         id: "real-time-analytics",
@@ -575,7 +575,7 @@ export const CAPABILITIES_CONFIG = {
           "Support fast decision-making",
         ],
         additionalContent:
-          "With Tech&’s Real-Time Analytics solutions, clients act faster and improve performance. Teams and businesses respond to problems immediately, operations stay smooth and business results improve.",
+          "tech&’s Real-Time Analytics solutions, clients act faster and improve performance. Teams and businesses respond to problems immediately, operations stay smooth and business results improve.",
       },
       {
         id: "data-governance-security",
@@ -592,7 +592,7 @@ export const CAPABILITIES_CONFIG = {
           "Maintain control across systems",
         ],
         additionalContent:
-          "With Tech&’s Data Governance solutions, clients secure their data and meet regulations. Teams handle information safely reduce risks and maintain trust. Business operations remain secure and efficient.",
+          "tech&’s Data Governance solutions, clients secure their data and meet regulations. Teams handle information safely reduce risks and maintain trust. Business operations remain secure and efficient.",
       },
     ],
   },

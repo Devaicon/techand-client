@@ -125,7 +125,7 @@ const structuredData = {
     availableLanguage: ["en", "ar"],
   },
   sameAs: [
-    "https://www.linkedin.com/company/Tech&",
+    "https://www.linkedin.com/company/techand.ai/",
     "https://twitter.com/Tech&",
   ],
   areaServed: [

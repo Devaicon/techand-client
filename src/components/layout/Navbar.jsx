@@ -406,7 +406,7 @@ export default function Navbar() {
               aria-label="Tech& - Go to homepage"
             >
               <Image
-                src="/navbar.png"
+                src="/logo.svg"
                 alt="Tech& Logo"
                 width={124}
                 height={51}
@@ -478,7 +478,7 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              {/* Why With Tech& Dropdown */}
+              {/* Why Tech& Dropdown */}
               <li
                 className="relative"
                 onMouseEnter={handleWhyVitaEnter}
@@ -488,7 +488,7 @@ export default function Navbar() {
                   href="/whywith-techand"
                   className="text-gray-700 hover:text-[#5B6FB6] transition-colors font-bold text-sm relative whitespace-nowrap flex items-center gap-1"
                 >
-                  Why With Tech&
+                  Why Tech&
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${
                       showWhyVitaDropdown ? "rotate-180" : ""
@@ -502,7 +502,7 @@ export default function Navbar() {
             <Link
               href="/contact-us"
               className="hidden lg:flex items-center gap-2 border-gray-300 text-gray-700 hover:border-[#5B6FB6] hover:text-[#5B6FB6] transition-all duration-200 font-medium text-sm group"
-              aria-label="Get started with Tech&"
+              aria-label="Get started Tech&"
             >
               <span>Get Started</span>
               <CircleArrowRight size={28} />
@@ -735,7 +735,7 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Why With Tech& Dropdown */}
+      {/* Why Tech& Dropdown */}
       {showWhyVitaDropdown && (
         <div
           className="absolute left-1/2 -translate-x-1/2 top-[93px] w-full lg:w-[calc(100%-280px)] max-w-[1639px] z-40 animate-slideDown flex items-center"
@@ -857,7 +857,7 @@ export default function Navbar() {
                   onClick={closeMobileMenu}
                 >
                   <Image
-                    src="/logo1.png"
+                    src="/logo.svg"
                     alt="Tech& Logo"
                     width={90}
                     height={37}
@@ -1144,13 +1144,13 @@ export default function Navbar() {
                     What We Do
                   </Link>
 
-                  {/* Why With Tech& Dropdown */}
+                  {/* Why Tech& Dropdown */}
                   <div className="border-b border-gray-100">
                     <button
                       onClick={() => setMobileWhyVitaOpen(!mobileWhyVitaOpen)}
                       className="w-full flex items-center justify-between text-gray-900 hover:bg-gray-50 px-4 py-3 text-base font-medium transition-colors rounded-lg"
                     >
-                      <span>Why With Tech&</span>
+                      <span>Why Tech&</span>
                       <ChevronDown
                         className={`w-5 h-5 transition-transform duration-300 ${
                           mobileWhyVitaOpen ? "rotate-180" : ""
