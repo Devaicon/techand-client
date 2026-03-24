@@ -135,7 +135,7 @@ const FeaturedInsights = () => {
               <div className=" p-8 flex items-center justify-center ">
                 <div className="relative w-[600px] h-[400px]">
                   <Image
-                    src="/footer_logo.png"
+                    src="/footer_logo.svg"
                     alt="Tech& Logo"
                     fill
                     className="object-contain"

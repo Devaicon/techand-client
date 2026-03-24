@@ -389,7 +389,7 @@ export default function Navbar() {
     <>
       <header className="absolute top-0 left-0 right-0 z-50 flex justify-center">
         <nav
-          className={`bg-white border-2 border-gray-200 mx-auto w-full lg:w-[calc(100%-280px)] max-w-[1639px] h-[80px] lg:h-[93px] px-4 sm:px-8 lg:px-6 xl:px-[59px] py-4 lg:py-[32px] rounded-none transition-all duration-200 ${
+          className={`bg-white mx-auto w-full lg:w-[calc(100%-280px)] max-w-[1639px] h-[80px] lg:h-[93px] px-4 sm:px-8 lg:px-6 xl:px-[59px] py-4 lg:py-[32px] rounded-none transition-all duration-200 ${
             showIndustriesDropdown ||
             showCapabilitiesDropdown ||
             showWhyVitaDropdown
@@ -540,7 +540,7 @@ export default function Navbar() {
           onMouseEnter={handleIndustriesEnter}
           onMouseLeave={handleIndustriesLeave}
         >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full flex">
+          <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full flex">
             {/* Left Section - Industry List */}
             <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
               <div className="space-y-2">
