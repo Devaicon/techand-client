@@ -12,24 +12,24 @@ const FEATURED_BLOG_POSTS = [
     slug: "powering-enterprise-transformation-ai",
     comingSoon: true,
   },
-  {
-    image: "/blog-insight-img1.webp",
-    category: "Cloud",
-    title: "Building Scalable Cloud Foundations for Growth",
-    description:
-      "Discover best practices for designing secure, scalable cloud architectures that support enterprise workloads.",
-    slug: "powering-enterprise-transformation-ai",
-    comingSoon: true,
-  },
-  {
-    image: "/blog-insight-img1.webp",
-    category: "Cloud",
-    title: "Building Scalable Cloud Foundations for Growth",
-    description:
-      "Discover best practices for designing secure, scalable cloud architectures that support enterprise workloads.",
-    slug: "powering-enterprise-transformation-ai",
-    comingSoon: true,
-  },
+  // {
+  //   image: "/blog-insight-img1.webp",
+  //   category: "Cloud",
+  //   title: "Building Scalable Cloud Foundations for Growth",
+  //   description:
+  //     "Discover best practices for designing secure, scalable cloud architectures that support enterprise workloads.",
+  //   slug: "powering-enterprise-transformation-ai",
+  //   comingSoon: true,
+  // },
+  // {
+  //   image: "/blog-insight-img1.webp",
+  //   category: "Cloud",
+  //   title: "Building Scalable Cloud Foundations for Growth",
+  //   description:
+  //     "Discover best practices for designing secure, scalable cloud architectures that support enterprise workloads.",
+  //   slug: "powering-enterprise-transformation-ai",
+  //   comingSoon: true,
+  // },
 ];
 
 const FeaturedBlogCard = ({ post }) => {
