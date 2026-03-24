@@ -143,7 +143,7 @@ const ContactUsPage = () => {
               {/* Map Section */}
               <div className="bg-white rounded-2xl shadow-lg py-8 flex justify-center h-100">
                 <Image
-                  src="/map.svg"
+                  src="/map1.svg"
                   alt="Office Location Maap"
                   width={600}
                   height={400}
