@@ -54,7 +54,7 @@ export default function CornerListComponent() {
 
   return (
     <div
-      className="min-h-screen p-4 sm:p-8 flex items-center justify-center max-w-7xl mx-auto rounded-2xl sm:rounded-3xl lg:rounded-[30px] mt-16"
+      className="min-h-screen p-4 sm:p-6 lg:p-8 flex items-center justify-center w-full max-w-7xl mx-auto overflow-x-hidden rounded-2xl sm:rounded-3xl lg:rounded-[30px] mt-16"
       style={{
         background: "linear-gradient(180deg, #4555A7 0%, #53406B 100%)",
       }}
@@ -150,7 +150,7 @@ export default function CornerListComponent() {
         </div>
 
         {/* Top Left Item */}
-        <div className="absolute top-[-120px] left-[-40px] flex items-start gap-3 max-w-sm">
+        <div className="absolute top-[-120px] left-[-40px] lg:left-[-40px] hidden lg:flex items-start gap-3 max-w-sm">
           <div className="text-right flex-1">
             <h3 className="text-lg font-semibold text-white">
               {data.items[0].header}
@@ -168,7 +168,7 @@ export default function CornerListComponent() {
         </div>
 
         {/* Top Right Item */}
-        <div className="absolute top-[-120px] right-[-40px] flex items-start gap-3 max-w-sm">
+        <div className="absolute top-[-120px] right-[-40px] lg:right-[-40px] hidden lg:flex items-start gap-3 max-w-sm">
           <div className="w-20 h-20 rounded-xl flex items-center justify-center shadow-md flex-shrink-0 bg-white">
             {React.createElement(data.items[1].icon, {
               className: "w-10 h-10",
@@ -186,7 +186,7 @@ export default function CornerListComponent() {
         </div>
 
         {/* Left Item */}
-        <div className="absolute bottom-[-20px] left-[-40px] transform -translate-y-1/2 flex items-start gap-3 max-w-sm">
+        <div className="absolute bottom-[-20px] left-[-40px] transform -translate-y-1/2 hidden lg:flex items-start gap-3 max-w-sm">
           <div className="text-right flex-1">
             <h3 className="text-lg font-semibold text-white">
               {data.items[2].header}
@@ -204,7 +204,7 @@ export default function CornerListComponent() {
         </div>
 
         {/* Right Item */}
-        <div className="absolute bottom-[-20px] right-[-40px] transform -translate-y-1/2 flex items-start gap-3 max-w-sm">
+        <div className="absolute bottom-[-20px] right-[-40px] transform -translate-y-1/2 hidden lg:flex items-start gap-3 max-w-sm">
           <div className="w-20 h-20 rounded-xl flex items-center justify-center shadow-md flex-shrink-0 bg-white">
             {React.createElement(data.items[3].icon, {
               className: "w-10 h-10",

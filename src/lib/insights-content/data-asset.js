@@ -10,7 +10,7 @@ export default {
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise Data Specialists",
-    avatar: "/insights/technology.webp",
+    avatar: "/insights/tech_ai_team_icon.webp",
   },
   tags: ["Data Governance", "Microsoft Fabric", "Business Intelligence"],
   content: {

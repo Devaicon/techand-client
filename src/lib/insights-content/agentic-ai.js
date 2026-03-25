@@ -10,7 +10,7 @@ export default {
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise AI Specialists",
-    avatar: "/insights/enterprises.webp",
+    avatar: "/insights/tech_ai_team_icon.webp",
   },
   tags: ["Agentic AI", "Customer Experience", "Enterprise AI"],
   content: {

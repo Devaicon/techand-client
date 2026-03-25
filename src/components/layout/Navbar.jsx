@@ -389,12 +389,12 @@ export default function Navbar() {
     <>
       <header className="absolute top-0 left-0 right-0 z-50 flex justify-center">
         <nav
-          className={`bg-white mx-auto w-full lg:w-[calc(100%-280px)] max-w-[1639px] h-[80px] lg:h-[93px] px-4 sm:px-8 lg:px-6 xl:px-[59px] py-4 lg:py-[32px] rounded-none transition-all duration-200 ${
+          className={`bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] h-[80px] xl:h-[93px] px-4 sm:px-8 xl:px-[59px] py-4 xl:py-[32px] rounded-none transition-all duration-200 ${
             showIndustriesDropdown ||
             showCapabilitiesDropdown ||
             showWhyVitaDropdown
               ? " border-b-0"
-              : "lg:rounded-b-[30px]"
+              : "xl:rounded-b-[30px]"
           }`}
           aria-label="Main navigation"
         >
@@ -411,13 +411,13 @@ export default function Navbar() {
                 width={124}
                 height={51}
                 priority
-                className="object-contain w-[90px] h-auto lg:w-[124px]"
+                className="object-contain w-[90px] h-auto xl:w-[124px]"
               />
             </Link>
 
             {/* Desktop Navigation */}
             <ul
-              className="hidden lg:flex items-center gap-5 xl:gap-8"
+              className="hidden xl:flex items-center gap-5 xl:gap-8"
               role="list"
             >
               {/* Industries Dropdown */}
@@ -501,7 +501,7 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <Link
               href="/contact-us"
-              className="hidden lg:flex items-center gap-2 border-gray-300 text-gray-700 hover:border-[#5B6FB6] hover:text-[#5B6FB6] transition-all duration-200 font-medium text-sm group"
+              className="hidden xl:flex items-center gap-2 border-gray-300 text-gray-700 hover:border-[#5B6FB6] hover:text-[#5B6FB6] transition-all duration-200 font-medium text-sm group"
               aria-label="Get started Tech&"
             >
               <span>Get Started</span>
@@ -511,7 +511,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="xl:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Open navigation menu"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
@@ -536,11 +536,11 @@ export default function Navbar() {
       {/* Industries Dropdown */}
       {showIndustriesDropdown && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-[93px] w-full lg:w-[calc(100%-280px)] max-w-[1639px] z-40 animate-slideDown flex justify-center"
+          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex justify-center"
           onMouseEnter={handleIndustriesEnter}
           onMouseLeave={handleIndustriesLeave}
         >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full flex">
+          <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
             {/* Left Section - Industry List */}
             <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
               <div className="space-y-2">
@@ -597,11 +597,11 @@ export default function Navbar() {
       {/* Capabilities Dropdown */}
       {showCapabilitiesDropdown && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-[93px] w-full lg:w-[calc(100%-280px)] max-w-[1639px] z-40 animate-slideDown flex justify-center"
+          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex justify-center"
           onMouseEnter={handleCapabilitiesEnter}
           onMouseLeave={handleCapabilitiesLeave}
         >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full flex">
+          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
             {/* Left Section - Capabilities List */}
             <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
               <div className="space-y-2">
@@ -738,11 +738,11 @@ export default function Navbar() {
       {/* Why Tech& Dropdown */}
       {showWhyVitaDropdown && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-[93px] w-full lg:w-[calc(100%-280px)] max-w-[1639px] z-40 animate-slideDown flex items-center"
+          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex items-center justify-center"
           onMouseEnter={handleWhyVitaEnter}
           onMouseLeave={handleWhyVitaLeave}
         >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full p-8 px-64">
+          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] p-8 px-64">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
               <Link
                 href="/whywith-techand"
@@ -837,13 +837,13 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] lg:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] xl:hidden"
             onClick={closeMobileMenu}
             aria-hidden="true"
           />
           <div
             id="mobile-menu"
-            className="fixed inset-y-0 right-0 w-full max-w-sm bg-white z-[70] lg:hidden shadow-2xl"
+            className="fixed inset-y-0 right-0 w-full max-w-sm bg-white z-[70] xl:hidden shadow-2xl"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation menu"

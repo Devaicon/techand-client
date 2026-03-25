@@ -141,12 +141,12 @@ const ContactUsPage = () => {
             {/* Right Side - Map and Visit Office */}
             <div className="flex-1 space-y-6">
               {/* Map Section */}
-              <div className="bg-white rounded-2xl shadow-lg py-8 flex justify-center h-100">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative w-full h-80 sm:h-96 flex items-center justify-center">
                 <Image
-                  src="/map.svg"
+                  src="/mapfinal1.png"
                   alt="Office Location Maap"
-                  width={600}
-                  height={400}
+                  fill
+                  className="w-full h-full object-contain"
                 />
               </div>
 

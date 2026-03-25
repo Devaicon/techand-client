@@ -10,7 +10,7 @@ const autonomousAICustomerService = {
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise AI & CX Specialists",
-    avatar: "/insights/robotic.webp",
+     avatar: "/insights/tech_ai_team_icon.webp",
   },
   tags: ["Autonomous AI", "Customer Service", "Productivity", "AI Agents"],
   content: {

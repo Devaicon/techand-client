@@ -351,13 +351,13 @@ export default function Capabilities() {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-3 sm:gap-4 md:gap-5 py-4 sm:py-6 md:py-8 lg:py-10 w-full px-4">
+        <div className="grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5 py-4 sm:py-6 md:py-8 lg:py-10 w-full px-4">
           {CATEGORIES.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
               aria-pressed={activeCategory === category}
-              className={`flex-1 h-[45px] sm:h-[50px] md:h-[55px] lg:h-[59px] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-[10px] rounded-[36px] text-xs sm:text-sm md:text-base font-medium text-white whitespace-nowrap cursor-pointer
+              className={`w-full min-h-[45px] sm:min-h-[50px] md:h-[55px] lg:h-[59px] px-3 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-[10px] rounded-[36px] text-xs sm:text-sm md:text-base font-medium text-white whitespace-normal text-center leading-tight cursor-pointer
                 bg-gradient-to-b from-[#3e234c] to-[#6c3c85]
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[rgba(90,58,104,0.5)]
                 transition-colors duration-200

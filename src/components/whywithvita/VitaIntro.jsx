@@ -92,17 +92,17 @@ const VitaIntro = () => {
           </div>
 
           {/* Right Side - Image */}
-          <div className="flex items-center justify-center relative w-full h-auto min-h-80 sm:min-h-96 md:min-h-[450px] lg:min-h-[500px] ml-9">
+          <div className="flex items-center justify-center relative w-full h-auto min-h-80 sm:min-h-96 md:min-h-[450px] lg:min-h-[500px]">
             {/* Gradient Circle Background */}
             <div
               className="absolute w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[480px] lg:h-[480px] xl:w-[550px] xl:h-[550px] rounded-full"
-              style={{
-                background: "linear-gradient(180deg, #3E234C 0%, #6C3C85 100%)",
-                left: "-1.5rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                zIndex: 1,
-              }}
+              // style={{
+              //   background: "linear-gradient(180deg, #3E234C 0%, #6C3C85 100%)",
+              //    left: "0",
+              //   top: "50%",
+              //   transform: "translateY(-50%)",
+              //   zIndex: 1,
+              // }}
             />
 
             <div className="relative w-full aspect-square max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl z-10">
