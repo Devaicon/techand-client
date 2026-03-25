@@ -6,11 +6,11 @@ export default {
   title: "Value Driven Innovation through Automation",
   subtitle:
     "Digital transformation is no longer defined by system deployments alone. It's measured by quantifiable business impact. Organizations and businesses worldwide implement Dynamics 365, AI, and intelligent automation, expecting efficiency, visibility, and accelerated growth. But are these technologies actually improving business outcomes?",
-  heroImage: "/evolution_of_ai.webp",
+  heroImage: "/insights/automation.webp",
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise Transformation Specialists",
-    avatar: "/evolution_of_ai.webp",
+    avatar: "/insights/tech_ai_team_icon.webp",
   },
   tags: ["Digital Transformation", "Automation", "ROI", "Dynamics 365"],
   content: {
@@ -28,7 +28,7 @@ export default {
       paragraphs: [
         "This principle highlights that innovation alone is not enough. Enterprises must link every technology investment to real, measurable business outcomes or risk deploying tools that add complexity without value.",
       ],
-      image: "/evolution_of_ai.webp",
+      image: "/insights/ai-automation.webp",
       imageCaption: "Maximizing ROI through intelligent automation",
     },
     body: [
@@ -59,6 +59,9 @@ export default {
         ],
         additionalText:
           "When technology is aligned with these outcomes, it transforms from a tactical tool into a strategic differentiator.",
+        image: "/insights/automation.webp",
+        imageCaption:
+          "Intelligent automation driving measurable business outcomes",
       },
       {
         title:
@@ -73,9 +76,11 @@ export default {
         ],
         additionalText:
           "Dynamics 365 and AI platforms are powerful but their true enterprise value emerges only when business metrics improve measurably.",
+        image: "/insights/tech_ai_team_icon.webp",
+        imageCaption: "Tech& team expertise in AI-driven transformation",
       },
     ],
-    bodyImage: "/Enterprise-Scale Agentic AI.webp",
+    bodyImage: "/insights/acess-envision.webp",
     bodyImageCaption: "ROI-driven digital transformation framework",
     conclusion: {
       title: "",

@@ -183,7 +183,8 @@ export default function Footer() {
         {/* Copyright */}
         <div className="text-center mt-8 pt-6 ">
           <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} Tech& Consulting. All rights reserved.
+            © {new Date().getFullYear()} Techand systems LLC. All rights
+            reserved.
           </p>
         </div>
       </div>

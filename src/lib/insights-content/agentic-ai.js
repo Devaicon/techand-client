@@ -6,11 +6,11 @@ export default {
   title: "Agentic AI is Revolutionizing the Industries",
   subtitle:
     "Customer experience has evolved into one of the most decisive competitive differentiators for modern enterprises. Insight-only AI and rule-based automation are no longer sufficient. Organizations now require AI that can reason, act, and resolve autonomously at scale. This is especially critical for high-volume industries like banking, retail, telecom, and e-commerce in the UAE and GCC.",
-  heroImage: "/evolution_of_ai.webp",
+  heroImage: "/insights/agentic.webp",
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise AI Specialists",
-    avatar: "/evolution_of_ai.webp",
+    avatar: "/insights/enterprises.webp",
   },
   tags: ["Agentic AI", "Customer Experience", "Enterprise AI"],
   content: {
@@ -29,7 +29,7 @@ export default {
       paragraphs: [
         "Agentic AI refers to a new generation of intelligent systems that can understand context, make decisions, and complete end-to-end processes. All done with minimal human intervention. Agentic AI operates with clear objectives, governed autonomy, and measurable business outcomes.",
       ],
-      image: "/Evolution of Customer Experience.webp",
+      image: "/insights/Evolution of Customer Experience.webp",
       imageCaption: "Agentic AI transforming customer experience at scale",
     },
     body: [
@@ -51,6 +51,9 @@ export default {
           "Earlier digital systems relied on fixed rules and scripted logic. As a result, this approach limits how far automation could go. Agentic models represent a clear step forward, allowing software-driven agents to interpret intent and make informed decisions. Plus, it also carries out tasks across enterprise systems with minimal intervention. These agents connect securely with core platforms, handle complex workflows, and complete processes.",
         additionalText:
           "By learning from outcomes and adapting over time, this approach delivers consistent efficiency improvements across industries—organizations adopting agent-based automation benefit from faster execution, higher accuracy, and scalable operations.",
+        image: "/insights/agentic.webp",
+        imageCaption:
+          "Agentic AI driving enterprise automation and productivity",
       },
       {
         title: "Autonomy Requires Governance and Measurement for Results",
@@ -76,9 +79,11 @@ export default {
           "Simply establishing governance, security, and performance measurement frameworks",
           "Continuously optimizing AI agents based on real business results",
         ],
+        image: "/insights/enterprises.webp",
+        imageCaption: "Enterprise-scale deployment of agentic AI solutions",
       },
     ],
-    bodyImage: "/Enterprise-Scale Agentic AI.webp",
+    bodyImage: "/insights/Enterprise-Scale Agentic AI.webp",
     bodyImageCaption: "Enterprise-grade Agentic AI implementation framework",
     conclusion: {
       title: "",

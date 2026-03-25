@@ -89,12 +89,16 @@ export default async function BlogPostPage({ params }) {
         </header>
 
         {/* Hero Image */}
-        <div className="relative w-full h-64 md:h-96 mb-12 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative block w-full h-64 md:h-96 mb-12 rounded-lg overflow-hidden shadow-lg">
           <Image
             src={post.heroImage}
             alt={post.title}
             fill
-            className="object-cover"
+            className={`w-full h-full object-cover ${
+              slug === "value-driven-innovation-automation"
+                ? "object-center scale-[1.8]"
+                : "object-center scale-110"
+            }`}
             priority
           />
         </div>
@@ -131,13 +135,17 @@ export default async function BlogPostPage({ params }) {
 
               {/* Introduction Image */}
               {post.content.introduction.image && (
-                <div className="my-10">
-                  <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
+                <div className="my-10 w-full">
+                  <div className="relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
                     <Image
                       src={post.content.introduction.image}
                       alt="Introduction visual"
                       fill
-                      className="object-cover"
+                      className={`w-full h-full object-cover ${
+                        slug === "data-sovereign-asset"
+                          ? "object-top scale-125"
+                          : "object-center scale-110"
+                      }`}
                     />
                   </div>
                   {post.content.introduction.imageCaption && (
@@ -240,13 +248,17 @@ export default async function BlogPostPage({ params }) {
 
           {/* Body Image */}
           {post.content.bodyImage && (
-            <div className="my-10">
-              <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
+            <div className="my-10 w-full">
+              <div className="relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
                 <Image
                   src={post.content.bodyImage}
                   alt="Article visual"
                   fill
-                  className="object-cover"
+                  className={`w-full h-full object-cover ${
+                    slug === "data-sovereign-asset"
+                      ? "object-top scale-125"
+                      : "object-center scale-110"
+                  }`}
                 />
               </div>
               {post.content.bodyImageCaption && (

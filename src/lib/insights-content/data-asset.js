@@ -6,11 +6,11 @@ export default {
   title: "Data is Going to Be Your New Sovereign Asset",
   subtitle:
     "Modern leadership runs on data. Executives are expected to make high-stakes decisions quickly, backed by reliable insights. However, trust and the capacity to act confidently are undermined when data is disjointed and reports present disparate narratives.",
-  heroImage: "/hero-img2.webp",
+  heroImage: "/insights/data_availability.webp",
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise Data Specialists",
-    avatar: "/evolution_of_ai.webp",
+    avatar: "/insights/technology.webp",
   },
   tags: ["Data Governance", "Microsoft Fabric", "Business Intelligence"],
   content: {
@@ -18,6 +18,9 @@ export default {
       title: "How Unified Data Drives Faster and Better Business Decisions?",
       subtitle:
         "Modern leadership runs on data. Executives are expected to make high-stakes decisions quickly, backed by reliable insights. However, trust and the capacity to act confidently are undermined when data is disjointed and reports present disparate narratives.",
+      image: "/insights/data_availability.webp",
+      imageCaption:
+        "Data availability and accessibility for enterprise decisions",
     },
     quote: {
       text: "When leaders debate numbers instead of decisions, the organization does not have a reporting problem; it has a data problem.",
@@ -33,7 +36,7 @@ export default {
         "Data teams spend nearly 40% of their time reconciling reports rather than analyzing them",
         "Organizations with unified data platforms are three times more likely to make faster, confident decisions",
       ],
-      image: "/data_sovereign_asset.webp",
+      image: "/insights/technology.webp",
       imageCaption:
         "The disconnect between data availability and decision readiness",
     },
@@ -62,6 +65,9 @@ export default {
         ],
         additionalText:
           "Microsoft Fabric becomes a strategic enabler in this scenario.",
+        image: "/insights/data_availability.webp",
+        imageCaption:
+          "Data availability and accessibility for enterprise decisions",
       },
       {
         title: "Microsoft Fabric is One Platform and One Truth",
@@ -74,6 +80,8 @@ export default {
           "Built-in governance, security, and compliance aligned with enterprise and regulatory standards",
           "Faster insights through seamless support for real-time and batch analytics",
         ],
+        image: "/insights/technology.webp",
+        imageCaption: "Modern data technology and unified platform integration",
       },
       {
         title: "Why Unified Data Matters to Leadership?",
@@ -115,7 +123,7 @@ export default {
         ],
       },
     ],
-    bodyImage: "/microsoft_fabric_platform.webp",
+    bodyImage: "/insights/enterprises.webp",
     bodyImageCaption: "Microsoft Fabric unified data platform architecture",
     conclusion: {
       title: "",

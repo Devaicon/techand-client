@@ -6,11 +6,11 @@ const autonomousAICustomerService = {
   title: "How Customer Services Are Achieving Productivity with AI",
   subtitle:
     "Enterprise leaders are facing more service requests, higher expectations and tighter budgets. Without smart technology, keeping up seems impossible for businesses. Traditional ways of working can't keep up. The solution? Voice and digital assistants are proving to be the best answer. Tools like Microsoft Copilot help organizations handle requests faster, solve problems quickly, and make employees more efficient without hiring more people.",
-  heroImage: "/evolution_of_ai.webp",
+  heroImage: "/insights/autonomous.webp",
   author: {
     name: "Tech& Technology Team",
     role: "Enterprise AI & CX Specialists",
-    avatar: "/evolution_of_ai.webp",
+    avatar: "/insights/robotic.webp",
   },
   tags: ["Autonomous AI", "Customer Service", "Productivity", "AI Agents"],
   content: {
@@ -21,13 +21,13 @@ const autonomousAICustomerService = {
         "Enterprise leaders are facing more service requests, higher expectations and tighter budgets. Without smart technology, keeping up seems impossible for businesses. Traditional ways of working can't keep up. The solution? Voice and digital assistants are proving to be the best answer. Tools like Microsoft Copilot help organizations handle requests faster, solve problems quickly, and make employees more efficient without hiring more people.",
     },
     quote: {
-      text: "",
+      text: "The objective is not automation alone, but intelligent execution at scale.",
       author: "",
     },
     introduction: {
       title: "",
       paragraphs: [],
-      image: "/Enterprise-Scale Agentic AI.webp",
+      image: "/insights/robotic.webp",
       imageCaption: "Autonomous AI transforming customer service operations",
     },
     body: [
@@ -43,6 +43,8 @@ const autonomousAICustomerService = {
         ],
         additionalText:
           "The objective is not automation alone, but intelligent execution at scale.",
+        image: "/insights/autonomous.webp",
+        imageCaption: "Autonomous AI-powered voice assistant technology",
       },
       {
         title: "How Does Tech& Enable AI-Powered Voice Assistants?",
@@ -54,9 +56,11 @@ const autonomousAICustomerService = {
           "Consistent service execution",
           "Scalable, always-available operations",
         ],
+        image: "/insights/robotic.webp",
+        imageCaption: "Robotic process automation in voice assistant systems",
       },
     ],
-    bodyImage: "/blog-insight-img1.webp",
+    bodyImage: "/insights/evolution_of_ai.webp",
     bodyImageCaption: "AI-powered customer service transformation framework",
     conclusion: {
       title: "",
