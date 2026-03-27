@@ -29,7 +29,7 @@ export default {
       paragraphs: [
         "Agentic AI refers to a new generation of intelligent systems that can understand context, make decisions, and complete end-to-end processes. All done with minimal human intervention. Agentic AI operates with clear objectives, governed autonomy, and measurable business outcomes.",
       ],
-      image: "/insights/Evolution of Customer Experience.webp",
+      image: "/insights/customer.webp",
       imageCaption: "Agentic AI transforming customer experience at scale",
     },
     body: [

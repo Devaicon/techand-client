@@ -144,6 +144,8 @@ export default async function BlogPostPage({ params }) {
                       className={`w-full h-full object-cover ${
                         slug === "data-sovereign-asset"
                           ? "object-top scale-125"
+                          : slug === "agentic-ai"
+                          ? "object-center scale-[1.5]"
                           : "object-center scale-110"
                       }`}
                     />
