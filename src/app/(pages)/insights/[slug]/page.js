@@ -145,8 +145,8 @@ export default async function BlogPostPage({ params }) {
                         slug === "data-sovereign-asset"
                           ? "object-top scale-125"
                           : slug === "agentic-ai"
-                          ? "object-center scale-[1.5]"
-                          : "object-center scale-110"
+                            ? "object-center scale-[1.5]"
+                            : "object-center scale-110"
                       }`}
                     />
                   </div>
