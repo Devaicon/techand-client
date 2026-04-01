@@ -170,7 +170,12 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+        <link
+          rel="icon"
+          href="/footer_logo.svg"
+          sizes="any"
+          type="image/svg+xml"
+        />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#5B6FB6" />
         <script
