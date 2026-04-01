@@ -172,9 +172,17 @@ export default async function RootLayout({ children }) {
       <head>
         <link
           rel="icon"
+          href="/favicon/favicon.ico"
+          sizes="any"
+          type="image/x-icon"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
           href="/footer_logo.svg"
           sizes="any"
           type="image/svg+xml"
+          media="(prefers-color-scheme: dark)"
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#5B6FB6" />
