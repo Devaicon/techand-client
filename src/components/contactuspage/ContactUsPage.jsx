@@ -143,8 +143,8 @@ const ContactUsPage = () => {
               {/* Map Section */}
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative w-full h-80 sm:h-96 flex items-center justify-center">
                 <Image
-                  src="/mapfinal1.png"
-                  alt="Office Location Maap"
+                  src="/map.png"
+                  alt="Office Location Map"
                   fill
                   className="w-full h-full object-contain"
                 />

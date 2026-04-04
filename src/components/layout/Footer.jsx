@@ -32,7 +32,7 @@ const FOOTER_SECTIONS = [
   {
     title: "Capabilities",
     links: [
-      { label: "Capabilities Overview", href: "/capabilities" },
+      // { label: "Capabilities Overview", href: "/capabilities" },
       { label: "AI", href: "/capabilities#ai" },
       {
         label: "Business Applications",
