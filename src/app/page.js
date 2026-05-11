@@ -30,21 +30,11 @@ export const metadata = {
     siteName: "Tech&",
     type: "website",
     locale: "en_US",
-    images: [
-      {
-        url: "/techand1.png",
-        width: 1200,
-        height: 630,
-        alt: "Tech& - Your Technology Partner",
-        type: "image/png",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tech& | Your Technology Partner",
     description: "Empowering businesses with innovative technology solutions.",
-    images: ["/techand1.png"],
     creator: "@Techand",
   },
   alternates: {

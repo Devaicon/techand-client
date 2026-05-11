@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
   adjustFontFallback: true,
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://withvita.cloud";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
