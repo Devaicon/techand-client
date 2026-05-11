@@ -27,14 +27,16 @@ export const metadata = {
     description:
       "Empowering businesses with innovative technology solutions for enterprise automation and digital transformation.",
     url: "/",
+    siteName: "Tech&",
     type: "website",
     locale: "en_US",
     images: [
       {
-        url: "/og-image.webp",
+        url: "/techand1.png",
         width: 1200,
         height: 630,
         alt: "Tech& - Your Technology Partner",
+        type: "image/png",
       },
     ],
   },
@@ -42,7 +44,8 @@ export const metadata = {
     card: "summary_large_image",
     title: "Tech& | Your Technology Partner",
     description: "Empowering businesses with innovative technology solutions.",
-    images: ["/twitter-image.webp"],
+    images: ["/techand1.png"],
+    creator: "@Techand",
   },
   alternates: {
     canonical: "/",
