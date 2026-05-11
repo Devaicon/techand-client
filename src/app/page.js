@@ -47,7 +47,7 @@ export default function Home() {
     <main>
       <Hero />
       <FinancialBacking />
-      <IndustriesSection /> 
+      <IndustriesSection />
       <ServicesSection />
       <EnterpriseExcellence />
       <Capabilities />
