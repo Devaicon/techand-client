@@ -59,23 +59,13 @@ export const metadata = {
     description:
       "Empowering enterprise transformation through cutting-edge technology consulting for the UAE & GCC region.",
     siteName: "Tech&",
-    images: [
-      {
-        url: "/og-image.webp",
-        width: 1200,
-        height: 630,
-        alt: "Tech& - Enterprise Automation Solutions",
-        type: "image/jpeg",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tech& | Enterprise Automation & Digital Transformation",
     description:
       "Empowering enterprise transformation through cutting-edge technology consulting.",
-    images: ["/twitter-image.webp"],
-    creator: "@Tech&",
+    creator: "@Techand",
   },
   robots: {
     index: true, // Allow indexing
@@ -91,6 +81,11 @@ export const metadata = {
   },
   alternates: {
     canonical: siteUrl,
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/techand1.png",
   },
   category: "technology",
 };

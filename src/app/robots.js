@@ -7,7 +7,7 @@ export default function robots() {
       {
         userAgent: "*", // all web crawlers
         allow: "/",
-        disallow: ["/api/", "/admin/", "/_next/", "/private/"],
+        disallow: ["/api/", "/admin/", "/private/"],
       },
       {
         userAgent: "Googlebot",
