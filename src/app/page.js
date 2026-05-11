@@ -9,7 +9,8 @@ import ContactSection from "@/components/landing/contact-form/ContactSection";
 import TransformationCTASection from "@/components/landing/TransformationCTASection";
 
 export const metadata = {
-  title: "Tech& | Your Technology Partner for Digital Transformation",
+  title:
+    "Tech& | Turning Technology into measurable Business Impact for Digital Transformation",
   description:
     "Empowering businesses with innovative technology solutions for enterprise automation and digital transformation across UAE and GCC.",
   keywords: [
@@ -23,7 +24,7 @@ export const metadata = {
     "innovation consulting",
   ],
   openGraph: {
-    title: "Tech& | Your Technology Partner",
+    title: "Tech& | Turning Technology into measurable Business Impact",
     description:
       "Empowering businesses with innovative technology solutions for enterprise automation and digital transformation.",
     url: "/",
@@ -33,7 +34,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tech& | Your Technology Partner",
+    title: "Tech& | Turning Technology into measurable Business Impact",
     description: "Empowering businesses with innovative technology solutions.",
     creator: "@Techand",
   },

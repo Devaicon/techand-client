@@ -82,7 +82,9 @@ export default function ComingSoon() {
           />
         </div>
 
-        <h1 className={styles.tagline}>Your Technology Partner</h1>
+        <h1 className={styles.tagline}>
+          Turning Technology into measurable Business Impact
+        </h1>
         <p className={styles.description}>
           Empowering businesses with innovative technology solutions
         </p>
