@@ -69,18 +69,29 @@ const ContactUsPage = () => {
                       background: "#37469e",
                     }}
                   >
-                    <div className="flex sm:flex-col p-5 ">
+                    <div className="flex sm:flex-col gap-1 p-3 sm:p-4 md:p-5">
                       {/* Call Now Tab */}
                       <button
                         onClick={() => setActiveTab("callNow")}
-                        className={`flex-1 sm:flex-none flex items-center gap-3 px-4 py-4 sm:py-5 text-left transition-all rounded-lg ${
+                        className={`group flex flex-1 sm:flex-none items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 text-left transition-all duration-300 rounded-lg sm:rounded-xl relative ${
                           activeTab === "callNow"
-                            ? "bg-white/20 border-l-4 border-white"
-                            : "text-white/80 hover:bg-white/10"
+                            ? "bg-white/20 shadow-md text-white"
+                            : "text-white/70 hover:text-white hover:bg-white/10"
                         }`}
                       >
-                        <Phone className="w-9 h-9 p-[6px] rounded-lg bg-white/20 text-white " />
-                        <span className="text-white text-sm font-semibold">
+                        {activeTab === "callNow" && (
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full hidden sm:block" />
+                        )}
+                        <div
+                          className={`w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 rounded-lg flex items-center justify-center transition-all ${
+                            activeTab === "callNow"
+                              ? "bg-white/30"
+                              : "bg-white/10 group-hover:bg-white/20"
+                          }`}
+                        >
+                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-semibold whitespace-nowrap hidden min-[400px]:block">
                           Call Now
                         </span>
                       </button>
@@ -88,29 +99,53 @@ const ContactUsPage = () => {
                       {/* Request Call Back Tab */}
                       <button
                         onClick={() => setActiveTab("requestCallback")}
-                        className={`flex-1 sm:flex-none flex items-center gap-3 px-4 py-4 sm:py-5 text-left transition-all rounded-lg ${
+                        className={`group flex flex-1 sm:flex-none items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 text-left transition-all duration-300 rounded-lg sm:rounded-xl relative ${
                           activeTab === "requestCallback"
-                            ? "bg-white/20 border-l-4 border-white"
-                            : "text-white/80 hover:bg-white/10"
+                            ? "bg-white/20 shadow-md text-white"
+                            : "text-white/70 hover:text-white hover:bg-white/10"
                         }`}
                       >
-                        <MessageSquare className="w-9 h-9 p-[6px] rounded-lg bg-white/20 text-white " />
-                        <span className="text-white text-sm font-semibold whitespace-nowrap">
-                          Request Call Back
+                        {activeTab === "requestCallback" && (
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full hidden sm:block" />
+                        )}
+                        <div
+                          className={`w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 rounded-lg flex items-center justify-center transition-all ${
+                            activeTab === "requestCallback"
+                              ? "bg-white/30"
+                              : "bg-white/10 group-hover:bg-white/20"
+                          }`}
+                        >
+                          <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-semibold leading-tight hidden min-[400px]:block">
+                          Request
+                          <br />
+                          Call Back
                         </span>
                       </button>
 
                       {/* Talk to Expert Tab */}
                       <button
                         onClick={() => setActiveTab("talkToExpert")}
-                        className={`flex-1 sm:flex-none flex items-center gap-3 px-4 py-4 sm:py-5 text-left transition-all rounded-lg ${
+                        className={`group flex flex-1 sm:flex-none items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 text-left transition-all duration-300 rounded-lg sm:rounded-xl relative ${
                           activeTab === "talkToExpert"
-                            ? "bg-white/20 border-l-4 border-white"
-                            : "text-white/80 hover:bg-white/10"
+                            ? "bg-white/20 shadow-md text-white"
+                            : "text-white/70 hover:text-white hover:bg-white/10"
                         }`}
                       >
-                        <UserCircle className="w-9 h-9 p-[6px] rounded-lg bg-white/20 text-white " />
-                        <span className="text-white text-sm font-semibold whitespace-nowrap">
+                        {activeTab === "talkToExpert" && (
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full hidden sm:block" />
+                        )}
+                        <div
+                          className={`w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 rounded-lg flex items-center justify-center transition-all ${
+                            activeTab === "talkToExpert"
+                              ? "bg-white/30"
+                              : "bg-white/10 group-hover:bg-white/20"
+                          }`}
+                        >
+                          <UserCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-semibold whitespace-nowrap hidden min-[400px]:block">
                           Talk to Expert
                         </span>
                       </button>
