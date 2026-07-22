@@ -26,9 +26,16 @@ import {
   Phone,
   ChevronRight,
 } from "lucide-react";
+import { ADMIN_RIBBON_HEIGHT } from "@/components/layout/AdminRibbon";
+import MicrosoftPartnerBadge from "@/components/shared/MicrosoftPartnerBadge";
 
-export default function Navbar() {
+// Navbar heights (px) used to place the fixed header and its hover dropdowns.
+const NAV_HEIGHT = 93;
+const NAV_HEIGHT_SCROLLED = 72;
+
+export default function Navbar({ hasRibbon = false }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [showIndustriesDropdown, setShowIndustriesDropdown] = useState(false);
   const [showCapabilitiesDropdown, setShowCapabilitiesDropdown] =
     useState(false);
@@ -71,6 +78,22 @@ export default function Navbar() {
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isMobileMenuOpen, closeMobileMenu]);
+
+  // Shrink the navbar (and logo) once the page is scrolled a little.
+  useEffect(() => {
+    const onScroll = () => {
+      const next = window.scrollY > 20;
+      setScrolled((prev) => (prev === next ? prev : next));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const ribbonOffset = hasRibbon ? ADMIN_RIBBON_HEIGHT : 0;
+  // Where hover dropdowns start: below the ribbon + current navbar height.
+  const dropdownTop =
+    ribbonOffset + (scrolled ? NAV_HEIGHT_SCROLLED : NAV_HEIGHT);
 
   const handleIndustriesEnter = () => {
     if (industriesTimeoutRef.current) {
@@ -387,9 +410,16 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="absolute top-0 left-0 right-0 z-50 flex justify-center">
+      <header
+        style={{ top: ribbonOffset }}
+        className="fixed left-0 right-0 z-50 flex justify-center"
+      >
         <nav
-          className={`bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] h-[80px] xl:h-[93px] px-4 sm:px-8 xl:px-[59px] py-4 xl:py-[32px] rounded-none transition-all duration-200 ${
+          className={`bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] px-4 sm:px-8 xl:px-[59px] rounded-none transition-all duration-200 ${
+            scrolled
+              ? "h-[64px] xl:h-[72px] shadow-md"
+              : "h-[80px] xl:h-[93px]"
+          } ${
             showIndustriesDropdown ||
             showCapabilitiesDropdown ||
             showWhyVitaDropdown
@@ -398,11 +428,14 @@ export default function Navbar() {
           }`}
           aria-label="Main navigation"
         >
-          <div className="flex items-center justify-between h-full">
+          {/* 1fr | auto | 1fr. The `auto` middle column is centred in the nav
+              regardless of how wide the side columns get, so the navlinks no
+              longer slide when the logo shrinks on scroll. */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center h-full">
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center"
+              className="flex items-center justify-self-start"
               aria-label="Tech& - Go to homepage"
             >
               <Image
@@ -411,13 +444,15 @@ export default function Navbar() {
                 width={124}
                 height={51}
                 priority
-                className="object-contain w-[90px] h-auto xl:w-[124px]"
+                className={`object-contain h-auto transition-all duration-200 ${
+                  scrolled ? "w-[72px] xl:w-[96px]" : "w-[90px] xl:w-[124px]"
+                }`}
               />
             </Link>
 
             {/* Desktop Navigation */}
             <ul
-              className="hidden xl:flex items-center gap-5 xl:gap-8"
+              className="hidden xl:flex items-center gap-5 xl:gap-8 justify-self-center"
               role="list"
             >
               {/* Industries Dropdown */}
@@ -498,48 +533,65 @@ export default function Navbar() {
               </li>
             </ul>
 
-            {/* Desktop CTA */}
-            <Link
-              href="/contact-us"
-              className="hidden xl:flex items-center gap-2 border-gray-300 text-gray-700 hover:border-[#5B6FB6] hover:text-[#5B6FB6] transition-all duration-200 font-medium text-sm group"
-              aria-label="Get started Tech&"
-            >
-              <span>Get Started</span>
-              <CircleArrowRight size={28} />
-            </Link>
+            {/* Right column: badge, CTA, and the mobile menu button. The CTA
+                stays the terminal element of the bar, with the badge to its
+                left. */}
+            <div className="flex items-center gap-4 justify-self-end">
+              <MicrosoftPartnerBadge
+                size="sm"
+                className="hidden xl:inline-flex"
+              />
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="xl:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Open navigation menu"
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+              {/* Desktop CTA */}
+              <Link
+                href="/contact-us"
+                className="hidden xl:flex items-center gap-2 border-gray-300 text-gray-700 hover:border-[#5B6FB6] hover:text-[#5B6FB6] transition-all duration-200 font-medium text-sm group"
+                aria-label="Get started Tech&"
               >
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+                <span>Get Started</span>
+                <CircleArrowRight size={28} />
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="xl:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Open navigation menu"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </nav>
       </header>
 
       {/* Industries Dropdown */}
-      {showIndustriesDropdown && (
-        <div
-          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex justify-center"
-          onMouseEnter={handleIndustriesEnter}
-          onMouseLeave={handleIndustriesLeave}
-        >
+      {/* Always mounted so it can animate OUT as well as in. `invisible` takes
+          the closed panel's links out of the tab order; `pointer-events-none`
+          stops it swallowing clicks. */}
+      <div
+        style={{ top: dropdownTop }}
+        className={`fixed left-0 right-0 z-40 flex justify-center transition-all duration-200 ${
+          showIndustriesDropdown
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 invisible pointer-events-none"
+        }`}
+        onMouseEnter={handleIndustriesEnter}
+        onMouseLeave={handleIndustriesLeave}
+      >
           <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
             {/* Left Section - Industry List */}
             <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
@@ -592,15 +644,18 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Capabilities Dropdown */}
-      {showCapabilitiesDropdown && (
-        <div
-          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex justify-center"
-          onMouseEnter={handleCapabilitiesEnter}
-          onMouseLeave={handleCapabilitiesLeave}
-        >
+      <div
+        style={{ top: dropdownTop }}
+        className={`fixed left-0 right-0 z-40 flex justify-center transition-all duration-200 ${
+          showCapabilitiesDropdown
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 invisible pointer-events-none"
+        }`}
+        onMouseEnter={handleCapabilitiesEnter}
+        onMouseLeave={handleCapabilitiesLeave}
+      >
           <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
             {/* Left Section - Capabilities List */}
             <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
@@ -733,15 +788,18 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Why Tech& Dropdown */}
-      {showWhyVitaDropdown && (
-        <div
-          className="absolute left-0 right-0 top-[93px] z-40 animate-slideDown flex items-center justify-center"
-          onMouseEnter={handleWhyVitaEnter}
-          onMouseLeave={handleWhyVitaLeave}
-        >
+      <div
+        style={{ top: dropdownTop }}
+        className={`fixed left-0 right-0 z-40 flex items-center justify-center transition-all duration-200 ${
+          showWhyVitaDropdown
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 invisible pointer-events-none"
+        }`}
+        onMouseEnter={handleWhyVitaEnter}
+        onMouseLeave={handleWhyVitaLeave}
+      >
           <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] p-8 px-64">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
               <Link
@@ -831,7 +889,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
@@ -906,7 +963,7 @@ export default function Navbar() {
                       />
                     </button>
                     {mobileIndustriesOpen && (
-                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-slideDown rounded-lg mt-1">
+                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-dropdown rounded-lg mt-1">
                         {industriesData.map((industry, index) => (
                           <div
                             key={index}
@@ -939,7 +996,7 @@ export default function Navbar() {
                                   />
                                 </div>
                                 {mobileExpandedIndustry === industry.name && (
-                                  <div className="mt-2 space-y-2 animate-slideDown">
+                                  <div className="mt-2 space-y-2 animate-dropdown">
                                     <p className="text-xs text-gray-600 mb-2">
                                       {industry.description}
                                     </p>
@@ -977,7 +1034,7 @@ export default function Navbar() {
                       />
                     </button>
                     {mobileCapabilitiesOpen && (
-                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-slideDown rounded-lg mt-1">
+                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-dropdown rounded-lg mt-1">
                         {capabilitiesData.map((capability, index) => (
                           <div
                             key={index}
@@ -1012,7 +1069,7 @@ export default function Navbar() {
                                 </div>
                                 {mobileExpandedCapability ===
                                   capability.name && (
-                                  <div className="mt-2 space-y-3 animate-slideDown">
+                                  <div className="mt-2 space-y-3 animate-dropdown">
                                     <p className="text-xs text-gray-600">
                                       {capability.description}
                                     </p>
@@ -1158,7 +1215,7 @@ export default function Navbar() {
                       />
                     </button>
                     {mobileWhyVitaOpen && (
-                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-slideDown rounded-lg mt-1">
+                      <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-dropdown rounded-lg mt-1">
                         <Link
                           href="/whywith-techand"
                           className="flex items-center gap-3 p-3 rounded-md bg-white hover:bg-purple-50 transition-colors"
@@ -1256,23 +1313,6 @@ export default function Navbar() {
         </>
       )}
 
-      {/* CSS for slide down animation */}
-      <style jsx>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-slideDown {
-          animation: slideDown 0.4s ease-out forwards;
-        }
-      `}</style>
     </>
   );
 }

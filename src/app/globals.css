@@ -26,3 +26,23 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Dropdown enter animation. Lives here rather than in a component-scoped
+   `<style jsx>` block: styled-jsx compiles scoped rules to `.class.jsx-<hash>`,
+   and React Compiler (reactCompiler: true) hoists JSX into memo cache slots
+   before styled-jsx can attach that hash to the elements — so the rule is
+   emitted but matches nothing. Global CSS needs no scope class. */
+@theme {
+  --animate-dropdown: dropdown-in 200ms ease-out;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
