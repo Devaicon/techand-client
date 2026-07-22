@@ -2,7 +2,11 @@
 const autonomousAICustomerService = {
   slug: "autonomous-ai-customer-service",
   category: "AI & Customer Service",
-  date: "8 min read",
+  readTime: "8 min read",
+  publishedAt: "2026-07-09",
+  categories: ["AI"],
+  isFeatured: true,
+  cardImage: "/hero-img2.webp",
   title: "How Customer Services Are Achieving Productivity with AI",
   subtitle:
     "Enterprise leaders are facing more service requests, higher expectations and tighter budgets. Without smart technology, keeping up seems impossible for businesses. Traditional ways of working can't keep up. The solution? Voice and digital assistants are proving to be the best answer. Tools like Microsoft Copilot help organizations handle requests faster, solve problems quickly, and make employees more efficient without hiring more people.",

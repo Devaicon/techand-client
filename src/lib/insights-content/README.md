@@ -24,7 +24,11 @@ Create a new file in `lib/insights-content/` with a descriptive name (e.g., `dyn
 export default {
   slug: "your-url-slug", // Must be unique
   category: "AI & Automation", // or "Data & Analytics", "Transformation", etc.
-  date: "7 min read",
+  readTime: "7 min read",
+  publishedAt: "2026-01-31", // ISO date. Sorts the insights list, newest first.
+  categories: ["AI", "Automation"], // Must come from CATEGORIES in insightUtils.js
+  isFeatured: false, // true = also appears in the "Featured blogs" rail
+  cardImage: "/your-card-thumbnail.webp", // Card thumbnail; falls back to heroImage
   title: "Your Article Title",
   subtitle: "Your article subtitle/summary",
   heroImage: "/your-hero-image.png",

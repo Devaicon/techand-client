@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }) {
             <span className="inline-block px-3 py-1 bg-gradient-to-r from-[#4555A7] to-[#7C5BA8] text-white text-xs font-semibold rounded">
               {post.category}
             </span>
-            <span className="text-sm text-gray-500">{post.date}</span>
+            <span className="text-sm text-gray-500">{post.readTime}</span>
           </div>
         </header>
 

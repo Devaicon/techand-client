@@ -2,7 +2,11 @@
 export default {
   slug: "value-driven-innovation-automation",
   category: "Digital Transformation",
-  date: "7 min read",
+  readTime: "7 min read",
+  publishedAt: "2026-04-02",
+  categories: ["Automation", "Enterprise Platforms"],
+  isFeatured: false,
+  cardImage: "/Hero-img.webp",
   title: "Value Driven Innovation through Automation",
   subtitle:
     "Digital transformation is no longer defined by system deployments alone. It's measured by quantifiable business impact. Organizations and businesses worldwide implement Dynamics 365, AI, and intelligent automation, expecting efficiency, visibility, and accelerated growth. But are these technologies actually improving business outcomes?",

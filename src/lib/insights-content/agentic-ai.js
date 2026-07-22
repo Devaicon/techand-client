@@ -2,7 +2,11 @@
 export default {
   slug: "agentic-ai",
   category: "AI & Automation",
-  date: "8 min read",
+  readTime: "8 min read",
+  publishedAt: "2026-05-07",
+  categories: ["AI", "Automation"],
+  isFeatured: false,
+  cardImage: "/hero-img3.webp",
   title: "Agentic AI is Revolutionizing the Industries",
   subtitle:
     "Customer experience has evolved into one of the most decisive competitive differentiators for modern enterprises. Insight-only AI and rule-based automation are no longer sufficient. Organizations now require AI that can reason, act, and resolve autonomously at scale. This is especially critical for high-volume industries like banking, retail, telecom, and e-commerce in the UAE and GCC.",

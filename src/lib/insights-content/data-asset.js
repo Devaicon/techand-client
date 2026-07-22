@@ -2,7 +2,11 @@
 export default {
   slug: "data-sovereign-asset",
   category: "Data & Analytics",
-  date: "7 min read",
+  readTime: "7 min read",
+  publishedAt: "2026-06-11",
+  categories: ["Data"],
+  isFeatured: true,
+  cardImage: "/hero-img4.webp",
   title: "Data is Going to Be Your New Sovereign Asset",
   subtitle:
     "Modern leadership runs on data. Executives are expected to make high-stakes decisions quickly, backed by reliable insights. However, trust and the capacity to act confidently are undermined when data is disjointed and reports present disparate narratives.",
