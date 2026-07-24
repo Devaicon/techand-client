@@ -23,10 +23,15 @@ export const matchesSearchQuery = (post, query) => {
   );
 };
 
-// Utility function to check if a post matches category filter
+// Utility function to check if a post matches category filter.
+//
+// Driven by `categories`, not `tags`. Tags are free-form editorial labels
+// ("Agentic AI", "Microsoft Fabric") that do not line up with the fixed chip
+// list above — matching against them meant the "AI" chip returned zero posts.
+// `categories` is constrained to CATEGORIES by convention.
 export const matchesCategoryFilter = (post, category) => {
   if (category === "View all") return true;
-  return post.tags?.includes(category);
+  return post.categories?.includes(category);
 };
 
 // Combined filter function

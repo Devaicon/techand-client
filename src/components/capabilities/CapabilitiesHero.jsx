@@ -1,10 +1,11 @@
 import Image from "next/image";
+import Breadcrumb from "@/components/shared/Breadcrumb";
 
 const CapabilitiesHero = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] overflow-hidden">
+      <section className="relative flex w-full items-center overflow-hidden py-16 min-h-[50vh]">
         {/* Background Image */}
         <Image
           src="/contact-page-heroimg.webp"
@@ -29,7 +30,8 @@ const CapabilitiesHero = () => {
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center h-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
+        <div className="relative z-10 w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
+          <Breadcrumb />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4">
             Tech& Capabilities
           </h1>

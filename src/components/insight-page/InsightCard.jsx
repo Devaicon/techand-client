@@ -2,10 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { CATEGORIES } from "./insightUtils";
-import { CategoryBadge, ReadTime, CardWrapper } from "./InsightComponents";
+import {
+  CategoryBadge,
+  ReadTime,
+  CardWrapper,
+  ReadMoreButton,
+} from "./InsightComponents";
 
 const CategoryFilters = ({ activeCategory, onCategoryChange }) => {
   return (
@@ -28,34 +31,34 @@ const CategoryFilters = ({ activeCategory, onCategoryChange }) => {
   );
 };
 
+// The large hero card at the top of the list. It shows the single NEWEST post,
+// whatever its `isFeatured` flag says — `isFeatured` selects posts for the
+// separate "Featured blogs" rail in FeaturedInsights.jsx. Two different
+// meanings of "featured", both kept because both match how the site reads.
 const FeaturedCard = ({ post }) => {
   return (
-    <CardWrapper className="mb-8 flex flex-col md:flex-row min-h-[400px]">
-      <div className="relative w-full md:w-[45%] h-[280px] md:h-auto shrink-0">
+    <CardWrapper className="relative mb-8 md:min-h-[400px] w-full">
+      <div className="relative h-[280px] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-1/2">
         <Image
           src={post.image}
           alt={post.title}
           fill
           className="object-cover"
+          style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
-      <div className="p-6 md:p-8 flex flex-col justify-center flex-1">
+      <div className="p-6 md:p-8 flex flex-col justify-center md:ml-[50%]">
         <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={post.category} variant="primary" />
-          <ReadTime />
+          <ReadTime label={post.readTime} />
         </div>
-        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 line-clamp-2">
           {post.title}
         </h3>
-        <p className="text-gray-600 text-sm sm:text-base mb-5">
+        <p className="text-gray-600 text-sm sm:text-base mb-5 line-clamp-3">
           {post.description}
         </p>
-        <Link
-          href={post.link}
-          className="px-5 py-2.5 border border-[#111111] text-black rounded-sm text-sm font-semibold self-start cursor-pointer hover:bg-[#000000] hover:text-white transition-all inline-flex items-center gap-1"
-        >
-          Read more <ArrowRight size={16} />
-        </Link>
+        <ReadMoreButton href={post.link} />
       </div>
     </CardWrapper>
   );
@@ -70,24 +73,22 @@ const BlogPostCard = ({ post }) => {
           alt={post.title}
           fill
           className="object-cover"
+          style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-3 mb-3">
           <CategoryBadge category={post.category} variant="secondary" />
-          <ReadTime className="text-xs" />
+          <ReadTime label={post.readTime} className="text-xs" />
         </div>
-        <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-2">
+        <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-2">
           {post.title}
         </h4>
-        <p className="text-gray-600 text-sm mb-4 flex-1">{post.description}</p>
-        <Link
-          href={post.link}
-          className="px-4 py-2 bg-[#37469E] text-white rounded-lg text-sm font-semibold hover:bg-[#606bb3] transition-all self-start inline-flex items-center gap-1"
-        >
-          Read more <ArrowRight size={16} />
-        </Link>
+        <p className="text-gray-600 text-sm mb-4 flex-1 line-clamp-3">
+          {post.description}
+        </p>
+        <ReadMoreButton href={post.link} />
       </div>
     </CardWrapper>
   );
@@ -123,12 +124,14 @@ const InsightCard = ({
 
       {posts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post, index) => (
-            <BlogPostCard key={index} post={post} />
+          {posts.map((post) => (
+            <BlogPostCard key={post.link} post={post} />
           ))}
         </div>
       ) : (
-        <EmptyState />
+        // Only "nothing found" if the featured card is hidden too — otherwise
+        // the page would show a post and deny having any.
+        !showFeatured && <EmptyState />
       )}
     </>
   );

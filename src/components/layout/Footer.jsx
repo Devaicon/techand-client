@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import MicrosoftPartnerBadge from "@/components/shared/MicrosoftPartnerBadge";
 
 const FOOTER_SECTIONS = [
   {
@@ -88,6 +89,8 @@ export default function Footer() {
               Value-driven innovation through automation and technology
               consulting for the UAE & GCC region.
             </p>
+
+            <MicrosoftPartnerBadge size="md" className="mt-5" />
           </div>
 
           {/* Navigation Columns */}

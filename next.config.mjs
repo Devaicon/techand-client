@@ -7,6 +7,10 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
+    // Blog images are uploaded to Cloudinary from the admin panel. Listed even
+    // though `unoptimized` bypasses the optimizer, so that turning optimization
+    // back on later does not silently break every article image.
+    remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

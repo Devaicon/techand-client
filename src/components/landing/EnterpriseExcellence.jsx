@@ -1,4 +1,5 @@
 import { CircleCheck } from "lucide-react";
+import MicrosoftPartnerBadge from "@/components/shared/MicrosoftPartnerBadge";
 
 const EnterpriseExcellence = () => {
   return (
@@ -13,6 +14,10 @@ const EnterpriseExcellence = () => {
           drive digital transformation and business growth across the GCC
           region.
         </p>
+
+        {/* Sits directly under the "trusted Microsoft partner" claim it
+            substantiates. */}
+        <MicrosoftPartnerBadge size="lg" className="mt-2 sm:mt-3" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8 lg:gap-[10px] mt-4 sm:mt-5 lg:mt-5 w-full">
           <div className="flex items-start gap-3 sm:gap-4">

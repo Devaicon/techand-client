@@ -1,427 +1,196 @@
-import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { getInsightBySlug } from "@/lib/insights-content";
+import { notFound } from "next/navigation";
+import {
+  getInsightBySlug,
+  getPublishedSlugs,
+  getAllInsights,
+  toCardModel,
+} from "@/lib/blogs-api";
+import { pickRelatedPosts } from "@/lib/pickRelatedPosts.mjs";
+import GenericHero from "@/components/shared/GenericHero";
+import TableOfContents from "@/components/insight-page/reader/TableOfContents";
+import ExternalLinks from "@/components/insight-page/reader/ExternalLinks";
+import ArticleBody from "@/components/insight-page/reader/ArticleBody";
+import BlogCta from "@/components/insight-page/reader/BlogCta";
+import FaqSection from "@/components/insight-page/reader/FaqSection";
+import RelatedArticles from "@/components/insight-page/reader/RelatedArticles";
 
-// Get blog post from content files
-const getBlogPost = (slug) => {
-  const post = getInsightBySlug(slug);
-
-  // Return the post or null if not found
-  return post;
-};
-
-// Generate static params for all insights
-export function generateStaticParams() {
-  return [
-    { slug: "agentic-ai" },
-    { slug: "data-sovereign-asset" },
-    { slug: "autonomous-ai-customer-service" },
-  ];
+// Pre-render every published post at build time; anything published later is
+// rendered on first request and then cached (see `revalidate` in blogs-api).
+export async function generateStaticParams() {
+  const slugs = await getPublishedSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
-export default async function BlogPostPage({ params }) {
+export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getInsightBySlug(slug);
 
-  // Handle 404 if post not found
-  if (!post) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            404 - Insight Not Found
-          </h1>
-          <p className="text-gray-600 mb-8">
-            The insight you&apos;re looking for doesn&apos;t exist.
-          </p>
-          <Link
-            href="/insights"
-            className="px-6 py-3 text-white font-semibold rounded-lg"
-            style={{ background: "#37469E" }}
-          >
-            Back to Insights
-          </Link>
-        </div>
-      </main>
-    );
-  }
+  if (!post) return { title: "Insight not found | Tech&" };
+
+  const image = post.heroImage?.url || post.cardImage?.url;
+  return {
+    title: `${post.title} | Tech&`,
+    description: post.subtitle,
+    openGraph: {
+      title: post.title,
+      description: post.subtitle,
+      type: "article",
+      publishedTime: post.publishedAt,
+      images: image ? [{ url: image }] : undefined,
+    },
+  };
+}
+
+// Crop correction stored on the image, replacing what used to be per-slug
+// conditionals in this file.
+const imageStyle = (img) => ({
+  objectPosition: img?.focus || "center",
+  transform: img?.zoom && img.zoom !== 1 ? `scale(${img.zoom})` : undefined,
+});
+
+export default async function BlogPostPage({ params, searchParams }) {
+  const { slug } = await params;
+  const { preview } = (await searchParams) || {};
+
+  // Fetch the post and the full list in parallel — the list feeds the
+  // "Related articles" strip and both calls are independently cached.
+  const [post, allInsights] = await Promise.all([
+    getInsightBySlug(slug, preview),
+    getAllInsights(),
+  ]);
+  if (!post) notFound();
+
+  const inlineKeys = new Set(
+    (post.ctas || []).filter((c) => c.placement === "inline").map((c) => c.key),
+  );
+  const endCtas = (post.ctas || []).filter((c) => c.placement === "end");
+  const sidebarCtas = (post.ctas || []).filter(
+    (c) => c.placement === "sidebar",
+  );
+  const hasRail =
+    (post.externalLinks?.length ?? 0) > 0 || sidebarCtas.length > 0;
+
+  // Same tags preferred, otherwise the latest posts (see pickRelatedPosts).
+  const relatedPosts = pickRelatedPosts(allInsights, slug, post.tags, 3).map(
+    toCardModel,
+  );
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section
-        className="relative w-full py-20 md:py-28 lg:py-32 overflow-hidden flex justify-center"
-        style={{
-          background: "linear-gradient(135deg, #4555A7 0%, #7C5BA8 100%)",
-        }}
-      >
-        <div className="w-full lg:w-[calc(100%-280px)] max-w-[1639px] px-4 sm:px-8 lg:px-6 xl:px-[59px]">
-          {/* Back Link */}
-          <Link
-            href="/insights"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back to Insights</span>
-          </Link>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            {post.title}
-          </h1>
-          <p className="text-lg sm:text-xl text-white/90 max-w-4xl leading-relaxed">
-            {post.subtitle}
-          </p>
+      {preview && (
+        <div className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white">
+          Draft preview — this post is not published yet.
         </div>
-      </section>
+      )}
 
-      {/* Article Content */}
-      <article className="max-w-5xl mx-auto px-6 sm:px-12 md:px-16 py-12 md:py-16">
-        {/* Article Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="inline-block px-3 py-1 bg-gradient-to-r from-[#4555A7] to-[#7C5BA8] text-white text-xs font-semibold rounded">
+      {/* Hero — same standard header as the rest of the site. The post's own
+          hero image sits behind a heavy scrim so it reads as a faint texture;
+          the full image still appears crisply in the article body below. */}
+      <GenericHero
+        title={post.title}
+        subtitle={post.subtitle}
+        backgroundImage={post.heroImage?.url || "/contact-page-heroimg.webp"}
+        currentLabel={post.title}
+        dim={0.9}
+      />
+
+      {/* Three-column reader: sticky contents rail, centered article, sticky
+          aside. Both rails collapse below lg — the contents becomes an
+          accordion above the body, the aside moves beneath it. */}
+      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 px-4 py-12 sm:px-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 lg:px-12 lg:py-16 xl:grid-cols-[220px_minmax(0,720px)_260px] xl:justify-center">
+        <aside className="lg:row-span-2">
+          <TableOfContents entries={post.toc || []} />
+        </aside>
+
+        <article className="min-w-0">
+          <header className="mb-8 flex flex-wrap items-center gap-3">
+            <span className="inline-block rounded-md bg-[#37469E] px-3 py-1 text-xs font-semibold text-white">
               {post.category}
             </span>
-            <span className="text-sm text-gray-500">{post.date}</span>
-          </div>
-        </header>
+            {post.readTime && (
+              <span className="text-sm text-gray-500">{post.readTime}</span>
+            )}
+          </header>
 
-        {/* Hero Image */}
-        <div className="relative block w-full h-64 md:h-96 mb-12 rounded-lg overflow-hidden shadow-lg">
-          <Image
-            src={post.heroImage}
-            alt={post.title}
-            fill
-            className={`w-full h-full object-cover ${
-              slug === "value-driven-innovation-automation"
-                ? "object-center scale-[1.8]"
-                : "object-center scale-110"
-            }`}
-            priority
-          />
-        </div>
-
-        {/* Article Body */}
-        <div className="prose prose-lg max-w-none">
-          {/* Top Section */}
-          {post.content.topSection && (
-            <section className="mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {post.content.topSection.title}
-              </h2>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                {post.content.topSection.subtitle}
-              </p>
-            </section>
-          )}
-
-          {/* Introduction Section */}
-          {post.content.introduction && (
-            <section className="mb-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                {post.content.introduction.title}
-              </h3>
-
-              {post.content.introduction.paragraphs.map((para, idx) => (
-                <p
-                  key={idx}
-                  className="text-gray-700 leading-relaxed mb-6 text-lg"
-                >
-                  {para}
-                </p>
-              ))}
-
-              {/* Introduction Image */}
-              {post.content.introduction.image && (
-                <div className="my-10 w-full">
-                  <div className="relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
-                    <Image
-                      src={post.content.introduction.image}
-                      alt="Introduction visual"
-                      fill
-                      className={`w-full h-full object-cover ${
-                        slug === "data-sovereign-asset"
-                          ? "object-top scale-125"
-                          : slug === "agentic-ai"
-                            ? "object-center scale-[1.5]"
-                            : "object-center scale-110"
-                      }`}
-                    />
-                  </div>
-                  {post.content.introduction.imageCaption && (
-                    <p className="text-sm text-gray-500 italic text-center">
-                      {post.content.introduction.imageCaption}
-                    </p>
-                  )}
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Quote Block */}
-          {post.content.quote && (
-            <blockquote
-              className="my-12 pl-8 border-l-4 bg-gradient-to-br from-purple-50 to-blue-50 py-8 pr-8 rounded-r-lg shadow-sm"
-              style={{ borderLeftColor: "#4555A7" }}
-            >
-              <p className="text-xl md:text-2xl font-medium text-gray-800 italic mb-3 leading-relaxed">
-                &ldquo;{post.content.quote.text}&rdquo;
-              </p>
-              <footer className="text-sm text-gray-600 font-semibold">
-                — {post.content.quote.author}
-              </footer>
-            </blockquote>
-          )}
-
-          {/* Body Content Sections */}
-          {post.content.body.map((section, idx) => {
-            const isVitaSection =
-              section.title ===
-                "How Does Tech& Enable Enterprise-Scale Agentic AI?" ||
-              section.title ===
-                "How Does Tech& Enable AI-Powered Voice Assistants?" ||
-              section.title ===
-                "How Tech& Enables Value with Microsoft Fabric?" ||
-              section.title ===
-                "How Does Tech& Contribute to and Guarantee ROI-Driven Transformation?";
-
-            return (
-              <section
-                key={idx}
-                className={`mb-12 ${
-                  isVitaSection
-                    ? "bg-gray-200 shadow-lg p-8 md:p-12 rounded-lg border border-gray-300 hover:shadow-xl duration-300 transition-all"
-                    : ""
-                }`}
-              >
-                <h3
-                  className={`text-2xl md:text-3xl font-bold mb-6 ${
-                    isVitaSection ? "text-gray-800" : "text-gray-900"
-                  }`}
-                >
-                  {section.title}
-                </h3>
-                <p
-                  className={`leading-relaxed mb-6 text-lg ${
-                    isVitaSection ? "text-gray-600" : "text-gray-700"
-                  }`}
-                >
-                  {section.content}
-                </p>
-
-                {section.subtitle && (
-                  <p
-                    className={`font-semibold mb-4 text-lg ${
-                      isVitaSection ? "text-gray-600" : "text-gray-800"
-                    }`}
-                  >
-                    {section.subtitle}
-                  </p>
-                )}
-
-                {section.listItems && (
-                  <ul
-                    className={`list-disc list-inside space-y-3 ml-4 mb-6 ${
-                      isVitaSection ? "text-gray-600" : "text-gray-700"
-                    }`}
-                  >
-                    {section.listItems.map((item, itemIdx) => (
-                      <li key={itemIdx} className="text-lg leading-relaxed">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {section.additionalText && (
-                  <p
-                    className={`leading-relaxed mb-4 text-lg mt-4 ${
-                      isVitaSection ? "text-gray-600" : "text-gray-700"
-                    }`}
-                  >
-                    {section.additionalText}
-                  </p>
-                )}
-              </section>
-            );
-          })}
-
-          {/* Body Image */}
-          {post.content.bodyImage && (
-            <div className="my-10 w-full">
-              <div className="relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-3 shadow-md">
-                <Image
-                  src={post.content.bodyImage}
-                  alt="Article visual"
-                  fill
-                  className={`w-full h-full object-cover ${
-                    slug === "data-sovereign-asset"
-                      ? "object-top scale-125"
-                      : "object-center scale-110"
-                  }`}
-                />
-              </div>
-              {post.content.bodyImageCaption && (
-                <p className="text-sm text-gray-500 italic text-center">
-                  {post.content.bodyImageCaption}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Conclusion */}
-          {post.content.conclusion && (
-            <section className="mb-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                {post.content.conclusion.title}
-              </h3>
-
-              {post.content.conclusion.paragraphs.map((para, idx) => (
-                <p
-                  key={idx}
-                  className="text-gray-700 leading-relaxed mb-6 text-lg"
-                >
-                  {para}
-                </p>
-              ))}
-
-              {/* CTA Section */}
-              {post.content.conclusion.cta && (
-                <div className="mt-10 p-8 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-[#4555A7]/20 shadow-sm">
-                  <h4 className="text-2xl font-bold text-gray-900 mb-4">
-                    {post.content.conclusion.cta.title}
-                  </h4>
-                  <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-                    {post.content.conclusion.cta.description}
-                  </p>
-                  <Link
-                    href="/contact-us"
-                    className="px-6 py-3 hover:shadow-lg text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105"
-                    style={{ background: "#37469E" }}
-                  >
-                    Book a Session
-                  </Link>
-                </div>
-              )}
-            </section>
-          )}
-        </div>
-
-        {/* Author Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between flex-wrap gap-6">
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden">
+          {post.heroImage?.url && (
+            <div className="relative mb-12 block h-64 w-full overflow-hidden rounded-lg shadow-lg md:h-96">
               <Image
-                src={post.author.avatar}
-                alt={post.author.name}
+                src={post.heroImage.url}
+                alt={post.heroImage.alt || post.title}
                 fill
-                className="object-cover"
+                className="h-full w-full object-cover"
+                style={imageStyle(post.heroImage)}
+                priority
               />
             </div>
-            <div>
-              <h4 className="text-lg font-bold text-gray-900">
-                {post.author.name}
-              </h4>
-              <p className="text-sm text-gray-600">{post.author.role}</p>
-            </div>
-          </div>
+          )}
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="px-4 py-2 text-white text-xs font-semibold rounded-full shadow-sm"
-                style={{ background: "#4A2D58" }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </article>
+          <ArticleBody
+            html={post.contentHtml}
+            ctas={(post.ctas || []).filter((c) => inlineKeys.has(c.key))}
+          />
 
-      {/* Related Articles Section - Commented Out
-      <section className="bg-gray-50 py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Related Articles
-            </h2>
-            <Link
-              href="/insights"
-              className="px-6 py-3 hover:shadow-lg text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105"
-              style={{ background: "#37469E" }}
-            >
-              View all posts
-            </Link>
-          </div>
+          {endCtas.map((cta) => (
+            <BlogCta key={cta.key} cta={cta} />
+          ))}
 
-          <p className="text-gray-600 mb-10 text-lg">
-            Explore more insights on enterprise transformation and AI innovation
-          </p>
+          <FaqSection faqs={post.faqs} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {post.relatedArticles.map((article) => (
-              <article
-                key={article.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span
-                      className="inline-block px-3 py-1 text-white text-xs font-semibold rounded"
-                      style={{ background: "#4A2D58" }}
-                    >
-                      {article.category}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {article.readTime}
-                    </span>
+          {/* Author + tags */}
+          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-gray-200 pt-8">
+            {post.author?.name && (
+              <div className="flex items-center gap-4">
+                {post.author.avatarUrl && (
+                  <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                    <Image
+                      src={post.author.avatarUrl}
+                      alt={post.author.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-[#4555A7] transition-colors">
-                    {article.title}
-                  </h3>
-
-                  <p
-                    className="text-sm mb-4 line-clamp-3 leading-relaxed font-semibold"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, #4555A7 0%, #53406B 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    {article.description}
-                  </p>
-
-                  <Link
-                    href={`/insights/${article.slug}`}
-                    className="inline-block px-5 py-2 hover:shadow-md text-white text-sm font-semibold rounded-sm transition-all duration-300"
-                    style={{ background: "#37469E" }}
-                  >
-                    Read More
-                  </Link>
+                )}
+                <div>
+                  <h4 className="text-lg font-bold text-gray-900">
+                    {post.author.name}
+                  </h4>
+                  {post.author.role && (
+                    <p className="text-sm text-gray-600">{post.author.role}</p>
+                  )}
                 </div>
-              </article>
-            ))}
+              </div>
+            )}
+
+            {post.tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-lg px-4 py-2 text-xs font-semibold text-white shadow-sm"
+                    style={{ background: "#4A2D58" }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
-      */}
+        </article>
+
+        {hasRail && (
+          <aside className="min-w-0">
+            <div className="space-y-6 xl:sticky xl:top-36">
+              <ExternalLinks links={post.externalLinks} />
+              {sidebarCtas.map((cta) => (
+                <BlogCta key={cta.key} cta={cta} variant="sidebar" />
+              ))}
+            </div>
+          </aside>
+        )}
+      </div>
+
+      <RelatedArticles posts={relatedPosts} />
     </main>
   );
 }

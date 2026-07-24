@@ -1,20 +1,28 @@
 import Image from "next/image";
+import Breadcrumb from "@/components/shared/Breadcrumb";
 
 /**
  * GenericHero Component
- * Reusable hero section for any page
+ * Reusable hero section for any page. Fills half the viewport height, growing
+ * taller when the content (e.g. a long blog title) needs the room.
  * @param {Object} props
  * @param {string} props.title - Main heading
  * @param {string} props.subtitle - Subheading
  * @param {string} props.backgroundImage - Background image path
+ * @param {string} [props.currentLabel] - Overrides the final breadcrumb crumb's
+ *   label (e.g. a blog post title instead of its URL slug)
+ * @param {number} [props.dim] - 0–1 strength of an extra dark scrim over the
+ *   background image, for when the image should be only faintly visible
  */
 const GenericHero = ({
   title = "Tech& Solutions",
   subtitle = "Enterprise platforms and integration services",
   backgroundImage = "/contact-page-heroimg.webp",
+  currentLabel,
+  dim = 0,
 }) => {
   return (
-    <section className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] overflow-hidden">
+    <section className="relative flex w-full items-center overflow-hidden py-16 min-h-[50vh]">
       {/* Background Image */}
       <Image
         src={backgroundImage}
@@ -33,13 +41,23 @@ const GenericHero = ({
         }}
       />
 
+      {/* Optional heavy scrim — knocks the background image back so it reads as
+          a faint texture rather than a photo. */}
+      {dim > 0 && (
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: `rgba(40, 32, 61, ${dim})` }}
+        />
+      )}
+
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center h-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
+      <div className="relative z-10 w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
+        <Breadcrumb currentLabel={currentLabel} />
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-xl">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-5xl">
             {subtitle}
           </p>
         )}

@@ -9,63 +9,33 @@ import {
   matchesSearchQuery,
 } from "./insightUtils";
 
-const FEATURED_POST = {
-  image: "/Hero-img.webp",
-  category: "Digital Transformation",
-  title: "Value Driven Innovation through Automation",
-  description:
-    "Tech& helps GCC enterprises move beyond the limits of traditional CRM & ERP software. Digital transformation is measured by quantifiable business impact.",
-  link: "/insights/value-driven-innovation-automation",
-  tags: ["Digital Transformation", "Automation", "ROI"],
-};
-
-const BLOG_POSTS = [
-  {
-    image: "/hero-img3.webp",
-    category: "AI",
-    title: "Agentic AI is Revolutionizing the Industries",
-    description:
-      "Stop struggling with disconnected data systems. We apply Agentic AI to banking, retail, and other GCC industries.",
-    link: "/insights/agentic-ai",
-    tags: ["AI", "Automation", "Enterprise AI"],
-  },
-  {
-    image: "/hero-img4.webp",
-    category: "Data",
-    title: "Data is Going to Be Your New Sovereign Asset",
-    description:
-      "Your company's data is your most valuable resource. We solve the problem of data silos by building a unified platform.",
-    link: "/insights/data-sovereign-asset",
-    tags: ["Data", "Analytics", "Business Intelligence"],
-  },
-  {
-    image: "/hero-img2.webp",
-    category: "AI",
-    title:
-      "How Customer Service Teams Are Achieving a 20% to 45% Increase in Productivity with AI",
-    description:
-      "Companies using AI-driven tools like Microsoft Copilot see a 20% to 45% increase in the speed of resolving customer inquiries.",
-    link: "/insights/autonomous-ai-customer-service",
-    tags: ["AI", "Customer Service", "Productivity"],
-  },
-];
-
-const BlogInsights = () => {
+// Posts arrive as props from the Server Component above, already mapped to the
+// card model and sorted newest-first by the API. This component stays a client
+// component only because it owns the filter and search state.
+const BlogInsights = ({ posts: allPosts = [] }) => {
   const [activeCategory, setActiveCategory] = useState("View all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Memoized filter logic using utility function
+  // The newest post takes the large featured card; everything after it fills
+  // the 3-column grid.
+  const latestPost = allPosts[0] ?? null;
+  const restPosts = useMemo(() => allPosts.slice(1), [allPosts]);
+
+  // No posts at all — render the section chrome with an empty grid rather than
+  // a featured card built from `null`.
+
   const filteredPosts = useMemo(
-    () => filterPosts(BLOG_POSTS, activeCategory, searchQuery),
-    [activeCategory, searchQuery],
+    () => filterPosts(restPosts, activeCategory, searchQuery),
+    [restPosts, activeCategory, searchQuery],
   );
 
-  // Check if featured post matches filters using utility functions
+  // Hide the featured card when the active filter or search excludes it.
   const displayFeaturedPost = useMemo(
     () =>
-      matchesCategoryFilter(FEATURED_POST, activeCategory) &&
-      matchesSearchQuery(FEATURED_POST, searchQuery),
-    [activeCategory, searchQuery],
+      Boolean(latestPost) &&
+      matchesCategoryFilter(latestPost, activeCategory) &&
+      matchesSearchQuery(latestPost, searchQuery),
+    [latestPost, activeCategory, searchQuery],
   );
 
   return (
@@ -97,7 +67,7 @@ const BlogInsights = () => {
           <InsightCard
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
-            featuredPost={FEATURED_POST}
+            featuredPost={latestPost}
             posts={filteredPosts}
             showFeatured={displayFeaturedPost}
           />

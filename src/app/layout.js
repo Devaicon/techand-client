@@ -1,8 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import PartnerContactCard from "@/components/layout/PartnerContactCard";
-import Footer from "@/components/layout/Footer";
+import SiteChrome from "@/components/layout/SiteChrome";
 import ComingSoon from "@/components/coming-soon/ComingSoon";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -193,12 +191,7 @@ export default async function RootLayout({ children }) {
         {isComingSoon ? (
           <ComingSoon />
         ) : (
-          <>
-            <Navbar />
-            {children}
-            <PartnerContactCard />
-            <Footer />
-          </>
+          <SiteChrome>{children}</SiteChrome>
         )}
         <Analytics />
         <SpeedInsights />
