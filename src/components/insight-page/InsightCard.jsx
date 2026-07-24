@@ -44,6 +44,7 @@ const FeaturedCard = ({ post }) => {
           alt={post.title}
           fill
           className="object-cover"
+          style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
       <div className="p-6 md:p-8 flex flex-col justify-center md:ml-[50%]">
@@ -72,6 +73,7 @@ const BlogPostCard = ({ post }) => {
           alt={post.title}
           fill
           className="object-cover"
+          style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
 

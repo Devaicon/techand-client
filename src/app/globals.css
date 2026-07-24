@@ -46,3 +46,192 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Blog article typography (.blog-prose)
+
+   Hand-written rather than @tailwindcss/typography: the plugin is not
+   installed, and pulling it in for one page would mean overriding most of its
+   defaults anyway to match the existing article styling. These rules are ported
+   from the Tailwind classes the old hardcoded reader page used, so migrated
+   posts look identical to how they did before.
+
+   The body is server-sanitized HTML injected with dangerouslySetInnerHTML, so
+   it cannot carry Tailwind utility classes — it needs real element selectors.
+   ───────────────────────────────────────────────────────────────────────── */
+.blog-prose {
+  color: #374151;
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.blog-prose h2 {
+  margin: 2.5rem 0 1rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111827;
+  /* Clears the sticky header so an anchor jump does not land under it. */
+  scroll-margin-top: 6rem;
+}
+
+.blog-prose h3 {
+  margin: 2rem 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #111827;
+  scroll-margin-top: 6rem;
+}
+
+.blog-prose h4 {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  scroll-margin-top: 6rem;
+}
+
+@media (min-width: 768px) {
+  .blog-prose h2 { font-size: 2.25rem; }
+  .blog-prose h3 { font-size: 1.875rem; }
+}
+
+.blog-prose p {
+  margin-bottom: 1.5rem;
+}
+
+.blog-prose a {
+  color: #37469e;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.blog-prose a:hover {
+  color: #2c3a85;
+}
+
+.blog-prose strong { font-weight: 700; color: #111827; }
+.blog-prose em { font-style: italic; }
+
+.blog-prose ul,
+.blog-prose ol {
+  margin: 0 0 1.5rem 1rem;
+  padding-left: 1.25rem;
+}
+
+.blog-prose ul { list-style: disc; }
+.blog-prose ol { list-style: decimal; }
+
+.blog-prose li {
+  margin-bottom: 0.75rem;
+  line-height: 1.75;
+}
+
+.blog-prose blockquote {
+  margin: 3rem 0;
+  border-left: 4px solid #4555a7;
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: linear-gradient(to bottom right, #faf5ff, #eff6ff);
+  padding: 2rem;
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.blog-prose blockquote p:last-child { margin-bottom: 0; }
+
+.blog-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2.5rem 0 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* An image's caption is the paragraph immediately after it. */
+.blog-prose img + p {
+  margin-bottom: 2.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.blog-prose pre {
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: #1f2937;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: #f9fafb;
+}
+
+.blog-prose code {
+  border-radius: 0.25rem;
+  background: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.9em;
+}
+
+.blog-prose pre code { background: none; padding: 0; color: inherit; }
+
+.blog-prose hr { margin: 2.5rem 0; border-color: #e5e7eb; }
+
+/* Quill alignment classes, which survive sanitizing. */
+.blog-prose .ql-align-center { text-align: center; }
+.blog-prose .ql-align-right { text-align: right; }
+.blog-prose .ql-align-justify { text-align: justify; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Admin Quill editor
+   ───────────────────────────────────────────────────────────────────────── */
+.blog-editor .ql-container {
+  min-height: 20rem;
+  /* Cap the body so a long article scrolls WITHIN the editor instead of
+     stretching the whole admin page. The sticky toolbar above stays put. */
+  max-height: 60vh;
+  overflow-y: auto;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.blog-editor .ql-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.blog-editor .ql-editor { min-height: 20rem; }
+
+/* The inline-CTA marker.
+   Its label is drawn entirely with ::after so the node itself stays EMPTY —
+   any real text inside would be saved into the published article. */
+.blog-editor .ql-editor div[data-cta-slot] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+  border: 2px dashed #37469e;
+  border-radius: 0.5rem;
+  background: #eef0fa;
+  padding: 1rem;
+  user-select: none;
+}
+
+.blog-editor .ql-editor div[data-cta-slot]::after {
+  content: "◆ Call-to-action block";
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #37469e;
+}

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import MicrosoftPartnerBadge from "@/components/shared/MicrosoftPartnerBadge";
-import { getFeaturedInsights, toCardModel } from "@/lib/insights-content";
 import { CategoryBadge, ReadTime, ReadMoreButton } from "./InsightComponents";
 
 // Describe the section, not any one post. Deliberately styled UNLIKE the solid
@@ -18,6 +17,7 @@ const FeaturedBlogCard = ({ post }) => {
           alt={post.title}
           fill
           className="object-cover"
+          style={{ objectPosition: post.imageFocus || "center" }}
         />
         {post.comingSoon && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
@@ -49,9 +49,9 @@ const FeaturedBlogCard = ({ post }) => {
   );
 };
 
-const FeaturedInsights = () => {
-  const posts = getFeaturedInsights().map(toCardModel);
-
+// Posts come from the Server Component above — the ones an editor flagged
+// "Featured" in the admin panel.
+const FeaturedInsights = ({ posts = [] }) => {
   // Nothing flagged isFeatured — render nothing rather than a section with an
   // empty right-hand column.
   if (posts.length === 0) return null;
@@ -62,7 +62,7 @@ const FeaturedInsights = () => {
       className="py-1 sm:py-1 md:py-1 flex justify-center px-4"
     >
       <div
-        className="w-full max-w-[1200px] lg:w-[70%] rounded-2xl mb-14"
+        className="w-full max-w-[1200px] lg:w-[70%] rounded-2xl mb-36"
         style={{
           background: "linear-gradient(180deg, #4555A7 0%, #53406B 100%)",
         }}
@@ -94,12 +94,15 @@ const FeaturedInsights = () => {
               </p>
             </div>
 
-            {/* Logo lockup, pinned to the bottom of the card. Both marks are
-                white assets (/footer_logo.svg is fill="white"), so the panel
-                behind them is dark — a white panel would erase both. */}
+            {/* Logo lockup, pinned to the bottom of the card: Tech& above,
+                Microsoft Partner below. Deliberately has no panel of its own —
+                the two marks read as a lockup on the card's gradient rather
+                than as a boxed-off badge. Both are white assets
+                (/footer_logo.svg is fill="white"), which is safe here only
+                because that gradient is dark. */}
             <div className="mt-8 lg:mt-auto lg:pt-12">
-              <div className="flex flex-col items-center gap-4 rounded-xl bg-black/20 border border-white/15 p-5">
-                <div className="relative w-[140px] h-[56px]">
+              <div className="flex flex-col">
+                <div className="relative w-[245px] h-[200px]">
                   <Image
                     src="/footer_logo.svg"
                     alt="Tech& Logo"
@@ -107,7 +110,7 @@ const FeaturedInsights = () => {
                     className="object-contain"
                   />
                 </div>
-                <MicrosoftPartnerBadge size="md" />
+                <MicrosoftPartnerBadge size="lg" plaque className="bg-black" />
               </div>
             </div>
           </div>

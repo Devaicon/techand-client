@@ -23,9 +23,9 @@ function Guard({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F6F7FB]">
+    <div className="min-h-screen bg-[#F6F7FB] lg:flex">
       <AdminSidebar />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      <main className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
   );
 }

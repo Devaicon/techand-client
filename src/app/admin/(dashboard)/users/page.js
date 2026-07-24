@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Shield, Ban, CheckCircle2, Trash2 } from "lucide-react";
+import { Loader2, Shield, Ban, CheckCircle2, Trash2, SlidersHorizontal } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "../../AdminAuthProvider";
-import PermissionEditor, { ROLE_PRESETS } from "@/components/admin/PermissionEditor";
+import PermissionEditor, { ROLE_PRESETS, labelRole } from "@/components/admin/PermissionEditor";
 
 const sameSet = (a, b) =>
   (a || []).length === (b || []).length &&
@@ -31,18 +31,18 @@ export default function UsersPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const savePermissions = async ({ role, permissions, isCustom }) => {
-    if (role !== editing.role) {
-      await adminApi.patch(`/users/${editing.id}/role`, { role });
-    }
-    // If the role changed to a preset match, the role endpoint already set it.
-    const presetMatch = !isCustom && sameSet(permissions, ROLE_PRESETS[role]);
-    if (role === editing.role || !presetMatch) {
-      if (role !== "super_admin") {
-        await adminApi.patch(`/users/${editing.id}/permissions`, { permissions });
-      }
-    }
-    await load();
+  // Merge the server's returned user into the list (live-sync, no full reload).
+  const applyUser = (updated) =>
+    setUsers((us) => us.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)));
+
+  const changeRole = async (role) => {
+    const { data } = await adminApi.patch(`/users/${editing.id}/role`, { role });
+    applyUser(data.data.user);
+  };
+
+  const changePermissions = async (permissions) => {
+    const { data } = await adminApi.patch(`/users/${editing.id}/permissions`, { permissions });
+    applyUser(data.data.user);
   };
 
   const toggleStatus = async (u) => {
@@ -87,19 +87,19 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">
-                      <Shield size={12} />{u.role}{custom ? " (custom)" : ""}
+                      <Shield size={12} />{labelRole(u.role)}{custom ? " (CUSTOM)" : ""}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${u.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
-                      {u.status}
+                      {u.status.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       {can("team:manage") && (
-                        <button onClick={() => setEditing(u)} className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#37469E] hover:bg-[#EEF0FA]">
-                          Permissions
+                        <button onClick={() => setEditing(u)} title="Permissions" className="rounded-lg p-1.5 text-[#37469E] hover:bg-[#EEF0FA]">
+                          <SlidersHorizontal size={16} />
                         </button>
                       )}
                       {can("users:update") && (
@@ -125,7 +125,8 @@ export default function UsersPage() {
         <PermissionEditor
           member={editing}
           onClose={() => setEditing(null)}
-          onSave={savePermissions}
+          onRoleChange={changeRole}
+          onPermissionsChange={changePermissions}
         />
       )}
     </div>

@@ -78,7 +78,7 @@ const CapabilityDetailCard = ({ card, index, hideBadge = false }) => {
   return (
     <section
       id={card.id}
-      className="w-full py-10 md:py-12 scroll-mt-20"
+      className="w-full py-10 md:py-12us  "
       style={{ background: backgroundColor }}
     >
       <div className="max-w-8xl mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">

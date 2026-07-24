@@ -416,9 +416,7 @@ export default function Navbar({ hasRibbon = false }) {
       >
         <nav
           className={`bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] px-4 sm:px-8 xl:px-[59px] rounded-none transition-all duration-200 ${
-            scrolled
-              ? "h-[64px] xl:h-[72px] shadow-md"
-              : "h-[80px] xl:h-[93px]"
+            scrolled ? "h-[64px] xl:h-[72px] shadow-md" : "h-[80px] xl:h-[93px]"
           } ${
             showIndustriesDropdown ||
             showCapabilitiesDropdown ||
@@ -536,10 +534,11 @@ export default function Navbar({ hasRibbon = false }) {
             {/* Right column: badge, CTA, and the mobile menu button. The CTA
                 stays the terminal element of the bar, with the badge to its
                 left. */}
-            <div className="flex items-center gap-4 justify-self-end">
+            <div className="flex items-center gap-6 justify-self-end">
               <MicrosoftPartnerBadge
                 size="sm"
-                className="hidden xl:inline-flex"
+                plaque
+                className="hidden xl:inline-flex bg-black"
               />
 
               {/* Desktop CTA */}
@@ -592,58 +591,58 @@ export default function Navbar({ hasRibbon = false }) {
         onMouseEnter={handleIndustriesEnter}
         onMouseLeave={handleIndustriesLeave}
       >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
-            {/* Left Section - Industry List */}
-            <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-              <div className="space-y-2">
-                {industriesData.map((industry, index) => (
-                  <div
-                    key={index}
-                    onMouseEnter={() => setHoveredIndustry(industry.name)}
-                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                      hoveredIndustry === industry.name
-                        ? "bg-white shadow-lg scale-[1.02] border-l-4 border-[#5B6FB6]"
-                        : "hover:bg-white/60 hover:shadow-sm"
-                    }`}
-                  >
-                    <div className="text-[#5B6FB6]">{industry.icon}</div>
-                    <span className="text-sm font-medium text-gray-900 flex-1">
-                      {industry.name}
-                    </span>
-                    {hoveredIndustry === industry.name && (
-                      <ChevronRight className="w-4 h-4 text-[#5B6FB6]" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Section - Industry Details */}
-            <div className="w-2/3 p-8">
-              {industriesData.map(
-                (industry) =>
-                  hoveredIndustry === industry.name && (
-                    <div key={industry.name}>
-                      <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                        {industry.name}
-                      </h3>
-                      <p className="text-gray-700 text-base leading-relaxed mb-8">
-                        {industry.description}
-                      </p>
-
-                      <Link
-                        href={`/industries#${industry.id}`}
-                        className="bg-transparent border-2 border-[#5B6FB6] text-[#5B6FB6] px-6 py-2.5 rounded-md font-semibold hover:bg-[#5B6FB6] hover:text-white transition-all duration-200 flex items-center gap-2 w-fit"
-                      >
-                        LEARN MORE
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  ),
-              )}
+        <div className="bg-white shadow-2xl rounded-b-[30px] border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
+          {/* Left Section - Industry List */}
+          <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+            <div className="space-y-2">
+              {industriesData.map((industry, index) => (
+                <div
+                  key={index}
+                  onMouseEnter={() => setHoveredIndustry(industry.name)}
+                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                    hoveredIndustry === industry.name
+                      ? "bg-white shadow-lg scale-[1.02] border-l-4 border-[#5B6FB6]"
+                      : "hover:bg-white/60 hover:shadow-sm"
+                  }`}
+                >
+                  <div className="text-[#5B6FB6]">{industry.icon}</div>
+                  <span className="text-sm font-medium text-gray-900 flex-1">
+                    {industry.name}
+                  </span>
+                  {hoveredIndustry === industry.name && (
+                    <ChevronRight className="w-4 h-4 text-[#5B6FB6]" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Right Section - Industry Details */}
+          <div className="w-2/3 p-8">
+            {industriesData.map(
+              (industry) =>
+                hoveredIndustry === industry.name && (
+                  <div key={industry.name}>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                      {industry.name}
+                    </h3>
+                    <p className="text-gray-700 text-base leading-relaxed mb-8">
+                      {industry.description}
+                    </p>
+
+                    <Link
+                      href={`/industries#${industry.id}`}
+                      className="bg-transparent border-2 border-[#5B6FB6] text-[#5B6FB6] px-6 py-2.5 rounded-md font-semibold hover:bg-[#5B6FB6] hover:text-white transition-all duration-200 flex items-center gap-2 w-fit"
+                    >
+                      LEARN MORE
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                ),
+            )}
+          </div>
         </div>
+      </div>
 
       {/* Capabilities Dropdown */}
       <div
@@ -656,138 +655,134 @@ export default function Navbar({ hasRibbon = false }) {
         onMouseEnter={handleCapabilitiesEnter}
         onMouseLeave={handleCapabilitiesLeave}
       >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
-            {/* Left Section - Capabilities List */}
-            <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-              <div className="space-y-2">
-                {capabilitiesData.map((capability, index) => (
-                  <div
-                    key={index}
-                    onMouseEnter={() => setHoveredCapability(capability.name)}
-                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                      hoveredCapability === capability.name
-                        ? "bg-white shadow-lg scale-[1.02] border-l-4 border-[#5B6FB6]"
-                        : "hover:bg-white/60 hover:shadow-sm"
-                    }`}
-                  >
-                    <div className="text-[#5B6FB6]">{capability.icon}</div>
-                    <span className="text-sm font-medium text-gray-900 flex-1">
-                      {capability.name}
-                    </span>
-                    {hoveredCapability === capability.name && (
-                      <ChevronRight className="w-4 h-4 text-[#5B6FB6]" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Section - Capability Details */}
-            <div className="w-2/3 p-8">
-              {capabilitiesData.map(
-                (capability) =>
-                  hoveredCapability === capability.name && (
-                    <div key={capability.name}>
-                      <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                        {capability.name}
-                      </h3>
-                      <p className="text-gray-700 text-base leading-relaxed mb-6">
-                        {capability.description}
-                      </p>
-
-                      {/* Items */}
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        {capability.items.map((item, idx) => {
-                          const hasIconPath = typeof item.icon === "string";
-                          const ItemWrapper = hasIconPath ? Link : "div";
-
-                          // Determine the correct page route based on capability category
-                          let pageRoute = "/capabilities";
-                          if (capability.name === "Business Applications") {
-                            pageRoute = "/capabilities/business-applications";
-                          } else if (capability.name === "Cloud Services") {
-                            pageRoute = "/capabilities/cloud-services";
-                          } else if (capability.name === "Data") {
-                            pageRoute = "/capabilities/data";
-                          }
-
-                          const handleClick = (e) => {
-                            if (item.id) {
-                              // Add a small delay to allow page navigation to complete
-                              setTimeout(() => {
-                                const element = document.getElementById(
-                                  item.id,
-                                );
-                                if (element) {
-                                  element.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "start",
-                                  });
-                                }
-                              }, 100);
-                            }
-                          };
-
-                          const itemProps = hasIconPath
-                            ? {
-                                href: item.id ? `${pageRoute}#${item.id}` : "#",
-                                className:
-                                  "flex items-center gap-2 hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 p-2 rounded-lg transition-all duration-200 cursor-pointer",
-                                onClick: handleClick,
-                              }
-                            : { className: "flex items-center gap-2" };
-
-                          return (
-                            <ItemWrapper key={idx} {...itemProps}>
-                              {typeof item.icon === "string" ? (
-                                <div className="relative w-6 h-6 flex-shrink-0">
-                                  <Image
-                                    src={item.icon}
-                                    alt={item.name}
-                                    fill
-                                    className="object-contain"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="text-[#5B6FB6]">
-                                  {item.icon}
-                                </div>
-                              )}
-                              <span className="text-sm font-medium text-gray-900">
-                                {item.name}
-                              </span>
-                            </ItemWrapper>
-                          );
-                        })}
-                      </div>
-
-                      <Link
-                        href={
-                          capability.name === "AI"
-                            ? "/capabilities"
-                            : capability.name === "Business Applications"
-                              ? "/capabilities/business-applications"
-                              : capability.name === "Cloud Services"
-                                ? "/capabilities/cloud-services"
-                                : capability.name === "Data"
-                                  ? "/capabilities/data"
-                                  : "/capabilities"
-                        }
-                      >
-                        <button
-                          className="bg-transparent border-2 border-[#5B6FB6] text-[#5B6FB6] px-6 py-2.5 rounded-md font-semibold hover:bg-[#5B6FB6] hover:text-white transition-all duration-200 flex items-center gap-2"
-                          type="button"
-                        >
-                          LEARN MORE
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </Link>
-                    </div>
-                  ),
-              )}
+        <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] flex">
+          {/* Left Section - Capabilities List */}
+          <div className="w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+            <div className="space-y-2">
+              {capabilitiesData.map((capability, index) => (
+                <div
+                  key={index}
+                  onMouseEnter={() => setHoveredCapability(capability.name)}
+                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                    hoveredCapability === capability.name
+                      ? "bg-white shadow-lg scale-[1.02] border-l-4 border-[#5B6FB6]"
+                      : "hover:bg-white/60 hover:shadow-sm"
+                  }`}
+                >
+                  <div className="text-[#5B6FB6]">{capability.icon}</div>
+                  <span className="text-sm font-medium text-gray-900 flex-1">
+                    {capability.name}
+                  </span>
+                  {hoveredCapability === capability.name && (
+                    <ChevronRight className="w-4 h-4 text-[#5B6FB6]" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Right Section - Capability Details */}
+          <div className="w-2/3 p-8">
+            {capabilitiesData.map(
+              (capability) =>
+                hoveredCapability === capability.name && (
+                  <div key={capability.name}>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                      {capability.name}
+                    </h3>
+                    <p className="text-gray-700 text-base leading-relaxed mb-6">
+                      {capability.description}
+                    </p>
+
+                    {/* Items */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      {capability.items.map((item, idx) => {
+                        const hasIconPath = typeof item.icon === "string";
+                        const ItemWrapper = hasIconPath ? Link : "div";
+
+                        // Determine the correct page route based on capability category
+                        let pageRoute = "/capabilities";
+                        if (capability.name === "Business Applications") {
+                          pageRoute = "/capabilities/business-applications";
+                        } else if (capability.name === "Cloud Services") {
+                          pageRoute = "/capabilities/cloud-services";
+                        } else if (capability.name === "Data") {
+                          pageRoute = "/capabilities/data";
+                        }
+
+                        const handleClick = (e) => {
+                          if (item.id) {
+                            // Add a small delay to allow page navigation to complete
+                            setTimeout(() => {
+                              const element = document.getElementById(item.id);
+                              if (element) {
+                                element.scrollIntoView({
+                                  behavior: "smooth",
+                                  block: "start",
+                                });
+                              }
+                            }, 100);
+                          }
+                        };
+
+                        const itemProps = hasIconPath
+                          ? {
+                              href: item.id ? `${pageRoute}#${item.id}` : "#",
+                              className:
+                                "flex items-center gap-2 hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 p-2 rounded-lg transition-all duration-200 cursor-pointer",
+                              onClick: handleClick,
+                            }
+                          : { className: "flex items-center gap-2" };
+
+                        return (
+                          <ItemWrapper key={idx} {...itemProps}>
+                            {typeof item.icon === "string" ? (
+                              <div className="relative w-6 h-6 flex-shrink-0">
+                                <Image
+                                  src={item.icon}
+                                  alt={item.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
+                            ) : (
+                              <div className="text-[#5B6FB6]">{item.icon}</div>
+                            )}
+                            <span className="text-sm font-medium text-gray-900">
+                              {item.name}
+                            </span>
+                          </ItemWrapper>
+                        );
+                      })}
+                    </div>
+
+                    <Link
+                      href={
+                        capability.name === "AI"
+                          ? "/capabilities"
+                          : capability.name === "Business Applications"
+                            ? "/capabilities/business-applications"
+                            : capability.name === "Cloud Services"
+                              ? "/capabilities/cloud-services"
+                              : capability.name === "Data"
+                                ? "/capabilities/data"
+                                : "/capabilities"
+                      }
+                    >
+                      <button
+                        className="bg-transparent border-2 border-[#5B6FB6] text-[#5B6FB6] px-6 py-2.5 rounded-md font-semibold hover:bg-[#5B6FB6] hover:text-white transition-all duration-200 flex items-center gap-2"
+                        type="button"
+                      >
+                        LEARN MORE
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </Link>
+                  </div>
+                ),
+            )}
+          </div>
         </div>
+      </div>
 
       {/* Why Tech& Dropdown */}
       <div
@@ -800,43 +795,43 @@ export default function Navbar({ hasRibbon = false }) {
         onMouseEnter={handleWhyVitaEnter}
         onMouseLeave={handleWhyVitaLeave}
       >
-          <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] p-8 px-64">
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              <Link
-                href="/whywith-techand"
-                className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
-              >
-                <div className="text-[#5B6FB6] group-hover:scale-110 transition-transform duration-300 p-3 rounded-full group-hover:bg-[#5B6FB6] group-hover:text-white group-hover:shadow-lg">
-                  <Info className="w-12 h-12" />
-                </div>
-                <div>
-                  <h4 className="text-base font-bold text-gray-900 mb-2">
-                    About Tech&
-                  </h4>
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    Learn about our mission and values
-                  </p>
-                </div>
-              </Link>
+        <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] p-8 px-64">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <Link
+              href="/whywith-techand"
+              className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
+            >
+              <div className="text-[#5B6FB6] group-hover:scale-110 transition-transform duration-300 p-3 rounded-full group-hover:bg-[#5B6FB6] group-hover:text-white group-hover:shadow-lg">
+                <Info className="w-12 h-12" />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-gray-900 mb-2">
+                  About Tech&
+                </h4>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Learn about our mission and values
+                </p>
+              </div>
+            </Link>
 
-              <Link
-                href="/contact-us"
-                className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
-              >
-                <div className="text-[#5B6FB6] group-hover:scale-110 transition-transform duration-300 p-3 rounded-full group-hover:bg-[#5B6FB6] group-hover:text-white group-hover:shadow-lg">
-                  <Phone className="w-12 h-12" />
-                </div>
-                <div>
-                  <h4 className="text-base font-bold text-gray-900 mb-2">
-                    Contact
-                  </h4>
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    Get in touch with our team
-                  </p>
-                </div>
-              </Link>
+            <Link
+              href="/contact-us"
+              className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
+            >
+              <div className="text-[#5B6FB6] group-hover:scale-110 transition-transform duration-300 p-3 rounded-full group-hover:bg-[#5B6FB6] group-hover:text-white group-hover:shadow-lg">
+                <Phone className="w-12 h-12" />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-gray-900 mb-2">
+                  Contact
+                </h4>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Get in touch with our team
+                </p>
+              </div>
+            </Link>
 
-              {/* <Link
+            {/* <Link
                 href="/newsroom"
                 className="flex flex-col items-center text-center gap-4 p-6 rounded-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 transition-all duration-300 group hover:shadow-lg hover:scale-105 border-2 border-transparent hover:border-[#5B6FB6]"
               >
@@ -886,9 +881,9 @@ export default function Navbar({ hasRibbon = false }) {
                   </p>
                 </div>
               </Link> */}
-            </div>
           </div>
         </div>
+      </div>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
@@ -1312,7 +1307,6 @@ export default function Navbar({ hasRibbon = false }) {
           </div>
         </>
       )}
-
     </>
   );
 }

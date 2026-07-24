@@ -3,6 +3,10 @@ import axios from "axios";
 const baseURL =
   process.env.NEXT_PUBLIC_ADMIN_API || "http://localhost:3000/api/v1/admin";
 
+// Exposed so public-site components (e.g. the admin ribbon) can probe
+// /auth/me with a plain fetch, bypassing the refresh interceptor below.
+export const ADMIN_API_BASE = baseURL;
+
 const adminApi = axios.create({
   baseURL,
   withCredentials: true,

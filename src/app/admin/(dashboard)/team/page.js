@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Loader2, Mail, RefreshCw, XCircle, Send } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "../../AdminAuthProvider";
+import { labelRole } from "@/components/admin/PermissionEditor";
 
 const ROLES = ["admin", "editor", "viewer"];
 
@@ -72,7 +73,7 @@ export default function TeamPage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Role</label>
               <select value={role} onChange={(e) => setRole(e.target.value)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm">
-                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                {ROLES.map((r) => <option key={r} value={r}>{labelRole(r)}</option>)}
               </select>
             </div>
             <button type="submit" className="flex items-center gap-2 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]">
@@ -95,7 +96,7 @@ export default function TeamPage() {
                   <Mail size={16} className="text-gray-400" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">{inv.email}</p>
-                    <p className="text-xs text-gray-500">{inv.role} · expires {new Date(inv.expiresAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-gray-500">{labelRole(inv.role)} · expires {new Date(inv.expiresAt).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -117,7 +118,7 @@ export default function TeamPage() {
                 <p className="text-sm font-medium text-gray-900">{m.username}</p>
                 <p className="text-xs text-gray-500">{m.email}</p>
               </div>
-              <span className="rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">{m.role}</span>
+              <span className="rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">{labelRole(m.role)}</span>
             </li>
           ))}
         </ul>

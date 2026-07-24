@@ -3,25 +3,26 @@
 import React, { useState, useMemo } from "react";
 import InsightSearchBar from "./InsightSearchBar";
 import InsightCard from "./InsightCard";
-import { getAllInsights, toCardModel } from "@/lib/insights-content";
 import {
   filterPosts,
   matchesCategoryFilter,
   matchesSearchQuery,
 } from "./insightUtils";
 
-const BlogInsights = () => {
+// Posts arrive as props from the Server Component above, already mapped to the
+// card model and sorted newest-first by the API. This component stays a client
+// component only because it owns the filter and search state.
+const BlogInsights = ({ posts: allPosts = [] }) => {
   const [activeCategory, setActiveCategory] = useState("View all");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Sourced from the content registry rather than a hardcoded array, so
-  // publishing a post is one new file plus one line in insights-content/index.js.
-  const allPosts = useMemo(() => getAllInsights().map(toCardModel), []);
 
   // The newest post takes the large featured card; everything after it fills
   // the 3-column grid.
   const latestPost = allPosts[0] ?? null;
   const restPosts = useMemo(() => allPosts.slice(1), [allPosts]);
+
+  // No posts at all — render the section chrome with an empty grid rather than
+  // a featured card built from `null`.
 
   const filteredPosts = useMemo(
     () => filterPosts(restPosts, activeCategory, searchQuery),
