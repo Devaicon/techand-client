@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import adminApi from "@/lib/adminApi";
+import adminApi, { clearTokens } from "@/lib/adminApi";
 
 const AdminAuthContext = createContext(null);
 
@@ -30,6 +30,7 @@ export function AdminAuthProvider({ children }) {
     try {
       await adminApi.post("/auth/logout");
     } finally {
+      clearTokens();
       setUser(null);
     }
   }, []);
