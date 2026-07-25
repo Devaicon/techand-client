@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, Send, LogIn, Loader2 } from "lucide-react";
-import adminApi from "@/lib/adminApi";
+import adminApi, { setTokens } from "@/lib/adminApi";
 
 const inputCls =
   "block w-full rounded-xl border-0 bg-white py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#4555A7] sm:text-sm";
@@ -42,7 +42,8 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
     try {
-      await adminApi.post("/auth/mfa", { challengeId, code: otp });
+      const { data } = await adminApi.post("/auth/mfa", { challengeId, code: otp });
+      setTokens(data.data.tokens);
       router.push("/admin");
     } catch (err) {
       setError(apiError(err));
