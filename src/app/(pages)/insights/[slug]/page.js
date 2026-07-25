@@ -177,7 +177,7 @@ export default async function BlogPostPage({ params, searchParams }) {
 
         {hasRail && (
           <aside className="min-w-0">
-            <div className="space-y-6 xl:sticky xl:top-48">
+            <div className="space-y-6 xl:sticky xl:top-36">
               <ExternalLinks links={post.externalLinks} />
               {sidebarCtas.map((cta) => (
                 <BlogCta key={cta.key} cta={cta} variant="sidebar" />
