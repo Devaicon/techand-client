@@ -2,7 +2,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   getInsightBySlug,
-  getPublishedSlugs,
   getAllInsights,
   toCardModel,
 } from "@/lib/blogs-api";
@@ -15,12 +14,10 @@ import BlogCta from "@/components/insight-page/reader/BlogCta";
 import FaqSection from "@/components/insight-page/reader/FaqSection";
 import RelatedArticles from "@/components/insight-page/reader/RelatedArticles";
 
-// Pre-render every published post at build time; anything published later is
-// rendered on first request and then cached (see `revalidate` in blogs-api).
-export async function generateStaticParams() {
-  const slugs = await getPublishedSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
+// Render on every request so an edited or newly published post is reflected
+// immediately, rather than being served from a build-time snapshot or ISR
+// cache. `getInsightBySlug` is uncached to match.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -180,7 +177,7 @@ export default async function BlogPostPage({ params, searchParams }) {
 
         {hasRail && (
           <aside className="min-w-0">
-            <div className="space-y-6 xl:sticky xl:top-36">
+            <div className="space-y-6 xl:sticky xl:top-48">
               <ExternalLinks links={post.externalLinks} />
               {sidebarCtas.map((cta) => (
                 <BlogCta key={cta.key} cta={cta} variant="sidebar" />
