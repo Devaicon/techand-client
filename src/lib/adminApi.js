@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseURL =
-  process.env.NEXT_PUBLIC_ADMIN_API || "http://localhost:3000/api/v1/admin";
+  process.env.NEXT_PUBLIC_ADMIN_API || "https://vita-api-fd66c5fd8ec3.herokuapp.com/api/v1/admin";
 
 // Exposed so public-site components (e.g. the admin ribbon) can probe
 // /auth/me with a plain fetch, bypassing the refresh interceptor below.

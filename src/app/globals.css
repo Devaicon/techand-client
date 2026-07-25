@@ -47,6 +47,45 @@ body {
   }
 }
 
+/* Microsoft Partner navbar plaque sheen. A soft diagonal highlight sweeps
+   across the black tile on a slow loop, giving the badge a "shining" feel.
+   The host element must be `position: relative` + `overflow: hidden` (set via
+   Tailwind on .ms-partner-sheen) so the streak is clipped to the tile. */
+.ms-partner-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 75%
+  );
+  transform: translateX(-130%);
+  animation: ms-partner-sweep 5s ease-in-out infinite;
+}
+
+@keyframes ms-partner-sweep {
+  0%,
+  20% {
+    transform: translateX(-130%);
+  }
+  60%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-partner-sheen::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    Blog article typography (.blog-prose)
 
