@@ -27,7 +27,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { ADMIN_RIBBON_HEIGHT } from "@/components/layout/AdminRibbon";
-import MicrosoftPartnerBadge from "@/components/shared/MicrosoftPartnerBadge";
 
 // Navbar heights (px) used to place the fixed header and its hover dropdowns.
 const NAV_HEIGHT = 93;
@@ -415,7 +414,7 @@ export default function Navbar({ hasRibbon = false }) {
         className="fixed left-0 right-0 z-50 flex justify-center"
       >
         <nav
-          className={`bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] px-4 sm:px-8 xl:px-[59px] rounded-none transition-all duration-200 ${
+          className={`relative bg-white mx-auto w-full xl:w-[calc(100%-280px)] max-w-[1639px] px-4 sm:px-8 xl:px-[59px] rounded-none transition-all duration-200 ${
             scrolled ? "h-[64px] xl:h-[72px] shadow-md" : "h-[80px] xl:h-[93px]"
           } ${
             showIndustriesDropdown ||
@@ -531,16 +530,15 @@ export default function Navbar({ hasRibbon = false }) {
               </li>
             </ul>
 
-            {/* Right column: badge, CTA, and the mobile menu button. The CTA
-                stays the terminal element of the bar, with the badge to its
-                left. */}
-            <div className="flex items-center gap-6 justify-self-end">
-              <MicrosoftPartnerBadge
-                size="sm"
-                plaque
-                className="hidden xl:inline-flex bg-black"
-              />
-
+            {/* Right column: CTA and the mobile menu button. Pinned to the
+                third grid column with `col-start-3`: below xl the nav `<ul>` is
+                `display:none`, so without this the two remaining grid items
+                auto-place into columns 1 and 2 and the hamburger lands in the
+                centre `auto` column instead of the right edge.
+                The Microsoft Partner plaque is no longer inline here — it hangs
+                below the bar (see the plaque block after this grid) so it never
+                squeezes the CTA on narrower widths. */}
+            <div className="col-start-3 flex items-center gap-6 justify-self-end">
               {/* Desktop CTA */}
               <Link
                 href="/contact-us"
@@ -572,6 +570,34 @@ export default function Navbar({ hasRibbon = false }) {
                   <path d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+            </div>
+          </div>
+
+          {/* Microsoft Partner plaque — hangs beneath the bar's right edge,
+              tucked under the Get Started CTA. Its own black tile keeps the
+              white-on-transparent mark legible; the top edge sits flush to the
+              bar and the bottom corners round to echo the navbar. It fades out
+              while a hover dropdown is open so it never floats over the panel.
+              The sheen sweeps across on a slow loop. Heights are set per
+              breakpoint here (rather than via the shared badge) so it stays
+              legibly sized from mobile to desktop. */}
+          <div
+            className={`absolute top-full right-4 sm:right-8 xl:right-[59px] transition-opacity duration-200 ${
+              showIndustriesDropdown ||
+              showCapabilitiesDropdown ||
+              showWhyVitaDropdown
+                ? "opacity-0 pointer-events-none"
+                : "opacity-100"
+            }`}
+          >
+            <div className="ms-partner-sheen relative overflow-hidden bg-black rounded-b-lg xl:rounded-b-[16px] px-4 py-2 sm:px-5 sm:py-3 shadow-lg ring-1 ring-white/10">
+              <Image
+                src="/microsoft-partner.svg"
+                alt="Microsoft Partner"
+                width={245}
+                height={64}
+                className="w-auto h-5 sm:h-6 xl:h-7 object-contain"
+              />
             </div>
           </div>
         </nav>

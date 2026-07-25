@@ -110,7 +110,7 @@ const FeaturedInsights = ({ posts = [] }) => {
                     className="object-contain"
                   />
                 </div>
-                <MicrosoftPartnerBadge size="lg" plaque className="bg-black" />
+                <MicrosoftPartnerBadge size="lg" />
               </div>
             </div>
           </div>
