@@ -530,11 +530,15 @@ export default function Navbar({ hasRibbon = false }) {
               </li>
             </ul>
 
-            {/* Right column: CTA and the mobile menu button. The Microsoft
-                Partner plaque is no longer inline here — it hangs below the bar
-                (see the plaque block after this grid) so it never squeezes the
-                CTA on narrower widths. */}
-            <div className="flex items-center gap-6 justify-self-end">
+            {/* Right column: CTA and the mobile menu button. Pinned to the
+                third grid column with `col-start-3`: below xl the nav `<ul>` is
+                `display:none`, so without this the two remaining grid items
+                auto-place into columns 1 and 2 and the hamburger lands in the
+                centre `auto` column instead of the right edge.
+                The Microsoft Partner plaque is no longer inline here — it hangs
+                below the bar (see the plaque block after this grid) so it never
+                squeezes the CTA on narrower widths. */}
+            <div className="col-start-3 flex items-center gap-6 justify-self-end">
               {/* Desktop CTA */}
               <Link
                 href="/contact-us"
