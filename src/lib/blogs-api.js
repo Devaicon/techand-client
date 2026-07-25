@@ -1,22 +1,20 @@
 // Server-side data access for the public insights pages.
 //
-// Uses fetch (not the axios adminApi) because these run in Server Components,
-// where Next's fetch cache is what gives us ISR. Every call is cached and
-// revalidated on a timer, so the pages are static-fast but pick up newly
-// published posts without a redeploy.
+// Uses fetch (not the axios adminApi) because these run in Server Components.
+// Every call is uncached (`cache: "no-store"`), so the pages render on each
+// request and always reflect the latest admin change — publishing a post or
+// flipping its status shows up immediately, with no revalidation window to wait
+// on. The route files opt into dynamic rendering to match (see the
+// `export const dynamic` in the insights pages).
 //
 // Failures return empty results rather than throwing: a marketing site should
 // degrade to "no posts yet" if the API is briefly down, not render a 500.
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/public";
 
-const REVALIDATE = 300; // 5 minutes
-
-async function getJson(path, { revalidate = REVALIDATE, noStore = false } = {}) {
+async function getJson(path) {
   try {
-    const res = await fetch(`${API}${path}`, {
-      ...(noStore ? { cache: "no-store" } : { next: { revalidate } }),
-    });
+    const res = await fetch(`${API}${path}`, { cache: "no-store" });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -63,14 +61,13 @@ export async function getPublishedSlugs() {
   return json?.data?.slugs ?? [];
 }
 
-// `previewToken` fetches an unpublished draft. Those responses are explicitly
-// uncached — a preview must always show the latest save, and caching one would
-// risk serving draft content to ordinary visitors from the shared page cache.
+// `previewToken` fetches an unpublished draft — always the latest save, like
+// every other read here.
 export async function getInsightBySlug(slug, previewToken) {
   const path = previewToken
     ? `/blogs/${encodeURIComponent(slug)}?preview=${encodeURIComponent(previewToken)}`
     : `/blogs/${encodeURIComponent(slug)}`;
 
-  const json = await getJson(path, { noStore: Boolean(previewToken) });
+  const json = await getJson(path);
   return json?.data?.blog ?? null;
 }
