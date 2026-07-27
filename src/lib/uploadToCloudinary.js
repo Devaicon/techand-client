@@ -12,10 +12,28 @@ import adminApi from "./adminApi";
 const MAX_BYTES = 10 * 1024 * 1024; // Cloudinary's free-tier per-image ceiling
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
 
-export async function uploadToCloudinary(file) {
+// Icons are the one place SVG is allowed: brand and product marks (Dynamics
+// 365, Power Platform) only exist as vectors, and an icon rasterised to PNG
+// looks wrong at the sizes the cards render it. Photographs keep the raster-only
+// list above.
+//
+// An SVG can carry script, so this is deliberately opt-in per field rather than
+// added to ACCEPTED. Uploaded icons are only ever rendered through `<img>` /
+// next/image pointed at res.cloudinary.com, where browsers do not execute
+// embedded script — they are never inlined into the document.
+const ACCEPTED_ICONS = [...ACCEPTED, "image/svg+xml"];
+
+/**
+ * @param {File} file
+ * @param {{accept?: string[]}} [options] - override the allowed MIME types
+ */
+export async function uploadToCloudinary(file, { accept = ACCEPTED } = {}) {
   if (!file) throw new Error("No file selected.");
-  if (!ACCEPTED.includes(file.type)) {
-    throw new Error("Unsupported image type. Use JPG, PNG, WebP, AVIF or GIF.");
+  if (!accept.includes(file.type)) {
+    const label = accept
+      .map((t) => t.replace("image/", "").replace("+xml", "").toUpperCase())
+      .join(", ");
+    throw new Error(`Unsupported image type. Use ${label}.`);
   }
   if (file.size > MAX_BYTES) {
     throw new Error("Image is larger than 10 MB. Compress it and try again.");
@@ -54,4 +72,4 @@ export async function uploadToCloudinary(file) {
   };
 }
 
-export { ACCEPTED as ACCEPTED_IMAGE_TYPES };
+export { ACCEPTED as ACCEPTED_IMAGE_TYPES, ACCEPTED_ICONS as ACCEPTED_ICON_TYPES };

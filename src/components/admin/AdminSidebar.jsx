@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, UserPlus, LogOut, Menu, X, ExternalLink, FileText } from "lucide-react";
+import { LayoutDashboard, LayoutGrid, Users, UserPlus, LogOut, Menu, X, ExternalLink, FileText } from "lucide-react";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
 
@@ -30,6 +30,7 @@ const websiteHrefFor = (role) =>
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, perm: null },
   { href: "/admin/blogs", label: "Insights", icon: FileText, perm: "blog:read" },
+  { href: "/admin/services", label: "Services", icon: LayoutGrid, perm: "pages:read" },
   { href: "/admin/users", label: "Users", icon: Users, perm: "users:read" },
   { href: "/admin/team", label: "Team", icon: UserPlus, perm: "team:manage" },
 ];
