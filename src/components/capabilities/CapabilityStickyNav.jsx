@@ -2,42 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import {
-  ChevronLeft,
-  ChevronRight,
-  DollarSign,
-  Building2,
-  MapPin,
-  Factory,
-  Store,
-  Briefcase,
-  Heart,
-  GraduationCap,
-  Search,
-  Hammer,
-  Settings,
-  Globe,
-  Headphones,
-  Sparkles,
-} from "lucide-react";
-
-// Icon mapping for string-based icon names
-const iconMap = {
-  DollarSign,
-  Building2,
-  MapPin,
-  Factory,
-  Store,
-  Briefcase,
-  Heart,
-  GraduationCap,
-  Search,
-  Hammer,
-  Settings,
-  Globe,
-  Headphones,
-  Sparkles,
-};
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ICON_REGISTRY } from "@/lib/iconRegistry";
 
 /**
  * CapabilityStickyNav Component
@@ -141,11 +107,9 @@ const CapabilityStickyNav = ({ cards = [], activeCardId = "" }) => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {cards.map((navCard) => {
-              // Get the icon component from the string name
-              const IconComponent =
-                typeof navCard.icon === "string" && iconMap[navCard.icon]
-                  ? iconMap[navCard.icon]
-                  : null;
+              // A registered name renders as a Lucide glyph; anything else is
+              // an image path or an uploaded (Cloudinary) URL.
+              const IconComponent = ICON_REGISTRY[navCard.icon] || null;
 
               return (
                 <button

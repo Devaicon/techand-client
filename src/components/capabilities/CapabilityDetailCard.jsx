@@ -1,43 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import {
-  ChevronDown,
-  DollarSign,
-  Building2,
-  MapPin,
-  Factory,
-  Store,
-  Briefcase,
-  Heart,
-  GraduationCap,
-  Search,
-  Hammer,
-  Settings,
-  Globe,
-  Headphones,
-  Sparkles,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import React from "react";
-
-// Icon mapping for string-based icon names
-const iconMap = {
-  DollarSign,
-  Building2,
-  MapPin,
-  Factory,
-  Store,
-  Briefcase,
-  Heart,
-  GraduationCap,
-  Search,
-  Hammer,
-  Settings,
-  Globe,
-  Headphones,
-  Sparkles,
-};
+import { ICON_REGISTRY } from "@/lib/iconRegistry";
 
 /**
  * CapabilityDetailCard Component
@@ -71,9 +38,9 @@ const CapabilityDetailCard = ({ card, index, hideBadge = false }) => {
   const hasNewStructure =
     card.industryContext && card.painPoints && card.ourApproach;
 
-  // Get the icon component from the string name
-  const IconComponent =
-    typeof card.icon === "string" ? iconMap[card.icon] : null;
+  // A registered name renders as a Lucide glyph; anything else is an image path
+  // or an uploaded (Cloudinary) URL.
+  const IconComponent = ICON_REGISTRY[card.icon] || null;
 
   return (
     <section

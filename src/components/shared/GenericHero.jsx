@@ -22,7 +22,7 @@ const GenericHero = ({
   dim = 0,
 }) => {
   return (
-    <section className="relative flex w-full items-center overflow-hidden py-16 min-h-[50vh]">
+    <section className="relative flex w-full items-center overflow-hidden py-16 min-h-[clamp(320px,50vh,560px)]">
       {/* Background Image */}
       <Image
         src={backgroundImage}

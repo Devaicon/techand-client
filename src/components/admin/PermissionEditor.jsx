@@ -23,11 +23,14 @@ const PERMISSION_GROUPS = ALL_PERMISSIONS.reduce((groups, p) => {
   return groups;
 }, []);
 
+// Mirror of ROLE_PRESETS in server/src/config/rbac.js. Drift here is not
+// cosmetic: `isCustom` below compares a user's permissions against this list, so
+// a missing entry labels a perfectly standard admin as "(CUSTOM)".
 export const ROLE_PRESETS = {
   super_admin: ["*"],
-  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","media:upload"],
-  editor: ["users:read","blog:read","blog:create","blog:update","blog:publish","media:upload"],
-  viewer: ["users:read","blog:read"],
+  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","media:upload","pages:read","pages:manage","navbar:manage"],
+  editor: ["users:read","blog:read","blog:create","blog:update","blog:publish","media:upload","pages:read"],
+  viewer: ["users:read","blog:read","pages:read"],
 };
 
 const sameSet = (a, b) =>
