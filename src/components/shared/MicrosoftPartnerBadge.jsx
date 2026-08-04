@@ -10,17 +10,33 @@ const SIZE_CLASSES = {
   lg: "h-16",
 };
 
+// The two colourways of the lockup. `light` is the white-on-transparent artwork
+// that ships today; `dark` is the ink-on-transparent version placed alongside it
+// for light surfaces. The path is resolved here — the one place the asset lives —
+// so no caller has to know either filename.
+const VARIANT_ASSETS = {
+  light: "/microsoft-partner.svg",
+  dark: "/microsoft-partner-dark.svg",
+};
+
 /**
  * Microsoft Partner badge — the single place the asset path and plaque styling
  * live. Used by the navbar, the home Enterprise Excellence section, the footer,
  * and the insights Featured blogs card.
  *
- * /microsoft-partner.svg is a white-on-transparent asset: every fill in it is
- * #ffffff, and the "Microsoft Partner" wordmark is 18 white paths. On a light
- * background the wordmark vanishes and only the four coloured squares survive.
- * THE CALLER is responsible for putting it on a dark backdrop — either via
- * `plaque` plus a dark `className`, or by placing the bare mark on a dark
- * section. Never render it against white.
+ * There are two colourways, chosen with `variant`:
+ *
+ *   - `light` (default) — /microsoft-partner.svg, a white-on-transparent asset:
+ *     every fill is #ffffff and the "Microsoft Partner" wordmark is 18 white
+ *     paths. On a light background the wordmark vanishes and only the four
+ *     coloured squares survive, so this MUST sit on a dark backdrop — via
+ *     `plaque` plus a dark `className`, or on an already-dark section.
+ *   - `dark` — /microsoft-partner-dark.svg, the ink-on-transparent counterpart
+ *     for light cards, where the white artwork would disappear.
+ *
+ * The caller owns the pairing: pick the variant whose wordmark contrasts with
+ * the surface it lands on. Getting it wrong is exactly the "invisible logo on
+ * white" the `dark` variant exists to prevent.
  *
  * `plaque` adds the chrome (rounding + inset padding) used where the badge sits
  * on a light surface and needs its own dark tile, i.e. the navbar. It is opt-in
@@ -33,6 +49,7 @@ const SIZE_CLASSES = {
 const MicrosoftPartnerBadge = ({
   size = "md",
   plaque = false,
+  variant = "light",
   className = "",
 }) => {
   return (
@@ -42,7 +59,7 @@ const MicrosoftPartnerBadge = ({
       } ${className}`}
     >
       <Image
-        src="/microsoft-partner.svg"
+        src={VARIANT_ASSETS[variant] ?? VARIANT_ASSETS.light}
         alt="Microsoft Partner"
         width={245}
         height={64}

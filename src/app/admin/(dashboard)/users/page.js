@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, Shield, Ban, CheckCircle2, Trash2, SlidersHorizontal } from "lucide-react";
 import adminApi from "@/lib/adminApi";
+import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
 import PermissionEditor, { ROLE_PRESETS, labelRole } from "@/components/admin/PermissionEditor";
 
@@ -12,6 +13,7 @@ const sameSet = (a, b) =>
 
 export default function UsersPage() {
   const { can } = useAdminAuth();
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -36,25 +38,58 @@ export default function UsersPage() {
     setUsers((us) => us.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)));
 
   const changeRole = async (role) => {
-    const { data } = await adminApi.patch(`/users/${editing.id}/role`, { role });
-    applyUser(data.data.user);
+    try {
+      const { data } = await adminApi.patch(`/users/${editing.id}/role`, {
+        role,
+      });
+      applyUser(data.data.user);
+      toast.success(`Role changed to ${role}.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to change the role.");
+    }
   };
 
   const changePermissions = async (permissions) => {
-    const { data } = await adminApi.patch(`/users/${editing.id}/permissions`, { permissions });
-    applyUser(data.data.user);
+    try {
+      const { data } = await adminApi.patch(
+        `/users/${editing.id}/permissions`,
+        { permissions },
+      );
+      applyUser(data.data.user);
+      toast.success("Permissions updated.");
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to update permissions.",
+      );
+    }
   };
 
   const toggleStatus = async (u) => {
     const status = u.status === "active" ? "suspended" : "active";
-    await adminApi.patch(`/users/${u.id}/status`, { status });
-    await load();
+    try {
+      await adminApi.patch(`/users/${u.id}/status`, { status });
+      await load();
+      toast.success(
+        status === "suspended"
+          ? `${u.username} suspended.`
+          : `${u.username} reinstated.`,
+      );
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to change the account status.",
+      );
+    }
   };
 
   const remove = async (u) => {
     if (!confirm(`Delete ${u.username}? This cannot be undone.`)) return;
-    await adminApi.delete(`/users/${u.id}`);
-    await load();
+    try {
+      await adminApi.delete(`/users/${u.id}`);
+      await load();
+      toast.success(`${u.username} deleted.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete the user.");
+    }
   };
 
   if (loading) {

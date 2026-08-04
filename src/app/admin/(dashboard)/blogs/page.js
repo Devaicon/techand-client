@@ -6,6 +6,7 @@ import {
   Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
+import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
 
 const STATUS_FILTERS = [
@@ -18,6 +19,7 @@ const formatDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—";
 
 export default function BlogsPage() {
+  const toast = useToast();
   const { can } = useAdminAuth();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +60,7 @@ export default function BlogsPage() {
       });
       patchLocal(data.data.blog);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update.");
+      toast.error(err.response?.data?.message || "Failed to update.");
     } finally {
       setBusyId(null);
     }
@@ -71,7 +73,7 @@ export default function BlogsPage() {
       const { data } = await adminApi.patch(`/blogs/${blog.id}/status`, { status: next });
       patchLocal(data.data.blog);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to change status.");
+      toast.error(err.response?.data?.message || "Failed to change status.");
     } finally {
       setBusyId(null);
     }
@@ -84,7 +86,7 @@ export default function BlogsPage() {
       await adminApi.delete(`/blogs/${blog.id}`);
       setBlogs((bs) => bs.filter((b) => b.id !== blog.id));
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete.");
+      toast.error(err.response?.data?.message || "Failed to delete.");
     } finally {
       setBusyId(null);
     }
@@ -96,7 +98,9 @@ export default function BlogsPage() {
       const { data } = await adminApi.get(`/blogs/${blog.id}/preview-link`);
       window.open(data.data.url, "_blank", "noopener,noreferrer");
     } catch (err) {
-      setError(err.response?.data?.message || "Could not build a preview link.");
+      toast.error(
+        err.response?.data?.message || "Could not build a preview link.",
+      );
     } finally {
       setBusyId(null);
     }
