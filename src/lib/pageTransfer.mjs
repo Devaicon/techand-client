@@ -12,6 +12,11 @@
 // The upshot that matters: an imported block goes through `blocks.parseProps`
 // like any other, so a file that has been hand-edited into nonsense is rejected
 // field by field rather than trusted because it arrived as a "page export".
+//
+// `.mjs`, like the other lib modules with tests beside them: it is what lets
+// `node --test` import this file directly, with no bundler in the way. The two
+// functions that touch `document` and the network only do so inside their
+// bodies, so importing the module outside a browser is safe.
 
 // Stamped into every file and checked on the way back in. A user who picks the
 // wrong .json from their downloads folder should be told that, rather than

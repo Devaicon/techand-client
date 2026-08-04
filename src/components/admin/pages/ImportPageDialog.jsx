@@ -13,7 +13,7 @@ import {
   importPage,
   parsePageExport,
   splitByKnownType,
-} from "@/lib/pageTransfer";
+} from "@/lib/pageTransfer.mjs";
 
 /**
  * Import a page from a `.page.json` file, as a new draft page.
@@ -161,8 +161,8 @@ export default function ImportPageDialog({ existingSlugs, onImported, onClose })
                   Choose a file, or drop one here
                 </span>
                 <span className="text-xs text-gray-500">
-                  The <code>.page.json</code> file an editor's Export button
-                  writes
+                  The <code>.page.json</code> file a page editor&rsquo;s Export
+                  button writes
                 </span>
               </button>
 

@@ -22,7 +22,7 @@ import {
   Trash2,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
-import { downloadPageExport } from "@/lib/pageTransfer";
+import { downloadPageExport } from "@/lib/pageTransfer.mjs";
 import useAutoSave from "@/hooks/useAutoSave";
 import AutoSaveStatus, {
   AutoSaveToggle,

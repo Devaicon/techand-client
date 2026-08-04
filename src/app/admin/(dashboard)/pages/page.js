@@ -21,7 +21,7 @@ import {
   Upload,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
-import { downloadPageExport } from "@/lib/pageTransfer";
+import { downloadPageExport } from "@/lib/pageTransfer.mjs";
 import ImportPageDialog from "@/components/admin/pages/ImportPageDialog";
 import { useToast } from "@/components/admin/Toast";
 import { useContextMenu } from "@/components/admin/ContextMenu";
