@@ -5,6 +5,7 @@ import {
   Loader2, Shield, Ban, CheckCircle2, Trash2, SlidersHorizontal, KeyRound,
   Pencil, Check, X, UserPlus, Mail, RefreshCw, XCircle,
 } from "lucide-react";
+import { AnimatePresence } from "motion/react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
@@ -292,15 +293,21 @@ export default function UsersPage() {
         </table>
       </div>
 
-      {inviting && (
-        <InviteMemberDialog
-          onClose={() => setInviting(false)}
-          onSent={(email) => {
-            toast.success(`Invitation sent to ${email}.`);
-            load();
-          }}
-        />
-      )}
+      {/* `AnimatePresence` so dismissing the dialog fades it out instead of
+          having it vanish — an `exit` prop alone does nothing once React has
+          already removed the element. */}
+      <AnimatePresence>
+        {inviting && (
+          <InviteMemberDialog
+            key="invite"
+            onClose={() => setInviting(false)}
+            onSent={(email) => {
+              toast.success(`Invitation sent to ${email}.`);
+              load();
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {editing && (
         <PermissionEditor

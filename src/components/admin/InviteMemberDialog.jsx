@@ -4,7 +4,9 @@ import { useState } from "react";
 import {
   Eye, Loader2, Mail, PenLine, Send, ShieldCheck, X,
 } from "lucide-react";
+import { motion } from "motion/react";
 import adminApi from "@/lib/adminApi";
+import { useOverlayMotion } from "@/components/motion";
 
 // What each role actually means, in the terms someone choosing one thinks in.
 // The role names alone are not self-explanatory — "editor" in particular sounds
@@ -42,6 +44,9 @@ export default function InviteMemberDialog({ onClose, onSent }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+  const backdrop = useOverlayMotion("backdrop");
+  const dialog = useOverlayMotion("modal");
+
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -58,13 +63,19 @@ export default function InviteMemberDialog({ onClose, onSent }) {
   };
 
   return (
-    <div
+    // As in ImportPageDialog: the backdrop fades on its own track and the panel
+    // rises and scales inside it, so it does not read as painted on the sheet.
+    <motion.div
+      {...backdrop}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="invite-title"
     >
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
+      <motion.div
+        {...dialog}
+        className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+      >
         <div className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-6 py-5">
           <div className="flex items-center gap-3">
             <span className="inline-flex rounded-xl bg-[#EEF0FA] p-2.5 text-[#37469E]">
@@ -194,7 +205,7 @@ export default function InviteMemberDialog({ onClose, onSent }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

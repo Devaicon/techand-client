@@ -283,13 +283,19 @@ export default function AdminSidebar() {
       >
         {collapsed ? (
           <div className="flex justify-center px-2 py-6">
+            {/* Sized by width, not height. The wordmark is 2.55:1, so in a
+                4.5rem rail the width is the binding constraint: `h-8` computed
+                an 82px width for a 56px box, and Tailwind's `img { max-width:
+                100% }` took the difference out of the letters rather than the
+                height. Declaring 40x40 for a 1030x403 file compounded it with a
+                square pre-load ratio. */}
             <Image
               src="/techand-logo.png"
               alt="Tech& Admin"
-              width={40}
-              height={40}
+              width={112}
+              height={44}
               priority
-              className="h-8 w-auto"
+              className="h-auto w-14"
             />
           </div>
         ) : (
