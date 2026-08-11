@@ -383,13 +383,16 @@ export default function PagesListPage() {
         )}
       </Reveal>
 
-      {importing && (
-        <ImportPageDialog
-          existingSlugs={pages.map((p) => p.slug)}
-          onImported={onImported}
-          onClose={() => setImporting(false)}
-        />
-      )}
+      <AnimatePresence>
+        {importing && (
+          <ImportPageDialog
+            key="import"
+            existingSlugs={pages.map((p) => p.slug)}
+            onImported={onImported}
+            onClose={() => setImporting(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {pages.length > 0 && (
         <Stagger className="mb-5 grid gap-3 sm:grid-cols-3" delay={0.06}>

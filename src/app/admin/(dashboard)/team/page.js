@@ -1,16 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Mail, RefreshCw, XCircle, Send } from "lucide-react";
+import { motion } from "motion/react";
+import { Mail, RefreshCw, XCircle, Send } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "../../AdminAuthProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
 import UserAvatar, { displayName } from "@/components/admin/UserAvatar";
+import {
+  Reveal,
+  Skeleton,
+  SkeletonRows,
+  Stagger,
+  StaggerItem,
+  useInteraction,
+} from "@/components/motion";
 
 const ROLES = ["admin", "editor", "viewer"];
 
 export default function TeamPage() {
   const { can } = useAdminAuth();
+  const press = useInteraction("button");
+  const iconPress = useInteraction("icon");
   const [members, setMembers] = useState([]);
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,15 +62,25 @@ export default function TeamPage() {
   const revoke = async (id) => { await adminApi.delete(`/team/invites/${id}`); await load(); };
 
   if (loading) {
-    return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#37469E]" /></div>;
+    return (
+      <div className="space-y-8" aria-busy="true" aria-label="Loading team">
+        <Skeleton className="h-7 w-24" />
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <Skeleton className="mb-4 h-5 w-40" />
+          <SkeletonRows count={4} />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Team</h1>
+    <Stagger className="space-y-8">
+      <StaggerItem as="h1" className="text-2xl font-bold text-gray-900">
+        Team
+      </StaggerItem>
 
       {can("team:invite") && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <StaggerItem className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Invite a member</h2>
           <form onSubmit={invite} className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[220px]">
@@ -77,22 +98,37 @@ export default function TeamPage() {
                 {ROLES.map((r) => <option key={r} value={r}>{labelRole(r)}</option>)}
               </select>
             </div>
-            <button type="submit" className="flex items-center gap-2 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]">
+            <motion.button {...press} type="submit" className="flex items-center gap-2 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85]">
               <Send size={15} />Send invite
-            </button>
+            </motion.button>
           </form>
+          {/* The result of an invite is the one thing on this page worth
+              announcing with movement — it appears in response to an action
+              rather than on load. Keyed on the text so a second invite replays
+              the entrance instead of silently swapping the words. */}
           {msg && (
-            <p className={`mt-3 text-sm ${msg.ok ? "text-emerald-600" : "text-rose-600"}`}>{msg.text}</p>
+            <Reveal
+              key={msg.text}
+              as="p"
+              variant="fall"
+              className={`mt-3 text-sm ${msg.ok ? "text-emerald-600" : "text-rose-600"}`}
+            >
+              {msg.text}
+            </Reveal>
           )}
-        </div>
+        </StaggerItem>
       )}
 
       {can("team:manage") && invites.length > 0 && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <StaggerItem className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Pending invites</h2>
-          <ul className="divide-y divide-gray-100">
+          {/* A nested cascade. The inner `Stagger` sets its own initial/animate,
+              so it starts an independent tree rather than inheriting the outer
+              one — which is what stops these rows waiting on the card above
+              them to finish. */}
+          <Stagger as="ul" className="divide-y divide-gray-100">
             {invites.map((inv) => (
-              <li key={inv._id} className="flex items-center justify-between py-3">
+              <StaggerItem as="li" key={inv._id} className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-3">
                   <Mail size={16} className="text-gray-400" />
                   <div>
@@ -101,20 +137,20 @@ export default function TeamPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => resend(inv._id)} title="Resend" className="text-gray-400 hover:text-[#37469E]"><RefreshCw size={16} /></button>
-                  <button onClick={() => revoke(inv._id)} title="Revoke" className="text-gray-400 hover:text-rose-600"><XCircle size={16} /></button>
+                  <motion.button {...iconPress} onClick={() => resend(inv._id)} title="Resend" className="text-gray-400 transition-colors hover:text-[#37469E]"><RefreshCw size={16} /></motion.button>
+                  <motion.button {...iconPress} onClick={() => revoke(inv._id)} title="Revoke" className="text-gray-400 transition-colors hover:text-rose-600"><XCircle size={16} /></motion.button>
                 </div>
-              </li>
+              </StaggerItem>
             ))}
-          </ul>
-        </div>
+          </Stagger>
+        </StaggerItem>
       )}
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+      <StaggerItem className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Members ({members.length})</h2>
-        <ul className="divide-y divide-gray-100">
+        <Stagger as="ul" className="divide-y divide-gray-100">
           {members.map((m) => (
-            <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+            <StaggerItem as="li" key={m.id} className="flex items-center justify-between gap-3 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <UserAvatar user={m} />
                 <div className="min-w-0">
@@ -130,10 +166,10 @@ export default function TeamPage() {
                 </div>
               </div>
               <span className="rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">{labelRole(m.role)}</span>
-            </li>
+            </StaggerItem>
           ))}
-        </ul>
-      </div>
-    </div>
+        </Stagger>
+      </StaggerItem>
+    </Stagger>
   );
 }

@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { useOverlayMotion } from "@/components/motion";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -91,6 +93,8 @@ function ToastRow({ toast, onDismiss }) {
   const variant = VARIANTS[toast.variant] || VARIANTS.info;
   const Glyph = variant.icon;
 
+  const enter = useOverlayMotion("toast");
+
   const [paused, setPaused] = useState(false);
   // Time is tracked rather than the timer restarted on hover, so a toast the
   // author brushed past at 3.4 of 3.5 seconds does not get a full new life.
@@ -110,7 +114,12 @@ function ToastRow({ toast, onDismiss }) {
   }, [paused, variant.duration, toast.id, onDismiss]);
 
   return (
-    <li
+    <motion.li
+      {...enter}
+      // `layout` is what makes the rest of the stack glide up into the gap when
+      // one toast is dismissed from the middle of it. Without it the survivors
+      // jump, which is more noticeable than the dismissal itself.
+      layout
       // `alert` interrupts a screen reader; `status` waits for a pause. A
       // failure is worth interrupting for, a confirmation is not.
       role={toast.variant === "error" ? "alert" : "status"}
@@ -118,7 +127,7 @@ function ToastRow({ toast, onDismiss }) {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className={`pointer-events-auto flex w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border bg-white shadow-lg ${variant.ring} animate-[toast-in_160ms_ease-out]`}
+      className={`pointer-events-auto flex w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border bg-white shadow-lg ${variant.ring}`}
     >
       <span aria-hidden="true" className={`w-1 shrink-0 ${variant.accent}`} />
 
@@ -166,7 +175,7 @@ function ToastRow({ toast, onDismiss }) {
           <X size={13} />
         </button>
       </div>
-    </li>
+    </motion.li>
   );
 }
 
@@ -179,6 +188,7 @@ export function ToastProvider({ children }) {
   // during SSR. `createPortal` is unreachable there by construction rather than
   // by a guard — the same argument `ContextMenuProvider` makes.
   const [toasts, setToasts] = useState([]);
+  const [everPushed, setEverPushed] = useState(false);
 
   const dismiss = useCallback((id) => {
     setToasts((list) => list.filter((t) => t.id !== id));
@@ -186,6 +196,7 @@ export function ToastProvider({ children }) {
 
   const push = useCallback((variant, message, options = {}) => {
     const id = `toast-${(seq += 1)}`;
+    setEverPushed(true);
     setToasts((list) => {
       const next = [...list, { id, variant, message, ...options }];
       // A queue that grows without limit is a wall the author cannot see past.
@@ -234,25 +245,30 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      {toasts.length > 0 &&
+      {/* The list is now rendered whenever anything has ever been pushed, not
+          only while it is non-empty: `AnimatePresence` has to stay mounted to
+          play the last toast out. It holds no toasts and takes no space when
+          idle, and `everPushed` starts false, so the portal is still off the
+          server render for the reason described above. */}
+      {everPushed &&
         createPortal(
-          <>
-            <style>{`
-              @keyframes toast-in {
-                from { opacity: 0; transform: translateY(6px) scale(0.98); }
-                to   { opacity: 1; transform: none; }
-              }
-            `}</style>
-            <ul
-              aria-live="polite"
-              aria-label="Notifications"
-              className="pointer-events-none fixed bottom-4 right-4 z-[110] flex flex-col gap-2"
-            >
+          <ul
+            aria-live="polite"
+            aria-label="Notifications"
+            className="pointer-events-none fixed bottom-4 right-4 z-[110] flex flex-col gap-2"
+          >
+            {/* The hand-written `toast-in` keyframes this replaced could only
+                animate arrivals — a dismissed toast vanished on the frame it
+                was removed. */}
+            {/* No `initial={false}` — this list mounts at the same moment the
+                first toast is pushed, so suppressing initial animations would
+                cost that toast its entrance. */}
+            <AnimatePresence>
               {toasts.map((toast) => (
                 <ToastRow key={toast.id} toast={toast} onDismiss={dismiss} />
               ))}
-            </ul>
-          </>,
+            </AnimatePresence>
+          </ul>,
           document.body,
         )}
     </ToastContext.Provider>

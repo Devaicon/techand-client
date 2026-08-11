@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { GripHorizontal, Minus, X } from "lucide-react";
+import { useInteraction, useOverlayMotion } from "@/components/motion";
 
 /**
  * A draggable, resizable window that floats over the editor canvas.
@@ -107,6 +109,9 @@ export default function FloatingPanel({
   );
   const [minimised, setMinimised] = useState(() => Boolean(saved?.minimised));
   const [dragMode, setDragMode] = useState(null);
+
+  const enter = useOverlayMotion("panel");
+  const iconPress = useInteraction("icon");
 
   // Written on a timer, not on every frame. A drag produces a rect change per
   // pointermove, and `localStorage.setItem` is synchronous — persisting each one
@@ -242,7 +247,14 @@ export default function FloatingPanel({
         />
       )}
 
-      <section
+      <motion.section
+        {...enter}
+        // Only opacity and scale are animated. Position is `left`/`top` driven
+        // by the pointer, and height changes when the panel is minimised —
+        // handing either to Motion would put an animation between the author's
+        // hand and the window they are dragging, which is the one place lag is
+        // unforgivable. The entrance is a transform, so it settles to identity
+        // and never touches the drag maths.
         aria-label={title}
         className="pointer-events-auto fixed z-30 flex flex-col rounded-xl border border-gray-200 bg-white shadow-2xl"
         style={{
@@ -273,24 +285,26 @@ export default function FloatingPanel({
           )}
         </span>
 
-        <button
+        <motion.button
+          {...iconPress}
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
           onClick={() => setMinimised((v) => !v)}
           aria-label={minimised ? "Expand panel" : "Minimise panel"}
-          className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
         >
           <Minus size={13} />
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+          {...iconPress}
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
           onClick={onClose}
           aria-label="Close panel"
-          className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
         >
           <X size={13} />
-        </button>
+        </motion.button>
       </header>
 
       {!minimised && (
@@ -318,7 +332,7 @@ export default function FloatingPanel({
       {!minimised && (
         <span className="pointer-events-none absolute bottom-[3px] right-[3px] block h-2 w-2 border-b-2 border-r-2 border-gray-300" />
       )}
-      </section>
+      </motion.section>
     </>
   );
 }

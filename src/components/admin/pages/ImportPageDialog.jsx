@@ -8,7 +8,9 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { motion } from "motion/react";
 import adminApi from "@/lib/adminApi";
+import { useOverlayMotion } from "@/components/motion";
 import {
   importPage,
   parsePageExport,
@@ -37,6 +39,9 @@ export default function ImportPageDialog({ existingSlugs, onImported, onClose })
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
+
+  const backdrop = useOverlayMotion("backdrop");
+  const dialog = useOverlayMotion("modal");
 
   const taken = new Set(existingSlugs || []);
 
@@ -112,8 +117,17 @@ export default function ImportPageDialog({ existingSlugs, onImported, onClose })
   const skipped = staged?.unsupported.length || 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-full w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl">
+    // The backdrop fades on its own track; the dialog rises and scales inside
+    // it. Separating the two is what stops the panel appearing to be painted on
+    // the dim sheet and arriving as one flat rectangle.
+    <motion.div
+      {...backdrop}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    >
+      <motion.div
+        {...dialog}
+        className="max-h-full w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl"
+      >
         <header className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4">
           <div>
             <h2 className="text-base font-bold text-gray-900">Import a page</h2>
@@ -280,7 +294,7 @@ export default function ImportPageDialog({ existingSlugs, onImported, onClose })
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
