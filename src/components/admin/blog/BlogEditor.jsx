@@ -5,12 +5,12 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   Loader2, Save, Send, SendHorizontal, Eye, Star, ChevronDown, ExternalLink,
-  ArrowLeft, Check, Clock, X,
+  ArrowLeft, Check, Clock, X, Images, AlertTriangle, History,
 } from "lucide-react";
 import Link from "next/link";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
-import { usePendingApprovals } from "@/app/admin/PendingApprovalsProvider";
+import { useBlogQueues } from "@/app/admin/BlogQueuesProvider";
 import { statusMeta, timeAgo } from "@/lib/blogStatus";
 import { deriveToc } from "@/lib/deriveToc";
 import { CATEGORIES } from "@/components/insight-page/insightUtils";
@@ -54,6 +54,7 @@ const emptyBlog = {
   author: { name: "", role: "", avatarUrl: "" },
   contentHtml: "", contentDelta: null, toc: [], ctas: [], externalLinks: [],
   faqs: [], isFeatured: false, comingSoon: false, status: "draft", review: {},
+  activity: [],
 };
 
 function Panel({ title, count, children, defaultOpen = false }) {
@@ -97,6 +98,10 @@ function Field({ label, children, hint }) {
 const inputClass =
   "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#37469E] focus:outline-none";
 
+// Populated review/activity references arrive as user objects. Prefers the
+// admin-set name, same as displayName() does everywhere else.
+const personName = (u) => u?.name || u?.username || "";
+
 // Where the post stands in the approval flow, stated in the editor rather than
 // left to the status pill. A rejection in particular is useless as a badge: the
 // author needs the reason, and the reason only exists here.
@@ -104,7 +109,7 @@ function ReviewBanner({ status, review }) {
   if (!review) return null;
 
   if (status === "rejected" && review.decidedAt) {
-    const by = review.decidedBy?.username;
+    const by = personName(review.decidedBy);
     return (
       <div className="mb-4 rounded-lg border border-rose-100 bg-rose-50 p-4">
         <p className="flex items-center gap-1.5 text-sm font-semibold text-rose-800">
@@ -124,14 +129,32 @@ function ReviewBanner({ status, review }) {
     );
   }
 
+  if (status === "pending_images" && review.submittedAt) {
+    const by = personName(review.submittedBy);
+    return (
+      <div className="mb-4 rounded-lg border border-violet-100 bg-violet-50 p-4">
+        <p className="flex items-center gap-1.5 text-sm font-medium text-violet-800">
+          <Images size={15} /> Waiting for images — submitted
+          {by ? ` by ${by}` : ""} {timeAgo(review.submittedAt)}.
+        </p>
+        <p className="mt-1 text-sm text-violet-700">
+          The reviewers have not been told about this post yet. Sending it for
+          approval is what notifies them.
+        </p>
+      </div>
+    );
+  }
+
   if (status === "pending_approval" && review.submittedAt) {
-    const by = review.submittedBy?.username;
+    const by = personName(review.submittedBy);
+    const artworkBy = personName(review.illustratedBy);
     return (
       <div className="mb-4 rounded-lg border border-amber-100 bg-amber-50 p-4">
         <p className="flex items-center gap-1.5 text-sm font-medium text-amber-800">
           <Clock size={15} /> Awaiting approval — submitted
-          {by ? ` by ${by}` : ""} {timeAgo(review.submittedAt)}. Edits made now
-          are what the reviewer will see.
+          {by ? ` by ${by}` : ""} {timeAgo(review.submittedAt)}
+          {artworkBy ? `, artwork by ${artworkBy}` : ""}. Edits made now are what
+          the reviewer will see.
         </p>
       </div>
     );
@@ -140,10 +163,74 @@ function ReviewBanner({ status, review }) {
   return null;
 }
 
+// The post's history. Only rendered once a post has been through a stage, and
+// deliberately placed above the form rather than tucked in a side panel: the
+// artwork stage hands out full edit access, so for a reviewer this is not
+// trivia, it is the thing they are supposed to check before approving.
+function ActivityLog({ activity }) {
+  const [open, setOpen] = useState(false);
+  if (!activity?.length) return null;
+
+  // Newest first for reading, though it is stored oldest-first.
+  const entries = [...activity].reverse();
+  const flagged = entries.filter((e) => e.textChanged).length;
+
+  return (
+    <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-50"
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+          <History size={15} className="text-gray-400" />
+          History
+          <span className="font-normal text-gray-400">
+            ({entries.length} {entries.length === 1 ? "entry" : "entries"})
+          </span>
+        </span>
+        <span className="flex items-center gap-2">
+          {flagged > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+              <AlertTriangle size={11} /> Text edited
+            </span>
+          )}
+          <ChevronDown
+            size={16}
+            className={`text-gray-400 transition-transform ${open ? "" : "-rotate-90"}`}
+          />
+        </span>
+      </button>
+
+      {open && (
+        <ul className="divide-y divide-gray-100 border-t border-gray-100">
+          {entries.map((e, i) => (
+            <li key={i} className="flex flex-wrap items-baseline gap-x-2 px-4 py-2.5 text-sm">
+              <span className="font-medium text-gray-800">
+                {personName(e.by) || "Someone"}
+              </span>
+              <span className="text-gray-600">{e.detail}</span>
+              {e.textChanged && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                  <AlertTriangle size={11} /> text
+                </span>
+              )}
+              <span className="ml-auto whitespace-nowrap text-xs text-gray-400">
+                {timeAgo(e.at)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function BlogEditor({ initial, blogId }) {
   const router = useRouter();
   const { can, user } = useAdminAuth();
-  const { refresh: refreshQueue } = usePendingApprovals();
+  const { refresh: refreshQueue } = useBlogQueues();
 
   const [blog, setBlog] = useState(() => ({
     ...emptyBlog,
@@ -373,11 +460,41 @@ export default function BlogEditor({ initial, blogId }) {
         ...b,
         status: data.data.blog.status,
         review: data.data.blog.review,
+        activity: data.data.blog.activity || b.activity,
       }));
       refreshQueue();
-      setNotice("Sent for approval.");
+      setNotice("Sent for artwork. Reviewers are told once its images are in.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to submit for review.");
+    } finally {
+      setSaving(false);
+      savingRef.current = false;
+    }
+  };
+
+  // Closing the artwork stage — the hop that actually summons the reviewers.
+  // Saves first for the same reason submitting does: what gets reviewed has to
+  // be what is on screen, not whatever was last written to the server.
+  const sendForApproval = async () => {
+    const saved = await save({ silent: true });
+    if (!saved) return;
+
+    setSaving(true);
+    savingRef.current = true;
+    try {
+      const { data } = await adminApi.post(`/blogs/${saved.id}/images-ready`);
+      setBlog((b) => ({
+        ...b,
+        status: data.data.blog.status,
+        review: data.data.blog.review,
+        activity: data.data.blog.activity || b.activity,
+      }));
+      refreshQueue();
+      setNotice("Sent for approval. The reviewers have been notified.");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Failed to send this post for approval.",
+      );
     } finally {
       setSaving(false);
       savingRef.current = false;
@@ -399,6 +516,7 @@ export default function BlogEditor({ initial, blogId }) {
         ...b,
         status: data.data.blog.status,
         review: data.data.blog.review,
+        activity: data.data.blog.activity || b.activity,
       }));
       setRejecting(false);
       setRejectNote("");
@@ -429,14 +547,33 @@ export default function BlogEditor({ initial, blogId }) {
 
   const canPublish = can("blog:publish");
   const canApprove = can("blog:approve");
-  const canSave = blogId ? can("blog:update") : can("blog:create");
+  const canIllustrate = can("blog:illustrate");
   const isPublished = blog.status === "published";
+  const isNeedsImages = blog.status === "pending_images";
   const isPending = blog.status === "pending_approval";
   const isRejected = blog.status === "rejected";
   const status = statusMeta(blog.status);
+
+  // An illustrator has no blog:update, so their write access is exactly the
+  // window the server allows: this post, while it is in the artwork stage. The
+  // form is left fully editable inside it — the permission really is that wide,
+  // and a UI that pretended otherwise would only be decorative, since the
+  // server would still accept whatever it sent.
+  const canEditThisPost = blogId
+    ? can("blog:update") || (canIllustrate && isNeedsImages)
+    : can("blog:create");
+  const canSave = canEditThisPost;
+
   // A post that has never been saved has nothing to submit — the button appears
   // once there is a row on the server to hand over.
-  const canSubmit = canSave && Boolean(savedIdRef.current) && !isPublished;
+  const canSubmit =
+    can(blogId ? "blog:update" : "blog:create") &&
+    Boolean(savedIdRef.current) &&
+    !isPublished &&
+    !isNeedsImages;
+  // Reviewers can close the artwork stage too, so a team with nobody in that
+  // seat is never stuck behind it.
+  const canSendForApproval = isNeedsImages && (canIllustrate || canApprove);
 
   return (
     <div>
@@ -513,10 +650,34 @@ export default function BlogEditor({ initial, blogId }) {
             {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
             Save
           </button>
-          {/* One slot, three audiences. A reviewer looking at a queued post
-              decides it here; a publisher flips it live; everyone else hands it
-              to the queue. */}
-          {isPending && canApprove ? (
+          {/* One slot, four audiences, in pipeline order. A post in the artwork
+              stage gets handed on; a reviewer looking at a queued post decides
+              it here; a publisher flips it live; everyone else hands it to the
+              queue.
+
+              Artwork is tested first so that an admin — who holds every one of
+              these permissions — is offered the action this post is actually
+              waiting on rather than the one their role could take. */}
+          {canSendForApproval ? (
+            <button
+              type="button"
+              onClick={sendForApproval}
+              disabled={saving}
+              title="Hand this post to the reviewers"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-60"
+            >
+              {saving ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Images size={15} />
+              )}
+              Send for approval
+            </button>
+          ) : isNeedsImages ? (
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+              <Images size={15} /> Waiting for images
+            </span>
+          ) : isPending && canApprove ? (
             <>
               <button
                 type="button"
@@ -615,6 +776,7 @@ export default function BlogEditor({ initial, blogId }) {
       )}
 
       <ReviewBanner status={blog.status} review={blog.review} />
+      <ActivityLog activity={blog.activity} />
 
       {error && (
         <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>

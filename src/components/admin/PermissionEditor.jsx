@@ -8,11 +8,27 @@ export const ALL_PERMISSIONS = [
   "users:read", "users:create", "users:update", "users:delete",
   "team:invite", "team:manage",
   "blog:read", "blog:create", "blog:update", "blog:delete", "blog:publish",
-  "blog:approve",
+  "blog:approve", "blog:illustrate",
   "media:upload",
   "pages:read", "pages:manage",
   "navbar:manage",
 ];
+
+// What a permission actually lets someone do. The toggle labels are derived
+// from the string ("blog:illustrate" → "ILLUSTRATE"), which is fine for the
+// obvious ones and useless for the rest — nobody can tell APPROVE from PUBLISH,
+// or guess that ILLUSTRATE hands out full edit access to a post in the artwork
+// stage. Anything not listed here renders with its label alone.
+export const PERMISSION_HINTS = {
+  "blog:publish": "Put a post live immediately, with no review.",
+  "blog:approve":
+    "Work the approval queue — approve or send back posts whose artwork is done.",
+  "blog:illustrate":
+    "Work the artwork queue. Full edit access to a post while it waits for images, and every save is recorded in its history.",
+  "team:invite": "Send invitations.",
+  "team:manage": "See pending invitations, and change roles and permissions.",
+  "users:update": "Rename accounts, suspend them, and reset their passwords.",
+};
 
 // Group permissions by their resource prefix ("users:read" -> "users"),
 // preserving first-appearance order, for the accordion sections.
@@ -29,7 +45,7 @@ const PERMISSION_GROUPS = ALL_PERMISSIONS.reduce((groups, p) => {
 // a missing entry labels a perfectly standard admin as "(CUSTOM)".
 export const ROLE_PRESETS = {
   super_admin: ["*"],
-  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","blog:approve","media:upload","pages:read","pages:manage","navbar:manage"],
+  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","blog:approve","blog:illustrate","media:upload","pages:read","pages:manage","navbar:manage"],
   editor: ["users:read","blog:read","blog:create","blog:update","media:upload","pages:read"],
   viewer: ["users:read","blog:read","pages:read"],
 };
@@ -176,12 +192,19 @@ export default function PermissionEditor({
                         return (
                           <div
                             key={p}
-                            className="flex items-center justify-between rounded-lg py-1.5"
+                            className="flex items-start justify-between gap-3 rounded-lg py-1.5"
                           >
-                            <span className="text-sm font-medium text-gray-700">
-                              {p.split(":")[1].toUpperCase()}
+                            <span className="min-w-0">
+                              <span className="block text-sm font-medium text-gray-700">
+                                {p.split(":")[1].toUpperCase()}
+                              </span>
+                              {PERMISSION_HINTS[p] && (
+                                <span className="mt-0.5 block text-xs leading-relaxed text-gray-500">
+                                  {PERMISSION_HINTS[p]}
+                                </span>
+                              )}
                             </span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex shrink-0 items-center gap-2 pt-0.5">
                               {saving && (
                                 <Loader2 size={14} className="animate-spin text-gray-400" />
                               )}

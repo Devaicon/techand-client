@@ -3,39 +3,57 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Loader2, Shield, Ban, CheckCircle2, Trash2, SlidersHorizontal, KeyRound,
-  Pencil, Check, X,
+  Pencil, Check, X, UserPlus, Mail, RefreshCw, XCircle,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
 import PermissionEditor, { ROLE_PRESETS, labelRole } from "@/components/admin/PermissionEditor";
 import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
+import InviteMemberDialog from "@/components/admin/InviteMemberDialog";
 import UserAvatar from "@/components/admin/UserAvatar";
+import { formatDate } from "@/lib/blogStatus";
 
 const sameSet = (a, b) =>
   (a || []).length === (b || []).length &&
   [...(a || [])].sort().join() === [...(b || [])].sort().join();
 
+// Everyone with access to the panel, and everyone on their way in.
+//
+// This page absorbed the old /admin/team, which listed the same members
+// read-only and owned invitations. Two pages for one subject meant an admin
+// looking at a person had to guess which of them held the control they wanted —
+// and the members list on Team was a strictly worse copy of the table here.
 export default function UsersPage() {
   const { can } = useAdminAuth();
   const toast = useToast();
   const [users, setUsers] = useState([]);
+  const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [resetting, setResetting] = useState(null);
+  const [inviting, setInviting] = useState(false);
   const [error, setError] = useState("");
+
+  const canManageInvites = can("team:manage");
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await adminApi.get("/users");
       setUsers(data.data.users);
+      // Listing pending invitations is team:manage; sending one is team:invite.
+      // Someone who can only send them still gets the button, just not the list.
+      if (canManageInvites) {
+        const i = await adminApi.get("/team/invites");
+        setInvites(i.data.data.invites);
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load users");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [canManageInvites]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -109,14 +127,97 @@ export default function UsersPage() {
     }
   };
 
+  const resendInvite = async (inv) => {
+    try {
+      await adminApi.post(`/team/invites/${inv.id}/resend`);
+      await load();
+      toast.success(`Invitation resent to ${inv.email}.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to resend.");
+    }
+  };
+
+  const revokeInvite = async (inv) => {
+    if (!confirm(`Revoke the invitation to ${inv.email}?`)) return;
+    try {
+      await adminApi.delete(`/team/invites/${inv.id}`);
+      setInvites((is) => is.filter((i) => i.id !== inv.id));
+      toast.success(`Invitation to ${inv.email} revoked.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to revoke.");
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#37469E]" /></div>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Users</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            {users.length} member{users.length === 1 ? "" : "s"}
+            {invites.length > 0 && `, ${invites.length} invitation${invites.length === 1 ? "" : "s"} pending`}
+          </p>
+        </div>
+        {can("team:invite") && (
+          <button
+            type="button"
+            onClick={() => setInviting(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]"
+          >
+            <UserPlus size={16} /> Invite member
+          </button>
+        )}
+      </div>
+
       {error && <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+
+      {/* Above the table on purpose: an invitation is the only thing on this
+          page with a deadline on it, and it disappears from view the moment it
+          is accepted. */}
+      {canManageInvites && invites.length > 0 && (
+        <section className="mb-6 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <h2 className="border-b border-gray-100 bg-gray-50 px-6 py-3 text-xs font-semibold uppercase text-gray-500">
+            Pending invitations
+          </h2>
+          <ul className="divide-y divide-gray-100">
+            {invites.map((inv) => (
+              <li key={inv.id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="inline-flex rounded-lg bg-amber-50 p-2 text-amber-600">
+                    <Mail size={15} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-gray-900">{inv.email}</p>
+                    <p className="text-xs text-gray-500">
+                      {labelRole(inv.role)} · expires {formatDate(inv.expiresAt)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    onClick={() => resendInvite(inv)}
+                    title="Resend the invitation"
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-[#37469E]"
+                  >
+                    <RefreshCw size={16} />
+                  </button>
+                  <button
+                    onClick={() => revokeInvite(inv)}
+                    title="Revoke the invitation"
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-50 hover:text-rose-600"
+                  >
+                    <XCircle size={16} />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-100 text-sm">
@@ -190,6 +291,16 @@ export default function UsersPage() {
           </tbody>
         </table>
       </div>
+
+      {inviting && (
+        <InviteMemberDialog
+          onClose={() => setInviting(false)}
+          onSent={(email) => {
+            toast.success(`Invitation sent to ${email}.`);
+            load();
+          }}
+        />
+      )}
 
       {editing && (
         <PermissionEditor

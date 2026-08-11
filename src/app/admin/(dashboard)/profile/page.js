@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Info, KeyRound, Loader2, Save, Shield } from "lucide-react";
+import { Check, Info, KeyRound, Loader2, Lock, Save, Shield } from "lucide-react";
 import adminApi, { setTokens } from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
@@ -50,9 +50,63 @@ function Field({ label, hint, children, htmlFor }) {
 // The date input wants YYYY-MM-DD; the API sends an ISO timestamp.
 const toDateInput = (iso) => (iso ? String(iso).slice(0, 10) : "");
 
+// The switches, each paired with the permission that makes it relevant. Mirrors
+// `notifications` on the User model — a key here with no counterpart there is
+// silently dropped by the service's allowlist.
+const NOTIFICATION_SWITCHES = [
+  {
+    key: "blogNeedsImages",
+    perm: "blog:illustrate",
+    label: "An insight needs images",
+    description:
+      "Sent when someone submits a post and it lands in the artwork queue.",
+  },
+  {
+    key: "blogSubmitted",
+    perm: "blog:approve",
+    label: "An insight needs approval",
+    description:
+      "Sent once a post's artwork is finished and it is ready for you to review.",
+  },
+  {
+    key: "blogDecision",
+    perm: null,
+    label: "A decision on something you wrote",
+    description:
+      "Sent when a reviewer approves your post or sends it back with changes.",
+  },
+];
+
+function ToggleRow({ label, description, checked, onChange }) {
+  return (
+    <div className="flex items-start justify-between gap-4 rounded-xl border border-gray-100 p-4">
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-gray-800">{label}</p>
+        <p className="mt-0.5 text-xs text-gray-500">{description}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={`relative mt-0.5 inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+          checked ? "bg-[#37469E]" : "bg-gray-300"
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+            checked ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const toast = useToast();
-  const { refresh: refreshSession } = useAdminAuth();
+  const { refresh: refreshSession, can } = useAdminAuth();
 
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState(null);
@@ -96,6 +150,7 @@ export default function ProfilePage() {
         department: form.department,
         bio: form.bio,
         avatar: form.avatar,
+        notifications: form.notifications,
       });
       setProfile(data.data.user);
       setForm({ ...data.data.user, dob: toDateInput(data.data.user.dob) });
@@ -299,6 +354,38 @@ export default function ProfilePage() {
               ))}
             </datalist>
           </Field>
+        </Card>
+
+        <Card
+          title="Email notifications"
+          description="Which workflow emails we send you. Everything else in the panel still shows up whether or not you get the email."
+        >
+          {/* Only shown to people the email could ever reach. A viewer with no
+              blog permissions being offered a switch for "posts awaiting your
+              approval" would be describing a job they do not have. */}
+          {NOTIFICATION_SWITCHES.filter((n) => !n.perm || can(n.perm)).map((n) => (
+            <ToggleRow
+              key={n.key}
+              label={n.label}
+              description={n.description}
+              checked={form.notifications?.[n.key] !== false}
+              onChange={(checked) =>
+                set({
+                  notifications: { ...form.notifications, [n.key]: checked },
+                })
+              }
+            />
+          ))}
+
+          {/* Says the quiet part out loud. Someone who switches everything off
+              here and later misses a reset link would otherwise reasonably
+              assume this page was the reason. */}
+          <p className="flex items-start gap-2 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs text-gray-500">
+            <Lock size={14} className="mt-px shrink-0" />
+            Password resets, invitations and sign-in codes are always sent. They
+            are how you get back into your account, so they cannot be switched
+            off.
+          </p>
         </Card>
 
         <div className="flex items-center gap-3">

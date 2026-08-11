@@ -1,15 +1,23 @@
-// The four states an insight can hold, in one place.
+// The five states an insight can hold, in one place.
 //
 // A blog's status is rendered as a badge in the list, in the editor header and
-// in the approval queue. Keeping the label and the palette here is what stops
-// the same post reading "PENDING" in one view and "IN REVIEW" in another — and
-// it is the reason `draft` moved off amber: amber now means "someone is waiting
-// on you", which a draft nobody has submitted is not.
+// in both work queues. Keeping the label and the palette here is what stops the
+// same post reading "PENDING" in one view and "IN REVIEW" in another — and it
+// is the reason `draft` moved off amber: amber means "someone is waiting on
+// you", which a draft nobody has submitted is not.
+//
+// The two waiting states are coloured apart on purpose. They are equally
+// "in progress" but they are different people's problem, and someone scanning
+// the list should be able to tell whose without reading the label.
 
 export const BLOG_STATUS = {
   draft: {
     label: "Draft",
     badge: "bg-gray-100 text-gray-600",
+  },
+  pending_images: {
+    label: "Needs images",
+    badge: "bg-violet-50 text-violet-700",
   },
   pending_approval: {
     label: "In review",

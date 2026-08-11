@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, UserPlus, LogOut, Menu, X, ExternalLink, FileText, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, LogOut, Menu, X, ExternalLink, FileText, ShieldCheck, Images } from "lucide-react";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
-import { usePendingApprovals } from "@/app/admin/PendingApprovalsProvider";
+import { useBlogQueues } from "@/app/admin/BlogQueuesProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
 import UserAvatar, { displayName } from "@/components/admin/UserAvatar";
 
@@ -29,16 +29,20 @@ function Logo({ className = "" }) {
 const websiteHrefFor = (role) =>
   ["editor", "viewer"].includes(role) ? "/insights" : "/";
 
+// `badge` asks SidebarInner to hang a queue count off the entry — a queue
+// nobody can see the depth of is a queue that gets forgotten. Artwork sits
+// directly above Approvals because that is the order a post passes through them.
+//
+// Users covers what used to be two entries: it holds the member table AND
+// invitations, which were never really separate jobs.
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, perm: null },
   { href: "/admin/blogs", label: "Insights", icon: FileText, perm: "blog:read" },
-  // `badge: "approvals"` asks SidebarInner to hang the pending count off this
-  // entry — a queue nobody can see the depth of is a queue that gets forgotten.
+  { href: "/admin/artwork", label: "Artwork", icon: Images, perm: "blog:illustrate", badge: "artwork" },
   { href: "/admin/approvals", label: "Approvals", icon: ShieldCheck, perm: "blog:approve", badge: "approvals" },
   { href: "/admin/pages", label: "Pages", icon: Files, perm: "pages:read" },
   { href: "/admin/navbar", label: "Navigation", icon: MenuIcon, perm: "navbar:manage" },
   { href: "/admin/users", label: "Users", icon: Users, perm: "users:read" },
-  { href: "/admin/team", label: "Team", icon: UserPlus, perm: "team:manage" },
 ];
 
 // Remembered across sessions: an author who works mostly in the page editor
@@ -50,11 +54,16 @@ const COLLAPSE_KEY = "techand.admin.sidebarCollapsed";
 // `collapsed` renders the icon-only rail; the mobile drawer never collapses,
 // since it is already an explicit overlay.
 function SidebarInner({
-  items, pathname, user, logout, onNavigate, collapsed, pendingCount,
+  items, pathname, user, logout, onNavigate, collapsed, counts,
 }) {
   const websiteHref = websiteHrefFor(user?.role);
-  const countFor = (item) =>
-    item.badge === "approvals" && pendingCount > 0 ? pendingCount : 0;
+  const countFor = (item) => (item.badge ? counts[item.badge] || 0 : 0);
+  // Each stage keeps the colour it wears everywhere else, so a glance at the
+  // rail says which stage is backed up without reading the labels.
+  const badgeTone = (item) =>
+    item.badge === "artwork"
+      ? { dot: "bg-violet-500", pill: "bg-violet-100 text-violet-700" }
+      : { dot: "bg-amber-500", pill: "bg-amber-100 text-amber-700" };
 
   if (collapsed) {
     return (
@@ -81,7 +90,9 @@ function SidebarInner({
               >
                 <Icon size={18} />
                 {count > 0 && (
-                  <span className="absolute right-1 top-1 min-w-[1.1rem] rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-[1.1rem] text-white">
+                  <span
+                    className={`absolute right-1 top-1 min-w-[1.1rem] rounded-full px-1 text-[10px] font-bold leading-[1.1rem] text-white ${badgeTone(item).dot}`}
+                  >
                     {count > 9 ? "9+" : count}
                   </span>
                 )}
@@ -155,7 +166,7 @@ function SidebarInner({
                 <span
                   aria-label={`${count} waiting`}
                   className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${
-                    active ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"
+                    active ? "bg-white/20 text-white" : badgeTone(item).pill
                   }`}
                 >
                   {count}
@@ -211,7 +222,8 @@ function SidebarInner({
 export default function AdminSidebar() {
   const pathname = usePathname();
   const { user, can, logout } = useAdminAuth();
-  const { count: pendingCount } = usePendingApprovals();
+  const { approvalCount, artworkCount } = useBlogQueues();
+  const counts = { approvals: approvalCount, artwork: artworkCount };
   const [open, setOpen] = useState(false);
 
   // Read once in a lazy initialiser rather than in an effect.
@@ -295,7 +307,7 @@ export default function AdminSidebar() {
           user={user}
           logout={logout}
           collapsed={collapsed}
-          pendingCount={pendingCount}
+          counts={counts}
         />
 
         {/* On the border rather than inside the rail: at 4.5rem wide there is no
@@ -340,7 +352,7 @@ export default function AdminSidebar() {
               user={user}
               logout={logout}
               onNavigate={() => setOpen(false)}
-              pendingCount={pendingCount}
+              counts={counts}
             />
           </aside>
         </div>

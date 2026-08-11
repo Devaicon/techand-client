@@ -8,23 +8,25 @@ import {
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
-import { usePendingApprovals } from "../../PendingApprovalsProvider";
+import { useBlogQueues } from "../../BlogQueuesProvider";
 import { formatDate, statusMeta } from "@/lib/blogStatus";
 
+// In pipeline order after "All", so the chips read as the journey a post takes.
 const STATUS_FILTERS = [
   { value: "all", label: "All" },
-  { value: "published", label: "Published" },
+  { value: "draft", label: "Drafts" },
+  { value: "pending_images", label: "Needs images" },
   { value: "pending_approval", label: "In review" },
   { value: "rejected", label: "Rejected" },
-  { value: "draft", label: "Drafts" },
+  { value: "published", label: "Published" },
 ];
 
 export default function BlogsPage() {
   const toast = useToast();
   const { can } = useAdminAuth();
-  // A submit or a publish from this list changes the queue behind the sidebar
+  // A submit or a publish from this list changes a queue behind a sidebar
   // badge, so the shared copy has to be told.
-  const { refresh: refreshQueue } = usePendingApprovals();
+  const { refresh: refreshQueue } = useBlogQueues();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
@@ -76,8 +78,10 @@ export default function BlogsPage() {
       const next = blog.status === "published" ? "draft" : "published";
       const { data } = await adminApi.patch(`/blogs/${blog.id}/status`, { status: next });
       patchLocal(data.data.blog);
-      // Publishing something that was queued resolves its review server-side.
-      if (blog.status === "pending_approval") refreshQueue();
+      // Publishing something that was in either queue resolves it server-side.
+      if (blog.status === "pending_images" || blog.status === "pending_approval") {
+        refreshQueue();
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to change status.");
     } finally {
@@ -85,14 +89,16 @@ export default function BlogsPage() {
     }
   };
 
-  // The non-publisher's path to going live: hand the post to a reviewer.
+  // The non-publisher's path to going live. It hands the post to the artwork
+  // stage, not to a reviewer — the reviewers are summoned a hop later, once its
+  // images are in.
   const submitForReview = async (blog) => {
     setBusyId(blog.id);
     try {
       const { data } = await adminApi.post(`/blogs/${blog.id}/submit`);
       patchLocal(data.data.blog);
       refreshQueue();
-      toast.success(`"${blog.title}" was sent for approval.`);
+      toast.success(`"${blog.title}" was sent for artwork.`);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to submit for review.");
     } finally {
@@ -240,10 +246,10 @@ export default function BlogsPage() {
                           <Eye size={16} />
                         </button>
                       )}
-                      {/* Publishers flip status outright. Everyone else hands
-                          the post to the approval queue instead — and a post
-                          already in review offers neither, since the decision
-                          is the reviewer's to make. */}
+                      {/* Publishers flip status outright. Everyone else sends
+                          the post into the pipeline instead — and a post
+                          already moving through it offers neither, since the
+                          next move belongs to whoever's stage it is sitting in. */}
                       {can("blog:publish") ? (
                         <button
                           onClick={() => toggleStatus(b)}
@@ -254,14 +260,15 @@ export default function BlogsPage() {
                         </button>
                       ) : (
                         can("blog:update") &&
-                        b.status !== "published" &&
-                        b.status !== "pending_approval" && (
+                        !["published", "pending_images", "pending_approval"].includes(
+                          b.status,
+                        ) && (
                           <button
                             onClick={() => submitForReview(b)}
                             title={
                               b.status === "rejected"
-                                ? "Resubmit for approval"
-                                : "Submit for approval"
+                                ? "Resubmit — goes for artwork first"
+                                : "Submit — goes for artwork first"
                             }
                             className="text-gray-400 hover:text-[#37469E]"
                           >

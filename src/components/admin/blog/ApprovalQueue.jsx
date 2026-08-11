@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Check, Eye, Loader2, Pencil, ShieldCheck, X,
+  AlertTriangle, Check, Eye, ImageOff, Loader2, Pencil, ShieldCheck, X,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
-import { usePendingApprovals } from "@/app/admin/PendingApprovalsProvider";
+import { useBlogQueues } from "@/app/admin/BlogQueuesProvider";
 import { timeAgo } from "@/lib/blogStatus";
 
 // The list of posts waiting on a reviewer, rendered identically on the overview
@@ -15,7 +15,7 @@ import { timeAgo } from "@/lib/blogStatus";
 // backlog belongs on the dedicated page, not on a dashboard summary.
 export default function ApprovalQueue({ limit = null, onSeeAll = null }) {
   const toast = useToast();
-  const { blogs, loading, error, decide } = usePendingApprovals();
+  const { approvals: blogs, loading, error, decide } = useBlogQueues();
   const [busyId, setBusyId] = useState(null);
   // Which row has its "send back" note open. Rejecting inline rather than in a
   // modal keeps the post's title and author on screen while the reason is
@@ -76,7 +76,7 @@ export default function ApprovalQueue({ limit = null, onSeeAll = null }) {
         <ShieldCheck size={22} className="text-emerald-500" />
         <p className="text-sm font-medium text-gray-700">Nothing awaiting approval</p>
         <p className="text-sm text-gray-500">
-          Submitted insights land here for you to approve or send back.
+          Insights land here once their artwork is done.
         </p>
       </div>
     );
@@ -88,7 +88,20 @@ export default function ApprovalQueue({ limit = null, onSeeAll = null }) {
         const busy = busyId === blog.id;
         const rejecting = rejectingId === blog.id;
         const submitter =
-          blog.review?.submittedBy?.username || blog.author?.name || "Someone";
+          blog.review?.submittedBy?.name ||
+          blog.review?.submittedBy?.username ||
+          blog.author?.name ||
+          "Someone";
+        const illustrator =
+          blog.review?.illustratedBy?.name ||
+          blog.review?.illustratedBy?.username ||
+          "";
+        // The artwork stage hands out full edit access, so the one thing a
+        // reviewer must not have to go looking for is whether the person who
+        // was only meant to add pictures also rewrote something.
+        const textTouched = (blog.activity || []).some(
+          (a) => a.action === "illustrated" && a.textChanged,
+        );
 
         return (
           <li key={blog.id} className={`py-4 first:pt-0 ${busy ? "opacity-50" : ""}`}>
@@ -97,8 +110,26 @@ export default function ApprovalQueue({ limit = null, onSeeAll = null }) {
                 <p className="font-medium text-gray-900">{blog.title}</p>
                 <p className="mt-0.5 text-xs text-gray-500">
                   by {submitter} · submitted {timeAgo(blog.review?.submittedAt)}
+                  {illustrator ? ` · artwork by ${illustrator}` : ""}
                   {blog.category ? ` · ${blog.category}` : ""}
                 </p>
+                {(textTouched || !blog.heroImage?.url) && (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {textTouched && (
+                      <span
+                        title="Someone edited the article text during the artwork stage"
+                        className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700"
+                      >
+                        <AlertTriangle size={11} /> Text edited after submission
+                      </span>
+                    )}
+                    {!blog.heroImage?.url && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
+                        <ImageOff size={11} /> No hero image
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">
