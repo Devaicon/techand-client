@@ -87,6 +87,51 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   Loading skeletons (.skeleton)
+
+   The one animation in the panel that is CSS rather than Motion. A skeleton
+   loops for as long as a fetch takes and there may be a dozen on screen at
+   once; Motion would run a JavaScript loop per element for the duration,
+   whereas this sweep is a composited transform that costs nothing while it
+   runs. See src/components/motion/Skeleton.jsx, which owns the markup.
+
+   The highlight is a ::after overlay translating across, not an animated
+   `background-position` — background painting is not composited and would
+   repaint every bar every frame.
+   ───────────────────────────────────────────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e9ebf1;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: skeleton-sweep 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    Blog article typography (.blog-prose)
 
    Hand-written rather than @tailwindcss/typography: the plugin is not

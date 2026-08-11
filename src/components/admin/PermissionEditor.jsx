@@ -8,6 +8,7 @@ export const ALL_PERMISSIONS = [
   "users:read", "users:create", "users:update", "users:delete",
   "team:invite", "team:manage",
   "blog:read", "blog:create", "blog:update", "blog:delete", "blog:publish",
+  "blog:approve",
   "media:upload",
   "pages:read", "pages:manage",
   "navbar:manage",
@@ -28,8 +29,8 @@ const PERMISSION_GROUPS = ALL_PERMISSIONS.reduce((groups, p) => {
 // a missing entry labels a perfectly standard admin as "(CUSTOM)".
 export const ROLE_PRESETS = {
   super_admin: ["*"],
-  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","media:upload","pages:read","pages:manage","navbar:manage"],
-  editor: ["users:read","blog:read","blog:create","blog:update","blog:publish","media:upload","pages:read"],
+  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","blog:approve","media:upload","pages:read","pages:manage","navbar:manage"],
+  editor: ["users:read","blog:read","blog:create","blog:update","media:upload","pages:read"],
   viewer: ["users:read","blog:read","pages:read"],
 };
 

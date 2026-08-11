@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, UserPlus, LogOut, Menu, X, ExternalLink, FileText } from "lucide-react";
+import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, UserPlus, LogOut, Menu, X, ExternalLink, FileText, ShieldCheck } from "lucide-react";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
+import { usePendingApprovals } from "@/app/admin/PendingApprovalsProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
+import UserAvatar, { displayName } from "@/components/admin/UserAvatar";
 
 // Brand mark shown in the sidebar / drawer / mobile top bar headers.
 function Logo({ className = "" }) {
@@ -30,6 +32,9 @@ const websiteHrefFor = (role) =>
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, perm: null },
   { href: "/admin/blogs", label: "Insights", icon: FileText, perm: "blog:read" },
+  // `badge: "approvals"` asks SidebarInner to hang the pending count off this
+  // entry — a queue nobody can see the depth of is a queue that gets forgotten.
+  { href: "/admin/approvals", label: "Approvals", icon: ShieldCheck, perm: "blog:approve", badge: "approvals" },
   { href: "/admin/pages", label: "Pages", icon: Files, perm: "pages:read" },
   { href: "/admin/navbar", label: "Navigation", icon: MenuIcon, perm: "navbar:manage" },
   { href: "/admin/users", label: "Users", icon: Users, perm: "users:read" },
@@ -44,8 +49,12 @@ const COLLAPSE_KEY = "techand.admin.sidebarCollapsed";
 // mobile drawer. `onNavigate` lets the mobile drawer close itself on tap.
 // `collapsed` renders the icon-only rail; the mobile drawer never collapses,
 // since it is already an explicit overlay.
-function SidebarInner({ items, pathname, user, logout, onNavigate, collapsed }) {
+function SidebarInner({
+  items, pathname, user, logout, onNavigate, collapsed, pendingCount,
+}) {
   const websiteHref = websiteHrefFor(user?.role);
+  const countFor = (item) =>
+    item.badge === "approvals" && pendingCount > 0 ? pendingCount : 0;
 
   if (collapsed) {
     return (
@@ -57,24 +66,42 @@ function SidebarInner({ items, pathname, user, logout, onNavigate, collapsed }) 
                 ? pathname === "/admin"
                 : pathname.startsWith(item.href);
             const Icon = item.icon;
+            const count = countFor(item);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.label}
-                aria-label={item.label}
-                className={`flex justify-center rounded-lg p-2.5 transition-colors ${
+                title={count ? `${item.label} (${count})` : item.label}
+                aria-label={count ? `${item.label}, ${count} waiting` : item.label}
+                className={`relative flex justify-center rounded-lg p-2.5 transition-colors ${
                   active
                     ? "bg-[#37469E] text-white"
                     : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
                 <Icon size={18} />
+                {count > 0 && (
+                  <span className="absolute right-1 top-1 min-w-[1.1rem] rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-[1.1rem] text-white">
+                    {count > 9 ? "9+" : count}
+                  </span>
+                )}
               </Link>
             );
           })}
         </nav>
         <div className="space-y-1 border-t border-gray-200 p-2">
+          <Link
+            href="/admin/profile"
+            title="Your profile"
+            aria-label="Your profile"
+            className={`flex justify-center rounded-lg p-1.5 transition-colors ${
+              pathname.startsWith("/admin/profile")
+                ? "bg-[#EEF0FA]"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <UserAvatar user={user} size="sm" />
+          </Link>
           <a
             href={websiteHref}
             target="_blank"
@@ -110,6 +137,7 @@ function SidebarInner({ items, pathname, user, logout, onNavigate, collapsed }) 
               ? pathname === "/admin"
               : pathname.startsWith(item.href);
           const Icon = item.icon;
+          const count = countFor(item);
           return (
             <Link
               key={item.href}
@@ -123,17 +151,43 @@ function SidebarInner({ items, pathname, user, logout, onNavigate, collapsed }) 
             >
               <Icon size={18} />
               {item.label}
+              {count > 0 && (
+                <span
+                  aria-label={`${count} waiting`}
+                  className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${
+                    active ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
       <div className="border-t border-gray-200 p-4">
-        <div className="mb-3 px-2">
-          <p className="truncate text-sm font-semibold text-gray-900">{user?.username}</p>
-          <p className="truncate text-xs text-gray-500">
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">{labelRole(user?.role)}
-            </span></p>
-        </div>
+        {/* The whole block is the way into the profile page — the account
+            summary and "manage my account" are the same affordance everywhere
+            else, and a separate nav row for it would just be a second one. */}
+        <Link
+          href="/admin/profile"
+          onClick={onNavigate}
+          className={`mb-2 flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors ${
+            pathname.startsWith("/admin/profile")
+              ? "bg-[#EEF0FA]"
+              : "hover:bg-gray-100"
+          }`}
+        >
+          <UserAvatar user={user} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-gray-900">
+              {displayName(user)}
+            </p>
+            <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-[#EEF0FA] px-2 py-0.5 text-[11px] font-medium text-[#37469E]">
+              {labelRole(user?.role)}
+            </span>
+          </div>
+        </Link>
         <a
           href={websiteHref}
           target="_blank"
@@ -157,6 +211,7 @@ function SidebarInner({ items, pathname, user, logout, onNavigate, collapsed }) 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const { user, can, logout } = useAdminAuth();
+  const { count: pendingCount } = usePendingApprovals();
   const [open, setOpen] = useState(false);
 
   // Read once in a lazy initialiser rather than in an effect.
@@ -240,6 +295,7 @@ export default function AdminSidebar() {
           user={user}
           logout={logout}
           collapsed={collapsed}
+          pendingCount={pendingCount}
         />
 
         {/* On the border rather than inside the rail: at 4.5rem wide there is no
@@ -284,6 +340,7 @@ export default function AdminSidebar() {
               user={user}
               logout={logout}
               onNavigate={() => setOpen(false)}
+              pendingCount={pendingCount}
             />
           </aside>
         </div>

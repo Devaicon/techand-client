@@ -11,6 +11,8 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
+import { useOverlayMotion } from "@/components/motion";
 
 /**
  * Right-click menus for the admin panel.
@@ -45,19 +47,30 @@ export function useContextMenu() {
 // Menus are positioned from the pointer, then nudged back inside the viewport.
 // Measured after mount rather than estimated from item count: a menu with hints
 // and headings is not a predictable multiple of a row height.
+//
+// `offsetWidth`/`offsetHeight`, NOT `getBoundingClientRect()`. The menu now
+// animates in from `scale: 0.96`, and Motion writes that transform as an inline
+// style on the first render — before this measurement runs. A bounding rect
+// reflects transforms, so it would report a menu 4% smaller than the one about
+// to be on screen and clamp it a few pixels past the viewport edge. The offset
+// dimensions are pre-transform layout values and stay correct mid-animation.
 const clampToViewport = (x, y, el) => {
   const { innerWidth, innerHeight } = window;
-  const rect = el.getBoundingClientRect();
+  const width = el.offsetWidth;
+  const height = el.offsetHeight;
   const margin = 8;
 
+  // Flipping above the pointer rather than clamping to the bottom edge: a menu
+  // pinned to the bottom of the screen covers the row that opened it.
+  const flipped = y + height + margin > innerHeight;
+
   return {
-    left: Math.max(margin, Math.min(x, innerWidth - rect.width - margin)),
-    // Flipping above the pointer rather than clamping to the bottom edge: a menu
-    // pinned to the bottom of the screen covers the row that opened it.
-    top:
-      y + rect.height + margin > innerHeight
-        ? Math.max(margin, y - rect.height)
-        : y,
+    left: Math.max(margin, Math.min(x, innerWidth - width - margin)),
+    top: flipped ? Math.max(margin, y - height) : y,
+    // Reported so the scale-in can grow from whichever corner the menu is
+    // actually pinned by. Growing from the centre while anchored at one corner
+    // reads as the menu sliding rather than opening.
+    flipped,
   };
 };
 
@@ -67,6 +80,13 @@ function Menu({ x, y, items, onClose }) {
   const ref = useRef(null);
   const [pos, setPos] = useState({ left: x, top: y, ready: false });
   const [activeIndex, setActiveIndex] = useState(-1);
+  const menuMotion = useOverlayMotion("menu");
+  // False for the ~120ms a dismissed menu spends fading out. It is still
+  // mounted for that time, and without this its document-level listeners would
+  // outlive it: right-click A, right-click B, and the first click afterwards
+  // reaches A's dismiss handler, which closes B. Everything below is gated on
+  // it so a leaving menu is inert.
+  const isPresent = useIsPresent();
 
   // Position before paint, so the menu never appears at the raw pointer
   // coordinates and then jumps once it has been measured.
@@ -76,6 +96,8 @@ function Menu({ x, y, items, onClose }) {
   }, [x, y]);
 
   useEffect(() => {
+    if (!isPresent) return undefined;
+
     const onPointerDown = (event) => {
       if (!ref.current?.contains(event.target)) onClose();
     };
@@ -129,10 +151,11 @@ function Menu({ x, y, items, onClose }) {
       window.removeEventListener("blur", onDismiss);
       document.removeEventListener("scroll", onDismiss, true);
     };
-  }, [items, activeIndex, onClose]);
+  }, [items, activeIndex, onClose, isPresent]);
 
   return (
-    <div
+    <motion.div
+      {...menuMotion}
       ref={ref}
       role="menu"
       className="fixed z-[100] min-w-[13rem] max-w-[18rem] overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-2xl"
@@ -141,6 +164,12 @@ function Menu({ x, y, items, onClose }) {
         top: pos.top,
         // Hidden for the one frame between mount and measurement.
         visibility: pos.ready ? "visible" : "hidden",
+        // Anchored to the corner the menu actually hangs from, so it opens
+        // outward from the pointer instead of appearing to drift.
+        transformOrigin: pos.flipped ? "bottom left" : "top left",
+        // A fading menu must not swallow the click that dismissed it, nor any
+        // click aimed at what is now underneath it.
+        pointerEvents: isPresent ? undefined : "none",
       }}
     >
       {items.map((item, index) => {
@@ -207,22 +236,28 @@ function Menu({ x, y, items, onClose }) {
           </button>
         );
       })}
-    </div>
+    </motion.div>
   );
 }
 
 export function ContextMenuProvider({ children }) {
   const [menu, setMenu] = useState(null);
+  // The portal has to outlive the menu inside it, or the fade-out has nothing
+  // to play in — React would rip the whole subtree out on close and
+  // `AnimatePresence` would never see the child leave. So the portal opens on
+  // the first menu and then stays, holding an empty `AnimatePresence`.
+  //
+  // This preserves the original SSR argument: `opened` starts false and is only
+  // set from a pointer event, so `createPortal` is still unreachable during the
+  // server render by construction rather than by a `mounted` guard.
+  const [opened, setOpened] = useState(false);
 
-  // No `mounted` flag is needed to keep the portal off the server render:
-  // `menu` is null until a pointer event sets it, and pointer events only
-  // happen in a browser. So `createPortal` is unreachable during SSR by
-  // construction rather than by a guard.
   const close = useCallback(() => setMenu(null), []);
 
   const openAt = useCallback((x, y, items) => {
     const resolved = typeof items === "function" ? items() : items;
     if (!resolved?.length) return;
+    setOpened(true);
     setMenu({ x, y, items: resolved });
   }, []);
 
@@ -242,9 +277,22 @@ export function ContextMenuProvider({ children }) {
   return (
     <ContextMenuContext.Provider value={value}>
       {children}
-      {menu &&
+      {opened &&
         createPortal(
-          <Menu x={menu.x} y={menu.y} items={menu.items} onClose={close} />,
+          <AnimatePresence>
+            {menu && (
+              // Keyed on the coordinates: right-clicking somewhere else while a
+              // menu is open is a new menu, and it should re-run its opening
+              // animation from the new anchor rather than slide across.
+              <Menu
+                key={`${menu.x},${menu.y}`}
+                x={menu.x}
+                y={menu.y}
+                items={menu.items}
+                onClose={close}
+              />
+            )}
+          </AnimatePresence>,
           document.body,
         )}
     </ContextMenuContext.Provider>

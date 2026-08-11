@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { AdminAuthProvider, useAdminAuth } from "../AdminAuthProvider";
+import { PendingApprovalsProvider } from "../PendingApprovalsProvider";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { ContextMenuProvider } from "@/components/admin/ContextMenu";
 import { ToastProvider } from "@/components/admin/Toast";
@@ -48,7 +49,12 @@ export default function DashboardLayout({ children }) {
           underneath it. */}
       <ToastProvider>
         <ContextMenuProvider>
-          <Guard>{children}</Guard>
+          {/* Inside the auth provider (it needs `can`) and outside the guard,
+              so the sidebar's approval count and the overview's queue read the
+              same fetch. */}
+          <PendingApprovalsProvider>
+            <Guard>{children}</Guard>
+          </PendingApprovalsProvider>
         </ContextMenuProvider>
       </ToastProvider>
     </AdminAuthProvider>

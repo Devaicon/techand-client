@@ -4,11 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
-  Loader2, Save, Send, Eye, Star, ChevronDown, ExternalLink, ArrowLeft, Check,
+  Loader2, Save, Send, SendHorizontal, Eye, Star, ChevronDown, ExternalLink,
+  ArrowLeft, Check, Clock, X,
 } from "lucide-react";
 import Link from "next/link";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
+import { usePendingApprovals } from "@/app/admin/PendingApprovalsProvider";
+import { statusMeta, timeAgo } from "@/lib/blogStatus";
 import { deriveToc } from "@/lib/deriveToc";
 import { CATEGORIES } from "@/components/insight-page/insightUtils";
 import { normalizeUrl } from "@/lib/normalizeUrl";
@@ -50,7 +53,7 @@ const emptyBlog = {
   readTime: "", heroImage: {}, cardImage: {},
   author: { name: "", role: "", avatarUrl: "" },
   contentHtml: "", contentDelta: null, toc: [], ctas: [], externalLinks: [],
-  faqs: [], isFeatured: false, comingSoon: false, status: "draft",
+  faqs: [], isFeatured: false, comingSoon: false, status: "draft", review: {},
 };
 
 function Panel({ title, count, children, defaultOpen = false }) {
@@ -94,23 +97,80 @@ function Field({ label, children, hint }) {
 const inputClass =
   "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#37469E] focus:outline-none";
 
+// Where the post stands in the approval flow, stated in the editor rather than
+// left to the status pill. A rejection in particular is useless as a badge: the
+// author needs the reason, and the reason only exists here.
+function ReviewBanner({ status, review }) {
+  if (!review) return null;
+
+  if (status === "rejected" && review.decidedAt) {
+    const by = review.decidedBy?.username;
+    return (
+      <div className="mb-4 rounded-lg border border-rose-100 bg-rose-50 p-4">
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-rose-800">
+          <X size={15} /> Changes requested
+          {by ? ` by ${by}` : ""} · {timeAgo(review.decidedAt)}
+        </p>
+        {review.note ? (
+          <p className="mt-1.5 whitespace-pre-line text-sm text-rose-700">
+            {review.note}
+          </p>
+        ) : (
+          <p className="mt-1.5 text-sm text-rose-700">
+            No reason was given. Ask the reviewer what they were looking for.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (status === "pending_approval" && review.submittedAt) {
+    const by = review.submittedBy?.username;
+    return (
+      <div className="mb-4 rounded-lg border border-amber-100 bg-amber-50 p-4">
+        <p className="flex items-center gap-1.5 text-sm font-medium text-amber-800">
+          <Clock size={15} /> Awaiting approval — submitted
+          {by ? ` by ${by}` : ""} {timeAgo(review.submittedAt)}. Edits made now
+          are what the reviewer will see.
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 export default function BlogEditor({ initial, blogId }) {
   const router = useRouter();
   const { can, user } = useAdminAuth();
+  const { refresh: refreshQueue } = usePendingApprovals();
 
   const [blog, setBlog] = useState(() => ({
     ...emptyBlog,
     ...initial,
     author: {
       ...emptyBlog.author,
-      // A new post defaults to the signed-in user's name; existing posts keep
+      // A new post defaults to the signed-in user's details; existing posts keep
       // whatever was saved, so republishing never rewrites the byline.
-      ...(initial?.author || (blogId ? {} : { name: user?.username || "" })),
+      //
+      // The admin-set `name` is preferred over `username` — a byline is a real
+      // name, and "ali_h" on a published article is not one. Job title seeds the
+      // role line for the same reason.
+      ...(initial?.author ||
+        (blogId
+          ? {}
+          : {
+              name: user?.name || user?.username || "",
+              role: user?.jobTitle || "",
+            })),
     },
   }));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  // Open while a reviewer writes the reason for sending this post back.
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectNote, setRejectNote] = useState("");
   // Whether the editor body has changed since the last save. Drives the TOC
   // panel's "Detect headings" affordance.
   const [bodyDirty, setBodyDirty] = useState(false);
@@ -298,6 +358,64 @@ export default function BlogEditor({ initial, blogId }) {
     }
   };
 
+  // The route to going live for an author without blog:publish. Saves first for
+  // the same reason publish does — a reviewer has to read what is on screen,
+  // not whatever was last written to the server.
+  const submitForReview = async () => {
+    const saved = await save({ silent: true });
+    if (!saved) return;
+
+    setSaving(true);
+    savingRef.current = true;
+    try {
+      const { data } = await adminApi.post(`/blogs/${saved.id}/submit`);
+      setBlog((b) => ({
+        ...b,
+        status: data.data.blog.status,
+        review: data.data.blog.review,
+      }));
+      refreshQueue();
+      setNotice("Sent for approval.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to submit for review.");
+    } finally {
+      setSaving(false);
+      savingRef.current = false;
+    }
+  };
+
+  // A reviewer deciding from inside the editor, where they have just read the
+  // whole article — rather than from a queue row that shows only its title.
+  const decide = async (decision) => {
+    setSaving(true);
+    savingRef.current = true;
+    setError("");
+    try {
+      const { data } = await adminApi.patch(
+        `/blogs/${savedIdRef.current}/review`,
+        { decision, note: decision === "reject" ? rejectNote.trim() : "" },
+      );
+      setBlog((b) => ({
+        ...b,
+        status: data.data.blog.status,
+        review: data.data.blog.review,
+      }));
+      setRejecting(false);
+      setRejectNote("");
+      refreshQueue();
+      setNotice(
+        decision === "approve"
+          ? "Approved and published."
+          : "Sent back to the author.",
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to record that decision.");
+    } finally {
+      setSaving(false);
+      savingRef.current = false;
+    }
+  };
+
   const openPreview = async () => {
     const saved = await save({ silent: true });
     if (!saved) return;
@@ -310,8 +428,15 @@ export default function BlogEditor({ initial, blogId }) {
   };
 
   const canPublish = can("blog:publish");
+  const canApprove = can("blog:approve");
   const canSave = blogId ? can("blog:update") : can("blog:create");
   const isPublished = blog.status === "published";
+  const isPending = blog.status === "pending_approval";
+  const isRejected = blog.status === "rejected";
+  const status = statusMeta(blog.status);
+  // A post that has never been saved has nothing to submit — the button appears
+  // once there is a row on the server to hand over.
+  const canSubmit = canSave && Boolean(savedIdRef.current) && !isPublished;
 
   return (
     <div>
@@ -327,13 +452,9 @@ export default function BlogEditor({ initial, blogId }) {
             {blogId ? "Edit insight" : "New insight"}
           </h1>
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-              isPublished
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-amber-50 text-amber-700"
-            }`}
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${status.badge}`}
           >
-            {isPublished ? "PUBLISHED" : "DRAFT"}
+            {status.label.toUpperCase()}
           </span>
         </div>
 
@@ -392,7 +513,35 @@ export default function BlogEditor({ initial, blogId }) {
             {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
             Save
           </button>
-          {canPublish && (
+          {/* One slot, three audiences. A reviewer looking at a queued post
+              decides it here; a publisher flips it live; everyone else hands it
+              to the queue. */}
+          {isPending && canApprove ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setRejecting((v) => !v)}
+                disabled={saving}
+                aria-expanded={rejecting}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60"
+              >
+                <X size={15} /> Reject
+              </button>
+              <button
+                type="button"
+                onClick={() => decide("approve")}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-60"
+              >
+                {saving ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <Check size={15} />
+                )}
+                Approve
+              </button>
+            </>
+          ) : canPublish ? (
             <button
               type="button"
               onClick={publish}
@@ -401,9 +550,71 @@ export default function BlogEditor({ initial, blogId }) {
             >
               <Send size={15} /> {isPublished ? "Unpublish" : "Publish"}
             </button>
+          ) : isPending ? (
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
+              <Clock size={15} /> Awaiting review
+            </span>
+          ) : (
+            canSubmit && (
+              <button
+                type="button"
+                onClick={submitForReview}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-60"
+              >
+                {saving ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <SendHorizontal size={15} />
+                )}
+                {isRejected ? "Resubmit for review" : "Submit for review"}
+              </button>
+            )
           )}
         </div>
       </div>
+
+      {/* The reviewer's reason, written where the article they just read is
+          still on screen. */}
+      {rejecting && isPending && canApprove && (
+        <div className="mb-4 rounded-xl border border-rose-100 bg-rose-50/60 p-4">
+          <label
+            htmlFor="reject-note"
+            className="mb-1.5 block text-sm font-semibold text-rose-800"
+          >
+            What needs to change?
+          </label>
+          <textarea
+            id="reject-note"
+            value={rejectNote}
+            onChange={(e) => setRejectNote(e.target.value)}
+            rows={3}
+            maxLength={2000}
+            placeholder="Optional, but this is all the author will see."
+            className="w-full resize-y rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm focus:border-rose-400 focus:outline-none"
+          />
+          <div className="mt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setRejecting(false)}
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-white"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => decide("reject")}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-60"
+            >
+              {saving && <Loader2 size={14} className="animate-spin" />}
+              Send back
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ReviewBanner status={blog.status} review={blog.review} />
 
       {error && (
         <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>

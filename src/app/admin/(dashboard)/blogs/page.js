@@ -3,24 +3,28 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye,
+  Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye, SendHorizontal,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
+import { usePendingApprovals } from "../../PendingApprovalsProvider";
+import { formatDate, statusMeta } from "@/lib/blogStatus";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All" },
   { value: "published", label: "Published" },
+  { value: "pending_approval", label: "In review" },
+  { value: "rejected", label: "Rejected" },
   { value: "draft", label: "Drafts" },
 ];
-
-const formatDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—";
 
 export default function BlogsPage() {
   const toast = useToast();
   const { can } = useAdminAuth();
+  // A submit or a publish from this list changes the queue behind the sidebar
+  // badge, so the shared copy has to be told.
+  const { refresh: refreshQueue } = usePendingApprovals();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
@@ -72,8 +76,25 @@ export default function BlogsPage() {
       const next = blog.status === "published" ? "draft" : "published";
       const { data } = await adminApi.patch(`/blogs/${blog.id}/status`, { status: next });
       patchLocal(data.data.blog);
+      // Publishing something that was queued resolves its review server-side.
+      if (blog.status === "pending_approval") refreshQueue();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to change status.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // The non-publisher's path to going live: hand the post to a reviewer.
+  const submitForReview = async (blog) => {
+    setBusyId(blog.id);
+    try {
+      const { data } = await adminApi.post(`/blogs/${blog.id}/submit`);
+      patchLocal(data.data.blog);
+      refreshQueue();
+      toast.success(`"${blog.title}" was sent for approval.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit for review.");
     } finally {
       setBusyId(null);
     }
@@ -201,13 +222,9 @@ export default function BlogsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                        b.status === "published"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-amber-50 text-amber-700"
-                      }`}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusMeta(b.status).badge}`}
                     >
-                      {b.status.toUpperCase()}
+                      {statusMeta(b.status).label.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-600">{b.category}</td>
@@ -223,7 +240,11 @@ export default function BlogsPage() {
                           <Eye size={16} />
                         </button>
                       )}
-                      {can("blog:publish") && (
+                      {/* Publishers flip status outright. Everyone else hands
+                          the post to the approval queue instead — and a post
+                          already in review offers neither, since the decision
+                          is the reviewer's to make. */}
+                      {can("blog:publish") ? (
                         <button
                           onClick={() => toggleStatus(b)}
                           title={b.status === "published" ? "Unpublish" : "Publish"}
@@ -231,6 +252,22 @@ export default function BlogsPage() {
                         >
                           <Send size={16} />
                         </button>
+                      ) : (
+                        can("blog:update") &&
+                        b.status !== "published" &&
+                        b.status !== "pending_approval" && (
+                          <button
+                            onClick={() => submitForReview(b)}
+                            title={
+                              b.status === "rejected"
+                                ? "Resubmit for approval"
+                                : "Submit for approval"
+                            }
+                            className="text-gray-400 hover:text-[#37469E]"
+                          >
+                            <SendHorizontal size={16} />
+                          </button>
+                        )
                       )}
                       {can("blog:update") && (
                         <Link

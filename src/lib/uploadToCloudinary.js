@@ -23,11 +23,24 @@ const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/
 // embedded script — they are never inlined into the document.
 const ACCEPTED_ICONS = [...ACCEPTED, "image/svg+xml"];
 
+// Which signature endpoint to ask. `media` is the site image library and needs
+// `media:upload`; `avatar` is open to any signed-in member and can only ever
+// write to the avatars folder, because the folder is part of what the server
+// signs. A viewer has no media:upload and must still be able to set a face to
+// their name.
+const SIGNATURE_ENDPOINT = {
+  media: "/media/signature",
+  avatar: "/profile/avatar-signature",
+};
+
 /**
  * @param {File} file
- * @param {{accept?: string[]}} [options] - override the allowed MIME types
+ * @param {{accept?: string[], target?: "media" | "avatar"}} [options]
  */
-export async function uploadToCloudinary(file, { accept = ACCEPTED } = {}) {
+export async function uploadToCloudinary(
+  file,
+  { accept = ACCEPTED, target = "media" } = {},
+) {
   if (!file) throw new Error("No file selected.");
   if (!accept.includes(file.type)) {
     const label = accept
@@ -39,7 +52,9 @@ export async function uploadToCloudinary(file, { accept = ACCEPTED } = {}) {
     throw new Error("Image is larger than 10 MB. Compress it and try again.");
   }
 
-  const { data } = await adminApi.post("/media/signature");
+  const { data } = await adminApi.post(
+    SIGNATURE_ENDPOINT[target] || SIGNATURE_ENDPOINT.media,
+  );
   const { cloudName, apiKey, timestamp, signature, folder, uploadUrl } = data.data;
 
   const form = new FormData();

@@ -5,6 +5,7 @@ import { Loader2, Mail, RefreshCw, XCircle, Send } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useAdminAuth } from "../../AdminAuthProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
+import UserAvatar, { displayName } from "@/components/admin/UserAvatar";
 
 const ROLES = ["admin", "editor", "viewer"];
 
@@ -113,10 +114,20 @@ export default function TeamPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Members ({members.length})</h2>
         <ul className="divide-y divide-gray-100">
           {members.map((m) => (
-            <li key={m.id} className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-medium text-gray-900">{m.username}</p>
-                <p className="text-xs text-gray-500">{m.email}</p>
+            <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <UserAvatar user={m} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900">
+                    {displayName(m)}
+                    {m.name && (
+                      <span className="ml-1.5 font-normal text-gray-400">
+                        @{m.username}
+                      </span>
+                    )}
+                  </p>
+                  <p className="truncate text-xs text-gray-500">{m.email}</p>
+                </div>
               </div>
               <span className="rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">{labelRole(m.role)}</span>
             </li>

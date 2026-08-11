@@ -20,11 +20,21 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import adminApi from "@/lib/adminApi";
 import { downloadPageExport } from "@/lib/pageTransfer.mjs";
 import ImportPageDialog from "@/components/admin/pages/ImportPageDialog";
 import { useToast } from "@/components/admin/Toast";
 import { useContextMenu } from "@/components/admin/ContextMenu";
+import {
+  Reveal,
+  Stagger,
+  StaggerItem,
+  Skeleton,
+  SkeletonCard,
+  useInteraction,
+  useOverlayMotion,
+} from "@/components/motion";
 import { useAdminAuth } from "../../AdminAuthProvider";
 
 // "3 days ago" beats a timestamp on a list you scan: the question a page list
@@ -54,7 +64,11 @@ const relativeTime = (iso) => {
 
 function StatCard({ icon: Icon, label, value, tone }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3.5">
+    // A `StaggerItem` rather than a plain div: these three always appear
+    // together as a row, and arriving one after another is what tells the eye
+    // they are a set. Outside a `Stagger` it renders at rest, so this is safe
+    // if the card is ever reused elsewhere.
+    <StaggerItem className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3.5">
       <span
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tone}`}
       >
@@ -66,7 +80,7 @@ function StatCard({ icon: Icon, label, value, tone }) {
         </span>
         <span className="block truncate text-xs text-gray-500">{label}</span>
       </span>
-    </div>
+    </StaggerItem>
   );
 }
 
@@ -76,6 +90,10 @@ export default function PagesListPage() {
   const contextMenu = useContextMenu();
   const toast = useToast();
   const manage = can("pages:manage");
+
+  const press = useInteraction("button");
+  const cardHover = useInteraction("card");
+  const inlineForm = useOverlayMotion("modal");
 
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -304,16 +322,40 @@ export default function PagesListPage() {
   const blockTotal = pages.reduce((sum, p) => sum + (p.blockCount || 0), 0);
 
   if (loading) {
+    // Shaped like the real page rather than a centred spinner, so the content
+    // lands in the space already reserved for it instead of shoving a spinner
+    // out of the way. `aria-busy` carries the meaning the bars deliberately do
+    // not — they are all `aria-hidden`.
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="animate-spin text-[#37469E]" />
+      <div aria-busy="true" aria-label="Loading pages">
+        <Skeleton className="mb-2 h-7 w-32" />
+        <Skeleton className="mb-5 h-4 w-72" />
+        <div className="mb-5 grid gap-3 sm:grid-cols-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3.5"
+            >
+              <Skeleton className="h-10 w-10 shrink-0 rounded-xl" />
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }, (_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <Reveal className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Pages</h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -322,22 +364,24 @@ export default function PagesListPage() {
         </div>
         {manage && !creating && (
           <div className="flex items-center gap-2">
-            <button
+            <motion.button
+              {...press}
               onClick={() => setImporting(true)}
               title="Create a page from a .page.json export"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
             >
               <Upload size={16} /> Import
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              {...press}
               onClick={() => setCreating(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85]"
             >
               <Plus size={16} /> New page
-            </button>
+            </motion.button>
           </div>
         )}
-      </div>
+      </Reveal>
 
       {importing && (
         <ImportPageDialog
@@ -348,7 +392,7 @@ export default function PagesListPage() {
       )}
 
       {pages.length > 0 && (
-        <div className="mb-5 grid gap-3 sm:grid-cols-3">
+        <Stagger className="mb-5 grid gap-3 sm:grid-cols-3" delay={0.06}>
           <StatCard
             icon={Files}
             label="Total pages"
@@ -369,7 +413,7 @@ export default function PagesListPage() {
             value={blockTotal}
             tone="bg-amber-50 text-amber-600"
           />
-        </div>
+        </Stagger>
       )}
 
       {error && (
@@ -378,8 +422,13 @@ export default function PagesListPage() {
         </p>
       )}
 
-      {creating && (
-        <form
+      {/* `AnimatePresence` so cancelling the form fades it out instead of
+          snapping the list back up the page. */}
+      <AnimatePresence>
+        {creating && (
+        <motion.form
+          {...inlineForm}
+          key="create-page"
           onSubmit={create}
           className="mb-5 rounded-2xl border border-gray-200 bg-white p-5"
         >
@@ -426,24 +475,27 @@ export default function PagesListPage() {
             </label>
           </div>
           <div className="mt-4 flex justify-end gap-2">
-            <button
+            <motion.button
+              {...press}
               type="button"
               onClick={() => setCreating(false)}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
             >
               Cancel
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              {...press}
               type="submit"
               disabled={busy === "new"}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85] disabled:opacity-60"
             >
               {busy === "new" && <Loader2 size={15} className="animate-spin" />}
               Create & edit
-            </button>
+            </motion.button>
           </div>
-        </form>
-      )}
+        </motion.form>
+        )}
+      </AnimatePresence>
 
       {pages.length > 4 && (
         <div className="mb-3 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3">
@@ -496,13 +548,21 @@ export default function PagesListPage() {
           No pages match “{query}”.
         </p>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        // Deliberately not keyed on `query`: re-running the cascade on every
+        // keystroke of the search would turn filtering into a flicker. The
+        // cascade runs once when the fetch lands, and a page created or
+        // imported later still animates in on its own — a child mounting into
+        // an already-shown Stagger inherits the hidden state and transitions
+        // out of it.
+        <Stagger as="ul" className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((page) => {
             const published = page.status === "published";
             const hiddenCount = page.blockCount - page.activeBlockCount;
 
             return (
-              <li
+              <StaggerItem
+                as="li"
+                {...cardHover}
                 key={page.id}
                 onContextMenu={(event) => openMenu(event, page)}
                 className="group relative flex flex-col rounded-2xl border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
@@ -597,10 +657,10 @@ export default function PagesListPage() {
                     </button>
                   )}
                 </div>
-              </li>
+              </StaggerItem>
             );
           })}
-        </ul>
+        </Stagger>
       )}
 
       {pages.length > 0 && (
