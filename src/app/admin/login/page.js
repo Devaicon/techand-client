@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowLeft, Send, LogIn, Loader2 } from "lucide-react";
 import adminApi, { setTokens } from "@/lib/adminApi";
 
@@ -99,9 +100,17 @@ export default function AdminLogin() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
-                  Password
-                </label>
+                <div className="mb-2 flex items-baseline justify-between gap-3">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <Link
+                    href="/admin/forgot-password"
+                    className="text-sm font-medium text-[#37469E] hover:text-[#2C3A85]"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
                 <input
                   id="password"
                   type="password"

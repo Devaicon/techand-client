@@ -1,10 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { motion } from "motion/react";
 import { ExternalLink, Loader2, Save } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import ControlField from "@/components/admin/pages/controls/ControlField";
+import {
+  Skeleton,
+  Stagger,
+  StaggerItem,
+  useInteraction,
+} from "@/components/motion";
 import { useAdminAuth } from "../../AdminAuthProvider";
 
 /**
@@ -21,6 +28,7 @@ import { useAdminAuth } from "../../AdminAuthProvider";
  */
 export default function NavbarAdminPage() {
   const { can } = useAdminAuth();
+  const press = useInteraction("button");
   const toast = useToast();
   const manage = can("navbar:manage");
 
@@ -66,30 +74,44 @@ export default function NavbarAdminPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="animate-spin text-[#37469E]" />
+      <div
+        className="mx-auto max-w-3xl"
+        aria-busy="true"
+        aria-label="Loading navigation"
+      >
+        <Skeleton className="mb-2 h-7 w-40" />
+        <Skeleton className="mb-6 h-4 w-80" />
+        <div className="space-y-6 rounded-2xl border border-gray-200 bg-white p-5">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-3.5 w-28" />
+              <Skeleton className="h-9 w-full rounded-lg" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <Stagger className="mx-auto max-w-3xl">
+      <StaggerItem className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Navigation</h1>
           <p className="mt-1 text-sm text-gray-500">
             The menu shown at the top of every public page.
           </p>
         </div>
-        <a
+        <motion.a
+          {...press}
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
         >
           <ExternalLink size={15} /> View site
-        </a>
-      </div>
+        </motion.a>
+      </StaggerItem>
 
       {error && (
         <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
@@ -102,7 +124,7 @@ export default function NavbarAdminPage() {
         </p>
       )}
 
-      <form onSubmit={save} className="rounded-2xl border border-gray-200 bg-white p-5">
+      <StaggerItem as="form" onSubmit={save} className="rounded-2xl border border-gray-200 bg-white p-5">
         <fieldset disabled={!manage} className="space-y-6">
           {fields.map((field) => (
             <ControlField
@@ -118,10 +140,11 @@ export default function NavbarAdminPage() {
 
         {manage && (
           <div className="mt-6 flex justify-end border-t border-gray-100 pt-5">
-            <button
+            <motion.button
+              {...press}
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-5 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85] disabled:opacity-60"
             >
               {saving ? (
                 <Loader2 size={15} className="animate-spin" />
@@ -129,10 +152,10 @@ export default function NavbarAdminPage() {
                 <Save size={15} />
               )}
               Save navigation
-            </button>
+            </motion.button>
           </div>
         )}
-      </form>
-    </div>
+      </StaggerItem>
+    </Stagger>
   );
 }

@@ -3,24 +3,30 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye,
+  Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye, SendHorizontal,
 } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
+import { useBlogQueues } from "../../BlogQueuesProvider";
+import { formatDate, statusMeta } from "@/lib/blogStatus";
 
+// In pipeline order after "All", so the chips read as the journey a post takes.
 const STATUS_FILTERS = [
   { value: "all", label: "All" },
-  { value: "published", label: "Published" },
   { value: "draft", label: "Drafts" },
+  { value: "pending_images", label: "Needs images" },
+  { value: "pending_approval", label: "In review" },
+  { value: "rejected", label: "Rejected" },
+  { value: "published", label: "Published" },
 ];
-
-const formatDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—";
 
 export default function BlogsPage() {
   const toast = useToast();
   const { can } = useAdminAuth();
+  // A submit or a publish from this list changes a queue behind a sidebar
+  // badge, so the shared copy has to be told.
+  const { refresh: refreshQueue } = useBlogQueues();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
@@ -72,8 +78,29 @@ export default function BlogsPage() {
       const next = blog.status === "published" ? "draft" : "published";
       const { data } = await adminApi.patch(`/blogs/${blog.id}/status`, { status: next });
       patchLocal(data.data.blog);
+      // Publishing something that was in either queue resolves it server-side.
+      if (blog.status === "pending_images" || blog.status === "pending_approval") {
+        refreshQueue();
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to change status.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // The non-publisher's path to going live. It hands the post to the artwork
+  // stage, not to a reviewer — the reviewers are summoned a hop later, once its
+  // images are in.
+  const submitForReview = async (blog) => {
+    setBusyId(blog.id);
+    try {
+      const { data } = await adminApi.post(`/blogs/${blog.id}/submit`);
+      patchLocal(data.data.blog);
+      refreshQueue();
+      toast.success(`"${blog.title}" was sent for artwork.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit for review.");
     } finally {
       setBusyId(null);
     }
@@ -201,13 +228,9 @@ export default function BlogsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                        b.status === "published"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-amber-50 text-amber-700"
-                      }`}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusMeta(b.status).badge}`}
                     >
-                      {b.status.toUpperCase()}
+                      {statusMeta(b.status).label.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-600">{b.category}</td>
@@ -223,7 +246,11 @@ export default function BlogsPage() {
                           <Eye size={16} />
                         </button>
                       )}
-                      {can("blog:publish") && (
+                      {/* Publishers flip status outright. Everyone else sends
+                          the post into the pipeline instead — and a post
+                          already moving through it offers neither, since the
+                          next move belongs to whoever's stage it is sitting in. */}
+                      {can("blog:publish") ? (
                         <button
                           onClick={() => toggleStatus(b)}
                           title={b.status === "published" ? "Unpublish" : "Publish"}
@@ -231,6 +258,23 @@ export default function BlogsPage() {
                         >
                           <Send size={16} />
                         </button>
+                      ) : (
+                        can("blog:update") &&
+                        !["published", "pending_images", "pending_approval"].includes(
+                          b.status,
+                        ) && (
+                          <button
+                            onClick={() => submitForReview(b)}
+                            title={
+                              b.status === "rejected"
+                                ? "Resubmit — goes for artwork first"
+                                : "Submit — goes for artwork first"
+                            }
+                            className="text-gray-400 hover:text-[#37469E]"
+                          >
+                            <SendHorizontal size={16} />
+                          </button>
+                        )
                       )}
                       {can("blog:update") && (
                         <Link

@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "motion/react";
 import { ArrowDownToLine, ClipboardPaste, Plus, Search, X } from "lucide-react";
+import { useInteraction, useOverlayMotion } from "@/components/motion";
 import BlockPreview from "./BlockPreview";
 import BlockThumbnail from "./BlockThumbnail";
 import { blockFieldSummary } from "./blockSampleProps";
@@ -26,9 +28,17 @@ import { blockFieldSummary } from "./blockSampleProps";
  */
 export default function AddBlockMenu({ definitions, onPick, onPaste, clipboard }) {
   const [open, setOpen] = useState(false);
+  // Keeps the portal mounted after the first open so `AnimatePresence` has
+  // somewhere to play the dialog out. Starts false, so the portal is still
+  // unreachable during the server render — the same argument as before.
+  const [everOpened, setEverOpened] = useState(false);
   const [query, setQuery] = useState("");
   const [activeType, setActiveType] = useState(null);
   const searchRef = useRef(null);
+
+  const press = useInteraction("button");
+  const backdrop = useOverlayMotion("backdrop");
+  const dialog = useOverlayMotion("modal");
 
   // Category order follows first appearance in the registry, so the server
   // decides the palette's running order too.
@@ -84,37 +94,44 @@ export default function AddBlockMenu({ definitions, onPick, onPaste, clipboard }
 
   return (
     <>
-      <button
+      <motion.button
+        {...press}
         type="button"
         onClick={() => {
+          setEverOpened(true);
           setOpen(true);
           // Focused after the dialog mounts, not with autoFocus, so the
           // scroll position of the page behind it is left alone.
           setTimeout(() => searchRef.current?.focus(), 0);
         }}
-        className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85]"
       >
         <Plus size={16} /> Add block
-      </button>
+      </motion.button>
 
-      {/* No mounted flag: `open` is false until the button is clicked, so the
-          portal is unreachable during the server render by construction. */}
-      {open &&
+      {everOpened &&
         createPortal(
+          <AnimatePresence>
+            {open && (
           <div
+            key="add-block"
             role="dialog"
             aria-modal="true"
             aria-label="Add a block"
             className="fixed inset-0 z-[120] flex items-center justify-center p-4"
           >
-            <button
+            <motion.button
+              {...backdrop}
               type="button"
               aria-label="Close"
               onClick={close}
               className="absolute inset-0 cursor-default bg-gray-900/40"
             />
 
-            <div className="relative flex h-[min(78vh,640px)] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <motion.div
+              {...dialog}
+              className="relative flex h-[min(78vh,640px)] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+            >
               {/* ── list ──────────────────────────────────────────────── */}
               <div className="flex w-[19rem] shrink-0 flex-col border-r border-gray-200">
                 <div className="border-b border-gray-100 p-2">
@@ -246,19 +263,22 @@ export default function AddBlockMenu({ definitions, onPick, onPaste, clipboard }
                     <ArrowDownToLine size={14} className="shrink-0 text-gray-400" />
                     Added at the end of the page — drag it into place afterwards.
                   </p>
-                  <button
+                  <motion.button
+                    {...press}
                     type="button"
                     disabled={!active}
                     onClick={() => add(active)}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85] disabled:opacity-50"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2C3A85] disabled:opacity-50"
                   >
                     <Plus size={15} />
                     Add {active ? active.label.toLowerCase() : "block"}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
-            </div>
-          </div>,
+            </motion.div>
+          </div>
+            )}
+          </AnimatePresence>,
           document.body,
         )}
     </>
