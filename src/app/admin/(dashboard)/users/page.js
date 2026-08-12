@@ -2,14 +2,29 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  Loader2, Shield, Ban, CheckCircle2, Trash2, SlidersHorizontal, KeyRound,
-  Pencil, Check, X, UserPlus, Mail, RefreshCw, XCircle,
+  Loader2,
+  Shield,
+  Ban,
+  CheckCircle2,
+  Trash2,
+  SlidersHorizontal,
+  KeyRound,
+  Pencil,
+  Check,
+  X,
+  UserPlus,
+  Mail,
+  RefreshCw,
+  XCircle,
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import { useAdminAuth } from "../../AdminAuthProvider";
-import PermissionEditor, { ROLE_PRESETS, labelRole } from "@/components/admin/PermissionEditor";
+import PermissionEditor, {
+  ROLE_PRESETS,
+  labelRole,
+} from "@/components/admin/PermissionEditor";
 import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
 import InviteMemberDialog from "@/components/admin/InviteMemberDialog";
 import UserAvatar from "@/components/admin/UserAvatar";
@@ -56,11 +71,15 @@ export default function UsersPage() {
     }
   }, [canManageInvites]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // Merge the server's returned user into the list (live-sync, no full reload).
   const applyUser = (updated) =>
-    setUsers((us) => us.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)));
+    setUsers((us) =>
+      us.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)),
+    );
 
   const changeRole = async (role) => {
     try {
@@ -150,7 +169,11 @@ export default function UsersPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-[#37469E]" /></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="animate-spin text-[#37469E]" />
+      </div>
+    );
   }
 
   return (
@@ -160,7 +183,8 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="mt-1 text-sm text-gray-500">
             {users.length} member{users.length === 1 ? "" : "s"}
-            {invites.length > 0 && `, ${invites.length} invitation${invites.length === 1 ? "" : "s"} pending`}
+            {invites.length > 0 &&
+              `, ${invites.length} invitation${invites.length === 1 ? "" : "s"} pending`}
           </p>
         </div>
         {can("team:invite") && (
@@ -174,7 +198,11 @@ export default function UsersPage() {
         )}
       </div>
 
-      {error && <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+      {error && (
+        <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
+          {error}
+        </p>
+      )}
 
       {/* Above the table on purpose: an invitation is the only thing on this
           page with a deadline on it, and it disappears from view the moment it
@@ -186,15 +214,21 @@ export default function UsersPage() {
           </h2>
           <ul className="divide-y divide-gray-100">
             {invites.map((inv) => (
-              <li key={inv.id} className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
+              <li
+                key={inv.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
+              >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="inline-flex rounded-lg bg-amber-50 p-2 text-amber-600">
                     <Mail size={15} />
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{inv.email}</p>
+                    <p className="truncate text-sm font-medium text-gray-900">
+                      {inv.email}
+                    </p>
                     <p className="text-xs text-gray-500">
-                      {labelRole(inv.role)} · expires {formatDate(inv.expiresAt)}
+                      {labelRole(inv.role)} · expires{" "}
+                      {formatDate(inv.expiresAt)}
                     </p>
                   </div>
                 </div>
@@ -233,14 +267,18 @@ export default function UsersPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {users.map((u) => {
-              const custom = u.role !== "super_admin" && !sameSet(u.permissions, ROLE_PRESETS[u.role]);
+              const custom =
+                u.role !== "super_admin" &&
+                !sameSet(u.permissions, ROLE_PRESETS[u.role]);
               return (
                 <tr key={u.id}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <UserAvatar user={u} />
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-900">{u.username}</p>
+                        <p className="font-medium text-gray-900">
+                          {u.username}
+                        </p>
                         <p className="truncate text-gray-500">{u.email}</p>
                       </div>
                     </div>
@@ -254,33 +292,59 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FA] px-2.5 py-1 text-xs font-medium text-[#37469E]">
-                      <Shield size={12} />{labelRole(u.role)}{custom ? " (CUSTOM)" : ""}
+                      <Shield size={12} />
+                      {labelRole(u.role)}
+                      {custom ? " (CUSTOM)" : ""}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${u.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${u.status === "active" ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}
+                    >
                       {u.status.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       {can("team:manage") && (
-                        <button onClick={() => setEditing(u)} title="Permissions" className="rounded-lg p-1.5 text-[#37469E] hover:bg-[#EEF0FA]">
+                        <button
+                          onClick={() => setEditing(u)}
+                          title="Permissions"
+                          className="rounded-lg p-1.5 text-[#37469E] hover:bg-[#EEF0FA]"
+                        >
                           <SlidersHorizontal size={16} />
                         </button>
                       )}
                       {can("users:update") && (
-                        <button onClick={() => setResetting(u)} title="Reset password" className="text-gray-400 hover:text-[#37469E]">
+                        <button
+                          onClick={() => setResetting(u)}
+                          title="Reset password"
+                          className="text-gray-400 hover:text-[#37469E]"
+                        >
                           <KeyRound size={16} />
                         </button>
                       )}
                       {can("users:update") && (
-                        <button onClick={() => toggleStatus(u)} title={u.status === "active" ? "Suspend" : "Reactivate"} className="text-gray-400 hover:text-gray-700">
-                          {u.status === "active" ? <Ban size={16} /> : <CheckCircle2 size={16} />}
+                        <button
+                          onClick={() => toggleStatus(u)}
+                          title={
+                            u.status === "active" ? "Suspend" : "Reactivate"
+                          }
+                          className="text-gray-400 hover:text-gray-700"
+                        >
+                          {u.status === "active" ? (
+                            <Ban size={16} />
+                          ) : (
+                            <CheckCircle2 size={16} />
+                          )}
                         </button>
                       )}
                       {can("users:delete") && (
-                        <button onClick={() => remove(u)} title="Delete" className="text-gray-400 hover:text-rose-600">
+                        <button
+                          onClick={() => remove(u)}
+                          title="Delete"
+                          className="text-gray-400 hover:text-rose-600"
+                        >
                           <Trash2 size={16} />
                         </button>
                       )}
@@ -308,23 +372,25 @@ export default function UsersPage() {
           />
         )}
       </AnimatePresence>
-
-      {editing && (
-        <PermissionEditor
-          member={editing}
-          onClose={() => setEditing(null)}
-          onRoleChange={changeRole}
-          onPermissionsChange={changePermissions}
-        />
-      )}
-
-      {resetting && (
-        <ResetPasswordDialog
-          member={resetting}
-          onClose={() => setResetting(null)}
-          onDone={(message) => toast.success(message)}
-        />
-      )}
+      <AnimatePresence>
+        {editing && (
+          <PermissionEditor
+            member={editing}
+            onClose={() => setEditing(null)}
+            onRoleChange={changeRole}
+            onPermissionsChange={changePermissions}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {resetting && (
+          <ResetPasswordDialog
+            member={resetting}
+            onClose={() => setResetting(null)}
+            onDone={(message) => toast.success(message)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -402,7 +468,11 @@ function NameCell({ user, editable, onSave }) {
         title="Save"
         className="rounded p-1 text-emerald-600 hover:bg-emerald-50 disabled:opacity-50"
       >
-        {busy ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+        {busy ? (
+          <Loader2 size={14} className="animate-spin" />
+        ) : (
+          <Check size={14} />
+        )}
       </button>
       <button
         type="button"
