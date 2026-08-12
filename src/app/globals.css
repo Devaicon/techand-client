@@ -226,13 +226,29 @@ body {
 
 .blog-prose blockquote p:last-child { margin-bottom: 0; }
 
+/* Body images fill the article column edge to edge — no strip of column showing
+   down either side of the picture.
+   `max-width: none` is what makes that hold: Tailwind's preflight caps every
+   image at `max-width: 100%`, and a `width`/`height` attribute carried in from
+   pasted markup (both survive the server sanitizer) sizes the image to its own
+   intrinsic dimensions. Either one leaves a narrow image sitting inside a wider
+   column. Side margins are zeroed for the same reason. */
 .blog-prose img {
   display: block;
   width: 100%;
+  max-width: none;
   height: auto;
   margin: 2.5rem 0 0.75rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Quill wraps an inserted image in its own paragraph. That paragraph must not
+   contribute spacing or centring of its own — `text-align: center` on a wrapper
+   is the other way an image ends up short of the column edges. */
+.blog-prose p:has(> img) {
+  margin: 0;
+  text-align: initial;
 }
 
 /* An image's caption is the paragraph immediately after it. */
@@ -295,6 +311,21 @@ body {
 }
 
 .blog-editor .ql-editor { min-height: 20rem; }
+
+/* Images are click targets in the editor — clicking one reopens its alt text.
+   An image with no alt attribute yet is outlined so the gap is visible in the
+   body copy, not only in the counter beneath the editor. An EMPTY alt is not
+   flagged: that is the author having marked the image decorative on purpose. */
+.blog-editor .ql-editor img {
+  cursor: pointer;
+  max-width: 100%;
+  border-radius: 0.375rem;
+}
+
+.blog-editor .ql-editor img:not([alt]) {
+  outline: 2px dashed #f59e0b;
+  outline-offset: 2px;
+}
 
 /* The inline-CTA marker.
    Its label is drawn entirely with ::after so the node itself stays EMPTY —
