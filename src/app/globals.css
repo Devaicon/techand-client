@@ -307,10 +307,44 @@ body {
   border: none;
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
+  /* Keeps the last row of format buttons clear of the full-screen toggle, which
+     is positioned over this corner. */
+  padding-right: 2.75rem;
   border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .blog-editor .ql-editor { min-height: 20rem; }
+
+/* Full-screen ("zen") editing.
+   The wrapper is a fixed, full-viewport flex column, so the toolbar keeps its
+   natural height and the body takes everything left over — the 60vh cap above
+   would otherwise leave the panel two-thirds empty. */
+.blog-editor--zen {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.blog-editor--zen .ql-toolbar { border-radius: 0; }
+
+.blog-editor--zen .ql-container {
+  max-height: none;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* A measured column on a wide screen rather than one line of text per monitor
+   width, and enough bottom padding that the line being typed is never pinned to
+   the very bottom edge. */
+.blog-editor--zen .ql-editor {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 46rem;
+  padding: 2.5rem 1.5rem 30vh;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
 
 /* Images are click targets in the editor — clicking one reopens its alt text.
    An image with no alt attribute yet is outlined so the gap is visible in the

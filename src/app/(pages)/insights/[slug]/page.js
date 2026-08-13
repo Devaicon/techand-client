@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params, searchParams }) {
   return (
     <main className="min-h-screen bg-white">
       {preview && (
-        <div className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white">
+        <div className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white z-1000">
           Draft preview — this post is not published yet.
         </div>
       )}
@@ -95,7 +95,7 @@ export default async function BlogPostPage({ params, searchParams }) {
       {/* Three-column reader: sticky contents rail, centered article, sticky
           aside. Both rails collapse below lg — the contents becomes an
           accordion above the body, the aside moves beneath it. */}
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 px-4 py-12 sm:px-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 lg:px-12 lg:py-16 xl:grid-cols-[220px_minmax(0,720px)_260px] xl:justify-center">
+      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-8 px-4 py-12 sm:px-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 lg:px-12 lg:py-16 xl:grid-cols-[240px_minmax(0,880px)_280px] xl:justify-center">
         <aside className="lg:row-span-2">
           <TableOfContents entries={post.toc || []} />
         </aside>

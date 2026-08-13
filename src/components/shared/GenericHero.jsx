@@ -3,8 +3,8 @@ import Breadcrumb from "@/components/shared/Breadcrumb";
 
 /**
  * GenericHero Component
- * Reusable hero section for any page. Fills half the viewport height, growing
- * taller when the content (e.g. a long blog title) needs the room.
+ * Reusable hero section for any page. Fills just over half the viewport height,
+ * growing taller when the content (e.g. a long blog title) needs the room.
  * @param {Object} props
  * @param {string} props.title - Main heading
  * @param {string} props.subtitle - Subheading
@@ -22,7 +22,13 @@ const GenericHero = ({
   dim = 0,
 }) => {
   return (
-    <section className="relative flex w-full items-center overflow-hidden py-16 min-h-[clamp(320px,50vh,560px)]">
+    // The site header is `fixed` and nothing below it reserves room, so it
+    // floats over the top 80px (93px from xl) of this section. The asymmetric
+    // top padding is that clearance: content is vertically centred, so on a tall
+    // hero — a long blog title, a breadcrumb that wraps — centring alone would
+    // slide the first line up under the navbar. Padding sets a floor it cannot
+    // cross, and pushes the section taller instead.
+    <section className="relative flex w-full items-center overflow-hidden pb-16 pt-28 xl:pt-36 min-h-[clamp(380px,56vh,620px)]">
       {/* Background Image */}
       <Image
         src={backgroundImage}
@@ -53,7 +59,7 @@ const GenericHero = ({
       {/* Content */}
       <div className="relative z-10 w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
         <Breadcrumb currentLabel={currentLabel} />
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4">
+        <h1 className="text-xl lg:text-5xl font-bold text-white mb-3 sm:mb-4">
           {title}
         </h1>
         {subtitle && (

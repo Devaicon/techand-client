@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, Maximize2, Minimize2 } from "lucide-react";
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import ImageAltDialog from "./ImageAltDialog";
 import "quill/dist/quill.snow.css";
@@ -23,6 +23,44 @@ const TOOLBAR = [
   ["link", "image"],
   ["clean"],
 ];
+
+// Ctrl+Alt+<n> heading shortcuts (Cmd+Alt on a Mac, which is where that
+// combination is conventional).
+//
+// The numbers are not heading levels — they are the levels this pipeline
+// actually has. An article body starts at h2: h1 is the post title in the hero,
+// and the server sanitizer drops h5/h6 entirely, so the toolbar offers 2/3/4 and
+// nothing else. "1" is therefore an alias for the top level available rather
+// than a dead key, and "5" is the way back to body text.
+const HEADING_SHORTCUTS = { 1: 2, 2: 2, 3: 3, 4: 4, 5: false };
+
+// Each digit is registered twice. `event.key` covers the normal case; the legacy
+// `which` code covers layouts where Ctrl+Alt is AltGr and the event reports the
+// character it would have typed ("@", "²", …) instead of the digit.
+const DIGIT_WHICH = { 1: 49, 2: 50, 3: 51, 4: 52, 5: 53 };
+
+function headingBindings() {
+  return Object.fromEntries(
+    Object.entries(HEADING_SHORTCUTS).map(([digit, level]) => [
+      `techand-header-${digit}`,
+      {
+        key: [digit, DIGIT_WHICH[digit]],
+        // Maps to ctrlKey on Windows/Linux and metaKey on macOS.
+        shortKey: true,
+        altKey: true,
+        handler() {
+          // Pressing the level a line already has takes it back to body text,
+          // the same toggle the toolbar's header picker performs.
+          const current = this.quill.getFormat().header;
+          this.quill.format("header", current === level ? false : level, "user");
+          // Falsy tells Quill to preventDefault, so the browser never sees the
+          // combination.
+          return false;
+        },
+      },
+    ]),
+  );
+}
 
 // Registers the custom blots exactly once per page load. Quill's registry is
 // global, so re-registering on every mount logs an override warning.
@@ -105,6 +143,33 @@ export default function QuillEditor({
   // How many body images still have no alt attribute, surfaced under the editor
   // so an author is told rather than having to remember.
   const [missingAlt, setMissingAlt] = useState(0);
+  // Zen mode: the editor takes over the viewport. Only the wrapper's classes
+  // change, so Quill's own DOM subtree is never unmounted and the caret,
+  // selection and undo stack all survive the toggle.
+  const [zen, setZen] = useState(false);
+
+  // The page behind a full-viewport panel must not scroll underneath it.
+  useEffect(() => {
+    if (!zen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [zen]);
+
+  // A panel with no page chrome around it needs a way out that isn't the button.
+  // Bound only while the alt-text dialog is closed: Escape is that dialog's
+  // cancel key, and one press should not dismiss both it and the editor around
+  // it.
+  useEffect(() => {
+    if (!zen || altTarget) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setZen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [zen, altTarget]);
 
   useEffect(() => {
     let cancelled = false;
@@ -120,6 +185,9 @@ export default function QuillEditor({
         theme: "snow",
         placeholder,
         modules: {
+          // Merged into Quill's stock bindings rather than replacing them —
+          // expandConfig deep-merges module options over Keyboard.DEFAULTS.
+          keyboard: { bindings: headingBindings() },
           toolbar: {
             container: TOOLBAR,
             handlers: {
@@ -235,14 +303,49 @@ export default function QuillEditor({
     setAltTarget(null);
   };
 
+  const toggleZen = () => {
+    setZen((v) => !v);
+    // Keep the caret where it was — clicking the button moves focus to it, and
+    // an editor that has taken over the screen should be ready to type in.
+    requestAnimationFrame(() => quillRef.current?.focus());
+  };
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white">
+    // z-40, not z-50: the alt-text dialog and the mobile nav drawer both sit at
+    // z-50 and have to stay reachable from inside zen mode.
+    <div
+      className={
+        zen
+          ? "fixed inset-0 z-40 flex flex-col bg-white"
+          : "relative rounded-xl border border-gray-200 bg-white"
+      }
+    >
       {loading && (
         <div className="flex items-center gap-2 p-4 text-sm text-gray-500">
           <Loader2 size={16} className="animate-spin" /> Loading editor…
         </div>
       )}
-      <div className={loading ? "hidden" : "blog-editor"}>
+
+      {/* Sits over the sticky toolbar, which reserves room for it on the right
+          (see .blog-editor .ql-toolbar in globals.css). */}
+      {!loading && (
+        <button
+          type="button"
+          onClick={toggleZen}
+          aria-pressed={zen}
+          aria-label={zen ? "Exit full screen" : "Edit full screen"}
+          title={zen ? "Exit full screen (Esc)" : "Edit full screen"}
+          className="absolute right-1.5 top-1.5 z-20 rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        >
+          {zen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+      )}
+
+      <div
+        className={
+          loading ? "hidden" : `blog-editor${zen ? " blog-editor--zen" : ""}`
+        }
+      >
         <div ref={hostRef} />
       </div>
       {uploadError && (
@@ -255,6 +358,20 @@ export default function QuillEditor({
           <AlertTriangle size={15} className="shrink-0" />
           {missingAlt} {missingAlt === 1 ? "image has" : "images have"} no alt
           text. Click {missingAlt === 1 ? "it" : "each one"} to describe it.
+        </p>
+      )}
+
+      {/* A keyboard shortcut nobody is told about is a shortcut nobody uses. */}
+      {!loading && (
+        <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-400">
+          <kbd className="font-sans font-medium text-gray-500">Ctrl</kbd>+
+          <kbd className="font-sans font-medium text-gray-500">Alt</kbd>+
+          <kbd className="font-sans font-medium text-gray-500">1</kbd>–
+          <kbd className="font-sans font-medium text-gray-500">4</kbd> sets a
+          heading,{" "}
+          <kbd className="font-sans font-medium text-gray-500">5</kbd> returns to
+          body text.
+          {zen && " Esc leaves full screen."}
         </p>
       )}
 
