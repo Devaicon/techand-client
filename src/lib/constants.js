@@ -6,14 +6,14 @@ export const SITE_CONFIG = {
   title: "Enterprise Automation & Digital Transformation Solutions",
   description:
     "Empowering enterprise transformation through cutting-edge technology consulting for the UAE & GCC region.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://Tech&.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai",
   ogImage: "/og-image.webp",
   links: {
     twitter: "https://twitter.com/Tech&",
     linkedin: "https://www.linkedin.com/company/techand.ai/",
   },
   contact: {
-    email: "info@Tech&.com",
+    email: "info@techand.ai",
     phone: "+971-XX-XXX-XXXX",
   },
 };

@@ -10,6 +10,7 @@ import GenericHero from "@/components/shared/GenericHero";
 import TableOfContents from "@/components/insight-page/reader/TableOfContents";
 import ExternalLinks from "@/components/insight-page/reader/ExternalLinks";
 import ArticleBody from "@/components/insight-page/reader/ArticleBody";
+import ArticleSchema from "@/components/insight-page/reader/ArticleSchema";
 import BlogCta from "@/components/insight-page/reader/BlogCta";
 import FaqSection from "@/components/insight-page/reader/FaqSection";
 import RelatedArticles from "@/components/insight-page/reader/RelatedArticles";
@@ -75,6 +76,10 @@ export default async function BlogPostPage({ params, searchParams }) {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Structured data for the live article only — a draft preview must not
+          advertise itself to crawlers as a published piece. */}
+      {!preview && <ArticleSchema post={post} />}
+
       {preview && (
         <div className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white z-1000">
           Draft preview — this post is not published yet.
