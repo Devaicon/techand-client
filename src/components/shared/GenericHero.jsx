@@ -59,7 +59,13 @@ const GenericHero = ({
       {/* Content */}
       <div className="relative z-10 w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32">
         <Breadcrumb currentLabel={currentLabel} />
-        <h1 className="text-xl lg:text-5xl font-bold text-white mb-3 sm:mb-4">
+        {/* The ramp matches HeaderShort/HeaderTall. It matters most on the blog
+            detail page, where the breadcrumb's last crumb is the post title: at
+            the old `text-xl` the h1 was only 1.4x the 14px crumb, so the two
+            read as the same sentence printed twice rather than as a heading
+            under its trail. `break-words` because the section clips overflow —
+            an unbroken title would be cut off at the edge instead of wrapping. */}
+        <h1 className="mb-3 break-words text-3xl font-bold leading-tight text-white sm:mb-4 sm:text-4xl md:text-5xl">
           {title}
         </h1>
         {subtitle && (

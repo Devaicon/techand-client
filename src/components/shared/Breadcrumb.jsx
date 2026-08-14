@@ -31,7 +31,10 @@ export default function Breadcrumb({ currentLabel }) {
 
   return (
     <nav aria-label="Breadcrumb" className="mb-3 sm:mb-4">
-      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-white/80">
+      {/* Deliberately quiet on small screens. The last crumb repeats the h1
+          directly below it (a post title, a page name), so the trail has to
+          read as chrome rather than compete with the heading. */}
+      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-white/80 sm:text-sm">
         {crumbs.map((crumb, index) => (
           <li key={crumb.href} className="flex items-center gap-x-1.5">
             {index > 0 && (
@@ -41,7 +44,7 @@ export default function Breadcrumb({ currentLabel }) {
               />
             )}
             {crumb.isCurrent ? (
-              <span className="font-medium text-white" aria-current="page">
+              <span className="font-medium text-white/90" aria-current="page">
                 {crumb.label}
               </span>
             ) : (
