@@ -12,6 +12,14 @@ import { PAGE_INSET } from "./layout";
  * `aria-hidden`, no content, and they sit behind everything. On a narrow screen
  * they are the only thing that keeps a plain gradient from reading as flat.
  *
+ * The top padding is heavier than the bottom on purpose. The site header is
+ * `fixed` and nothing below it reserves room, so it floats over the top 80px
+ * (93px from xl) of this section; at an even `py-20` the breadcrumb landed
+ * behind it. `pt-28 xl:pt-36` matches GenericHero — the header the blog posts
+ * and /insights use — so every header on the site clears the navbar by the same
+ * margin, and the h1 stops at the same `md:text-5xl` instead of running on to
+ * 56px, which made the title tower over its own breadcrumb.
+ *
  * `overlapRoom` extends the gradient below the content by that many pixels. It is
  * how the `header-panel` block gives a card room to rise onto clean gradient
  * rather than over the buttons; left unset it changes nothing, so every page that
@@ -48,7 +56,7 @@ export default function HeaderTall({ props, overlapRoom = 0 }) {
         className="pointer-events-none absolute -bottom-40 -right-24 h-[392px] w-[392px] rounded-full bg-[#683b80]/35 blur-[186px]"
       />
 
-      <div className={`relative z-10 w-full py-20 md:py-28 ${PAGE_INSET}`}>
+      <div className={`relative z-10 w-full pb-20 pt-28 md:pb-28 xl:pt-36 ${PAGE_INSET}`}>
         {showBreadcrumb !== false && <Breadcrumb currentLabel={headline} />}
 
         {/* Every text node below breaks on words rather than overflowing. The
@@ -61,7 +69,7 @@ export default function HeaderTall({ props, overlapRoom = 0 }) {
           </span>
         )}
 
-        <h1 className="max-w-[900px] break-words text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl lg:text-[56px]">
+        <h1 className="max-w-[900px] break-words text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl">
           {headline}
         </h1>
 
