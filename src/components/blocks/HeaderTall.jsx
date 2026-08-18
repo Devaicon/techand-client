@@ -26,8 +26,16 @@ import { PAGE_INSET } from "./layout";
  * renders this header on its own is untouched.
  */
 export default function HeaderTall({ props, overlapRoom = 0 }) {
-  const { eyebrow, headline, subheading, body, image, primary, secondary, showBreadcrumb } =
-    props;
+  const {
+    eyebrow,
+    headline,
+    subheading,
+    body,
+    image,
+    primary,
+    secondary,
+    showBreadcrumb,
+  } = props;
 
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-br from-[#4653a2] via-[#52426f] to-[#683b80]">
@@ -56,7 +64,9 @@ export default function HeaderTall({ props, overlapRoom = 0 }) {
         className="pointer-events-none absolute -bottom-40 -right-24 h-[392px] w-[392px] rounded-full bg-[#683b80]/35 blur-[186px]"
       />
 
-      <div className={`relative z-10 w-full pb-20 pt-28 md:pb-28 xl:pt-36 ${PAGE_INSET}`}>
+      <div
+        className={`relative z-10 w-full pb-20 pt-36 md:pb-28 xl:pt-42 ${PAGE_INSET}`}
+      >
         {showBreadcrumb !== false && <Breadcrumb currentLabel={headline} />}
 
         {/* Every text node below breaks on words rather than overflowing. The
