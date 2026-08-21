@@ -342,9 +342,9 @@ export default function Capabilities() {
             className="w-[60px2px] h-[48px] sm:w-[80px] sm:h-[64px] md:w-[100px] md:h-[80px]"
           />
 
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold text-center my-2">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold text-center my-2">
             Tech& Capabilities
-          </h1>
+          </h2>
           <p className="text-xs sm:text-sm md:text-base font-normal text-[#f2f2f2] text-center mb-4 px-2">
             Enterprise platforms, AI, and integration services
           </p>

@@ -26,9 +26,9 @@ export default function InsightsExplorer({ posts = [] }) {
       <div className="w-full max-w-[1180px] px-4 sm:px-6 md:px-8 flex flex-col items-center">
         {/* Header */}
         <div className="w-full flex flex-col items-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-[#0f172a] text-center mb-2">
+          <h2 className="text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-[#0f172a] text-center mb-2">
             Insights
-          </h1>
+          </h2>
           <p className="text-sm sm:text-base font-normal text-[#475569] text-center mb-4 px-2">
             Expert perspectives on enterprise transformation, AI, and digital
             innovation

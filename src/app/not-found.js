@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SECTIONS, MACHINE_READABLE } from "@/lib/agentGuide.mjs";
 
 export const metadata = {
   title: "404 - Page Not Found",
@@ -45,6 +46,51 @@ export default function NotFound() {
           </svg>
           <span>Go Back Home</span>
         </Link>
+
+        {/* Recovery links.
+            A visitor who mistyped a URL and an agent that guessed one both need
+            the same thing: somewhere to go next. The section list is the one in
+            agentGuide.mjs, so this page, /llms.txt and the Markdown 404 body
+            never disagree about what the site contains.
+
+            Rendered as real links rather than a paragraph of text because
+            `robots: { follow: true }` above is only useful if there is
+            something here to follow. */}
+        <nav
+          aria-label="Main sections"
+          className="mt-12 border-t border-gray-100 pt-8"
+        >
+          <p className="text-sm font-semibold text-gray-500 mb-3">
+            Try one of these
+          </p>
+          <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+            {SECTIONS.map(({ path, title }) => (
+              <li key={path}>
+                <Link
+                  href={path}
+                  className="text-sm text-[#5B6FB6] hover:text-[#4a5e9d] hover:underline"
+                >
+                  {title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-6 text-xs text-gray-400">
+            Machine-readable:{" "}
+            {MACHINE_READABLE.map(({ path, title }, index) => (
+              <span key={path}>
+                {index > 0 && <span aria-hidden="true"> · </span>}
+                {/* Plain anchors: these are generated route handlers, not
+                    App Router pages, so there is nothing for next/link to
+                    prefetch. */}
+                <a href={path} className="hover:text-gray-600 hover:underline">
+                  {title}
+                </a>
+              </span>
+            ))}
+          </p>
+        </nav>
       </div>
     </div>
   );

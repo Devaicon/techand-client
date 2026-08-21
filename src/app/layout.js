@@ -5,6 +5,7 @@ import ComingSoon from "@/components/coming-soon/ComingSoon";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { getNavbar } from "@/lib/navbar-api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -159,7 +160,19 @@ const shouldRenderComingSoon = async () => {
 };
 
 export default async function RootLayout({ children }) {
-  const isComingSoon = await shouldRenderComingSoon();
+  // Both calls hit the same API and neither depends on the other, so they run
+  // together rather than adding two round trips to every render.
+  //
+  // The navbar is fetched HERE, on the server, so the CMS navigation ships in
+  // the initial HTML. SiteChrome is a client component and used to fetch it
+  // itself after hydration, which left every CMS page unreachable by link for
+  // anything that does not run JavaScript — crawlers and agents included.
+  // `getNavbar` returns null on failure, and SiteChrome falls back to its
+  // built-in menu exactly as before.
+  const [isComingSoon, menu] = await Promise.all([
+    shouldRenderComingSoon(),
+    getNavbar(),
+  ]);
 
   return (
     <html lang="en" className="scroll-smooth">
@@ -191,7 +204,7 @@ export default async function RootLayout({ children }) {
         {isComingSoon ? (
           <ComingSoon />
         ) : (
-          <SiteChrome>{children}</SiteChrome>
+          <SiteChrome initialMenu={menu}>{children}</SiteChrome>
         )}
         <Analytics />
         <SpeedInsights />

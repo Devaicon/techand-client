@@ -12,9 +12,16 @@
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/public";
 
-async function getJson(path) {
+// `revalidate` is opt-in, and only the crawler-facing documents take it up.
+// The reader-facing pages stay uncached: publishing a post has to be visible on
+// the next request, which is the whole reason this file does not use ISR.
+// sitemap.xml and llms.txt have the opposite requirement — they are re-fetched
+// by machines on their own schedule, and must not turn that into database load.
+async function getJson(path, { revalidate } = {}) {
   try {
-    const res = await fetch(`${API}${path}`, { cache: "no-store" });
+    const res = await fetch(`${API}${path}`, {
+      ...(revalidate ? { next: { revalidate } } : { cache: "no-store" }),
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -46,8 +53,8 @@ export const toCardModel = (post) => ({
   comingSoon: post.comingSoon ?? false,
 });
 
-export async function getAllInsights() {
-  const json = await getJson("/blogs");
+export async function getAllInsights(options) {
+  const json = await getJson("/blogs", options);
   return json?.data?.blogs ?? [];
 }
 
@@ -70,4 +77,19 @@ export async function getInsightBySlug(slug, previewToken) {
 
   const json = await getJson(path);
   return json?.data?.blog ?? null;
+}
+
+/**
+ * Every published article with the date it last changed, for the sitemap.
+ *
+ * Reads the same `/blogs/slugs` endpoint as `getPublishedSlugs`, taking its
+ * `entries` array instead of the bare slug list. One endpoint serves both so
+ * the two can never disagree about what is published.
+ *
+ * @returns {Promise<Array<{slug: string, updatedAt: string|null}>>}
+ */
+export async function getSitemapPosts({ revalidate } = {}) {
+  const json = await getJson("/blogs/slugs", { revalidate });
+  const entries = json?.data?.entries;
+  return Array.isArray(entries) ? entries : [];
 }

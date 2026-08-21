@@ -1,8 +1,9 @@
 // The CMS navigation tree.
 //
-// Fetched in the browser rather than on the server, because SiteChrome — the
-// only consumer — is a client component (it probes the admin session to decide
-// whether to show the admin ribbon).
+// Called from the root layout (a Server Component) so the menu is in the
+// server-rendered HTML, and from SiteChrome in the browser as the fallback for
+// when that server call came back empty. Plain fetch, so it runs unchanged in
+// both places.
 //
 // Returns `null` for "not configured, use the built-in menu" AND for any
 // failure. Both mean the same thing to the caller: fall back. A site that

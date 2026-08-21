@@ -73,12 +73,19 @@ export default function HeroCarousel({
             }`}
             aria-hidden={index !== currentSlide}
           >
+            {/* Every slide is rendered at once — the inactive ones are
+                stacked underneath at opacity 0 — so the heading level has to be
+                decided here rather than by whichever slide happens to be
+                showing. The first slide is the one visible on load and the only
+                one not aria-hidden, which makes it the page's H1; the rest are
+                H2s so the document has a single title. */}
             <HeroSlide
               backgroundImage={slide.backgroundImage}
               title={slide.title}
               description={slide.description}
               primaryButton={slide.primaryButton}
               secondaryButton={slide.secondaryButton}
+              headingLevel={index === 0 ? 1 : 2}
             />
           </div>
         ))}

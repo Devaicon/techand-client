@@ -8,6 +8,11 @@ import { ArrowRight } from "lucide-react";
  * @param {string} description - Description text for the slide
  * @param {Object} primaryButton - Primary button config {text, href}
  * @param {Object} secondaryButton - Secondary button config {text, href}
+ * @param {number} headingLevel - 1 for the slide that carries the page's H1,
+ *   2 for the rest. Every slide is in the DOM at once, so without this the
+ *   carousel emits one H1 per slide and the page has no single title for a
+ *   crawler or an assistive technology to anchor on. Defaults to 2 so a new
+ *   caller cannot accidentally introduce a second H1.
  */
 export default function HeroSlide({
   backgroundImage,
@@ -15,7 +20,12 @@ export default function HeroSlide({
   description,
   primaryButton,
   secondaryButton,
+  headingLevel = 2,
 }) {
+  // Styling is identical either way — this changes the document outline, not
+  // the design.
+  const Heading = headingLevel === 1 ? "h1" : "h2";
+
   return (
     <div
       className="relative flex items-center overflow-hidden w-full h-[500px] sm:h-[600px] md:h-[calc(100vh-40px)] lg:h-[calc(100vh-46px)] xl:h-[calc(100vh-46px)] 2xl:h-[700px]"
@@ -40,9 +50,9 @@ export default function HeroSlide({
         <div className="w-full lg:w-[calc(100%-280px)] max-w-[1639px] mx-auto px-4 sm:px-8 lg:px-6 xl:px-[59px] pt-6 md:pt-10 lg:pt-12 xl:pt-16">
           <div className="max-w-full sm:max-w-[600px] lg:max-w-[900px]">
             {/* Main Heading */}
-            <h1 className="font-bold text-white mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight lg:leading-[1.2]">
+            <Heading className="font-bold text-white mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight lg:leading-[1.2]">
               {title}
-            </h1>
+            </Heading>
 
             {/* Description */}
             <p

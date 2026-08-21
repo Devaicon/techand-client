@@ -35,6 +35,20 @@ const nextConfig = {
         source: "/:path*",
         headers: [
           {
+            // Every page has two representations — HTML and, under
+            // `Accept: text/markdown`, Markdown (see src/proxy.js). Without
+            // Accept in Vary, a CDN serves whichever variant it cached first to
+            // everyone: agents get HTML, or browsers get a .md download.
+            //
+            // Set here rather than in the proxy because Next.js writes its own
+            // Vary (`rsc, next-router-state-tree, …`) while rendering an App
+            // Router response, which replaces anything the proxy set. A header
+            // declared in next.config survives that, and Next merges this value
+            // with its own rather than dropping either.
+            key: "Vary",
+            value: "Accept",
+          },
+          {
             key: "Cache-Control",
             value: "public, max-age=0, must-revalidate", // No caching for pages
           },

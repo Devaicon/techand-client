@@ -53,3 +53,31 @@ export async function getPage(slug, previewToken) {
     return null;
   }
 }
+
+/**
+ * Every published CMS page, for the sitemap.
+ *
+ * Returns `[]` rather than `null` on failure — unlike `getPage`, where a
+ * failure has to become a 404. Here the caller is building sitemap.xml, and the
+ * right degraded behaviour is a sitemap listing the code routes only, not a
+ * missing or empty document.
+ *
+ * @returns {Promise<Array<{slug: string, updatedAt: string}>>}
+ */
+export async function getSitemapPages({ revalidate } = {}) {
+  try {
+    const res = await fetch(`${API}/pages/slugs`, {
+      // Uncached by default, like getPage above; the crawler-facing documents
+      // pass a revalidate window so re-fetching sitemap.xml cannot become a way
+      // to put load on the database.
+      ...(revalidate ? { next: { revalidate } } : { cache: "no-store" }),
+    });
+    if (!res.ok) return [];
+
+    const json = await res.json();
+    const pages = json?.data?.pages;
+    return Array.isArray(pages) ? pages : [];
+  } catch {
+    return [];
+  }
+}

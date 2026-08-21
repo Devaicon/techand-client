@@ -25,9 +25,9 @@ const FinancialBacking = () => {
     <section className="min-h-[550px] sm:min-h-[600px] md:min-h-[650px] lg:min-h-[700px] xl:h-[700px] w-full bg-[#fffcfa] flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16 gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative overflow-hidden">
       {/* Content */}
       <div className="flex flex-col items-start sm:items-center text-left sm:text-center justify-start  sm:justify-center w-full sm:w-[95%] md:w-[90%] lg:w-[85%] xl:w-[75%] gap-0 mt-2 sm:mt-4 md:mt-6 lg:mt-8">
-        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[36px] xl:text-[38px] font-semibold leading-[1.3] lg:leading-[1.4] text-[rgba(55,70,158,1)] mb-3 sm:mb-4 md:mb-5 px-2 sm:px-4">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[36px] xl:text-[38px] font-semibold leading-[1.3] lg:leading-[1.4] text-[rgba(55,70,158,1)] mb-3 sm:mb-4 md:mb-5 px-2 sm:px-4">
           Empowering enterprise transformation through cutting-edge technology
-        </h1>
+        </h2>
 
         <p className="text-xs sm:text-sm md:text-base lg:text-[15px] xl:text-[18px] leading-[1.6] sm:leading-[1.65] md:leading-[1.7] text-[rgba(136,136,136,1)] m-0 px-2 sm:px-4 max-w-full">
           Choosing the right partner is the most important step for your

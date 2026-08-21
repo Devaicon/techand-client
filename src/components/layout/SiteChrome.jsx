@@ -13,16 +13,28 @@ import { getNavbar } from "@/lib/navbar-api";
 // Admin routes get a blank, plain layout — no marketing navbar/footer.
 // Every other route keeps the full marketing chrome, plus a thin ribbon at the
 // very top when an admin happens to be signed in.
-export default function SiteChrome({ children }) {
+export default function SiteChrome({ children, initialMenu = null }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const [adminUser, setAdminUser] = useState(null);
   // null means "not configured, or the fetch failed" — either way the built-in
   // Navbar renders. See the fallback note where it is chosen below.
-  const [menu, setMenu] = useState(null);
+  //
+  // Seeded from the server (layout.js fetches the same menu) so the CMS
+  // navigation is in the initial HTML. Before that, the menu only existed after
+  // hydration, which meant a crawler — or anything else reading the page
+  // without running JavaScript — saw the hardcoded fallback menu and could not
+  // reach a single CMS page by link.
+  const [menu, setMenu] = useState(initialMenu);
 
   useEffect(() => {
     if (isAdmin) return undefined;
+    // The server already resolved the menu for this page load, uncached.
+    // Re-fetching would not just be redundant: a blip on the second call
+    // returns null, which would swap a good menu for the fallback in front of
+    // someone already looking at it.
+    if (initialMenu) return undefined;
+
     let active = true;
     (async () => {
       const navbar = await getNavbar();
@@ -31,7 +43,7 @@ export default function SiteChrome({ children }) {
     return () => {
       active = false;
     };
-  }, [isAdmin]);
+  }, [isAdmin, initialMenu]);
 
   // Probe the admin session once on public routes. Plain fetch (not adminApi)
   // so we never trigger the refresh interceptor for anonymous visitors. Skip
