@@ -37,17 +37,26 @@ const CategoryFilters = ({ activeCategory, onCategoryChange }) => {
 // meanings of "featured", both kept because both match how the site reads.
 const FeaturedCard = ({ post }) => {
   return (
-    <CardWrapper className="relative mb-8 md:min-h-[400px] w-full">
-      <div className="relative h-[280px] md:absolute md:inset-y-0 md:left-0 md:h-auto md:w-1/2">
+    <CardWrapper className="mb-8 w-full md:flex md:items-center">
+      {/* The thumbnail is sized BY its 16:9 ratio, not stretched to whatever
+          height the text beside it happens to need. Stretching is what used to
+          crop a widescreen image down its sides: the column was fixed at half
+          the card and then pulled to the card's full height, leaving
+          object-cover a much squarer box than the picture. `aspect-video` +
+          `md:items-center` means the column's height follows its width, so a
+          16:9 thumbnail lands in a 16:9 box and nothing is cut off — the card
+          gets as tall as the picture needs. */}
+      <div className="relative aspect-video w-full shrink-0 md:w-[56%]">
         <Image
           src={post.image}
           alt={post.title}
           fill
+          sizes="(max-width: 768px) 100vw, 56vw"
           className="object-cover"
           style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
-      <div className="p-6 md:p-8 flex flex-col justify-center md:ml-[50%]">
+      <div className="flex min-w-0 flex-1 flex-col justify-center p-6 md:p-8">
         <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={post.category} variant="primary" />
           <ReadTime label={post.readTime} />

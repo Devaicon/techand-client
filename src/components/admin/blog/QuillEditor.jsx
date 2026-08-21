@@ -70,6 +70,7 @@ function registerBlots(Quill) {
   if (blotsRegistered) return;
   registerCtaBlot(Quill);
   registerImageBlot(Quill);
+  registerFigureBlot(Quill);
   blotsRegistered = true;
 }
 
@@ -94,6 +95,63 @@ function registerImageBlot(Quill) {
   // `true` suppresses the "overwriting modules/formats" console warning — the
   // override is the entire point here.
   Quill.register(AltableImage, true);
+}
+
+// A body image and its caption as ONE block.
+//
+// Quill's stock image is an INLINE embed, so it lives inside a paragraph — and
+// a <figure> inside a <p> is not legal HTML, which leaves nowhere valid to hang
+// a <figcaption>. Making the whole figure the blot solves that, and has the
+// side benefit that the editor shows the caption exactly where the reader will
+// see it instead of hiding it behind a dialog.
+//
+// contenteditable="false" for the same reason CtaSlotBlot sets it: everything
+// inside is owned by the blot, so there is no place in here to type. The caption
+// is edited through the dialog, which is also where the alt text is set.
+//
+// The AltableImage blot above stays registered: posts written before this
+// existed have plain inline images in their saved Delta, and those must keep
+// loading. An old image becomes a figure the moment someone gives it a caption.
+function registerFigureBlot(Quill) {
+  const BlockEmbed = Quill.import("blots/block/embed");
+
+  class FigureBlot extends BlockEmbed {
+    static create(value) {
+      const node = super.create();
+      node.setAttribute("contenteditable", "false");
+
+      const img = document.createElement("img");
+      img.setAttribute("src", value?.src || "");
+      // A string — including "" — means the author has decided; null means the
+      // image has no alt attribute yet, which is what the counter below looks
+      // for. Setting alt="" unconditionally would hide that gap.
+      if (typeof value?.alt === "string") img.setAttribute("alt", value.alt);
+      node.appendChild(img);
+
+      // No caption, no empty <figcaption> in the published markup.
+      if (value?.caption) {
+        const caption = document.createElement("figcaption");
+        caption.textContent = value.caption;
+        node.appendChild(caption);
+      }
+
+      return node;
+    }
+
+    static value(node) {
+      const img = node.querySelector("img");
+      return {
+        src: img?.getAttribute("src") || "",
+        alt: img?.hasAttribute("alt") ? img.getAttribute("alt") : null,
+        caption: node.querySelector("figcaption")?.textContent || "",
+      };
+    }
+  }
+
+  FigureBlot.blotName = "figureImage";
+  FigureBlot.tagName = "figure";
+
+  Quill.register(FigureBlot);
 }
 
 function registerCtaBlot(Quill) {
@@ -126,6 +184,10 @@ export default function QuillEditor({
   initialDelta,
   onChange,
   onReady,
+  // Prefixes the uploaded file's name so a body image lands at a readable
+  // Cloudinary path (…/my-post-slug-agent-dashboard_ab12cd.png) rather than the
+  // random public id Cloudinary hands out by default. See uploadToCloudinary.
+  filenamePrefix = "",
   placeholder = "Write the article…",
 }) {
   const hostRef = useRef(null);
@@ -134,12 +196,19 @@ export default function QuillEditor({
   // without needing to be torn down and rebound on every parent render.
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  // Same reason: the editor is mounted once, but the post's slug is typed after
+  // that, so the upload handler has to read the current value rather than the
+  // one that existed at mount.
+  const filenamePrefixRef = useRef(filenamePrefix);
+  filenamePrefixRef.current = filenamePrefix;
 
   const [loading, setLoading] = useState(true);
   const [uploadError, setUploadError] = useState("");
-  // The image whose alt text is being edited: { index, src, alt }, where `alt`
-  // is null for an image that carries no alt attribute yet. Null = closed.
-  const [altTarget, setAltTarget] = useState(null);
+  // The image whose alt text and caption are being edited:
+  // { index, src, alt, caption, isFigure }, where `alt` is null for an image
+  // that carries no alt attribute yet and `isFigure` marks the newer
+  // figure+figcaption blot apart from a legacy inline image. Null = closed.
+  const [imageTarget, setImageTarget] = useState(null);
   // How many body images still have no alt attribute, surfaced under the editor
   // so an author is told rather than having to remember.
   const [missingAlt, setMissingAlt] = useState(0);
@@ -163,13 +232,13 @@ export default function QuillEditor({
   // cancel key, and one press should not dismiss both it and the editor around
   // it.
   useEffect(() => {
-    if (!zen || altTarget) return;
+    if (!zen || imageTarget) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") setZen(false);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [zen, altTarget]);
+  }, [zen, imageTarget]);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,19 +272,36 @@ export default function QuillEditor({
                   if (!file) return;
                   setUploadError("");
                   try {
-                    const { url } = await uploadToCloudinary(file);
+                    const { url } = await uploadToCloudinary(file, {
+                      filename: filenamePrefixRef.current
+                        ? filenamePrefixRef.current + "-" + file.name
+                        : file.name,
+                    });
                     const range = quill.getSelection(true);
-                    quill.insertEmbed(range.index, "image", url, "user");
+                    quill.insertEmbed(
+                      range.index,
+                      "figureImage",
+                      { src: url, alt: null, caption: "" },
+                      "user",
+                    );
                     quill.setSelection(range.index + 1, 0, "user");
-                    // Ask for the description while the author still has the
-                    // picture in mind. Dismissing the dialog leaves the image
-                    // in place with no alt, which the counter below then flags.
+                    // Ask for the description and caption while the author
+                    // still has the picture in mind. Dismissing the dialog
+                    // leaves the image in place with no alt, which the counter
+                    // below then flags.
                     //
-                    // getLeaf(range.index), not range.index + 1: a lookup lands
-                    // on the blot that STARTS at the index, so +1 would return
-                    // whatever follows the image — nothing at all when it is the
-                    // last thing in its paragraph.
-                    openAltDialog(quill.getLeaf(range.index)[0]?.domNode);
+                    // Found by src rather than by index: inserting a BLOCK
+                    // embed mid-paragraph splits that paragraph, and the blot
+                    // sitting at `range.index` afterwards is then the first
+                    // half of the split, not the figure. Last match wins, so
+                    // re-using a picture already in the article still opens the
+                    // copy just inserted.
+                    const figures = Array.from(
+                      quill.root.querySelectorAll("figure"),
+                    ).filter(
+                      (f) => f.querySelector("img")?.getAttribute("src") === url,
+                    );
+                    openImageDialog(figures[figures.length - 1]);
                   } catch (err) {
                     setUploadError(err.message || "Image upload failed.");
                   }
@@ -230,19 +316,28 @@ export default function QuillEditor({
       const countMissingAlt = () =>
         setMissingAlt(quill.root.querySelectorAll("img:not([alt])").length);
 
-      // Turns an <img> node in the editor into the dialog's payload. Quill.find
+      // Turns an image node in the editor into the dialog's payload. Quill.find
       // maps the node back to its blot, which is the only way to learn the
-      // document index that formatting the alt has to be applied at.
-      function openAltDialog(node) {
-        if (!node || node.tagName !== "IMG") return;
-        const blot = Quill.find(node);
-        if (!blot) return;
-        setAltTarget({
+      // document index the edit has to be applied at. `true` makes it bubble:
+      // a click lands on the <img> or the <figcaption>, but the blot that owns
+      // them is the <figure> around them.
+      function openImageDialog(node) {
+        if (!node) return;
+        const blot = Quill.find(node, true);
+        const el = blot?.domNode;
+        if (!el || (el.tagName !== "FIGURE" && el.tagName !== "IMG")) return;
+
+        const isFigure = el.tagName === "FIGURE";
+        const img = isFigure ? el.querySelector("img") : el;
+
+        setImageTarget({
           index: quill.getIndex(blot),
-          src: node.getAttribute("src") || "",
+          isFigure,
+          src: img?.getAttribute("src") || "",
           // null and "" are distinct: no alt attribute at all vs. one
           // deliberately left empty to mark the image decorative.
-          alt: node.hasAttribute("alt") ? node.getAttribute("alt") : null,
+          alt: img?.hasAttribute("alt") ? img.getAttribute("alt") : null,
+          caption: el.querySelector("figcaption")?.textContent || "",
         });
       }
 
@@ -250,7 +345,9 @@ export default function QuillEditor({
       // rather than per-image so it keeps working for images that arrive later,
       // whether typed, pasted, or restored from a saved Delta.
       quill.root.addEventListener("click", (e) => {
-        if (e.target instanceof HTMLImageElement) openAltDialog(e.target);
+        const node =
+          e.target instanceof Element ? e.target.closest("figure, img") : null;
+        if (node) openImageDialog(node);
       });
 
       if (initialDelta && initialDelta.ops) {
@@ -292,15 +389,27 @@ export default function QuillEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Writes the description onto the image the dialog was opened for. An empty
-  // string is a real value here — it marks the image decorative — so it is
-  // passed through rather than treated as "no change".
-  const saveAlt = (value) => {
+  // Writes the description and caption onto the image the dialog was opened
+  // for. An empty alt is a real value here — it marks the image decorative — so
+  // it is passed through rather than treated as "no change".
+  //
+  // A legacy inline image is swapped for a figure the moment it is given a
+  // caption, because <figcaption> has nowhere to live otherwise. One left
+  // without a caption stays as it is: rewriting every old image on a stray
+  // click would churn the saved Delta for nothing.
+  const saveImage = ({ alt, caption }) => {
     const quill = quillRef.current;
-    if (quill && altTarget) {
-      quill.formatText(altTarget.index, 1, "alt", value, "user");
+    if (quill && imageTarget) {
+      const { index, isFigure, src } = imageTarget;
+      if (isFigure || caption) {
+        quill.deleteText(index, 1, "user");
+        quill.insertEmbed(index, "figureImage", { src, alt, caption }, "user");
+        quill.setSelection(index + 1, 0, "user");
+      } else {
+        quill.formatText(index, 1, "alt", alt, "user");
+      }
     }
-    setAltTarget(null);
+    setImageTarget(null);
   };
 
   const toggleZen = () => {
@@ -377,13 +486,14 @@ export default function QuillEditor({
 
       {/* Keyed and mounted per image so it seeds itself from that image's
           current alt rather than carrying the previous one's text over. */}
-      {altTarget && (
+      {imageTarget && (
         <ImageAltDialog
-          key={`${altTarget.index}:${altTarget.src}`}
-          src={altTarget.src}
-          initialAlt={altTarget.alt}
-          onSave={saveAlt}
-          onCancel={() => setAltTarget(null)}
+          key={`${imageTarget.index}:${imageTarget.src}`}
+          src={imageTarget.src}
+          initialAlt={imageTarget.alt}
+          initialCaption={imageTarget.caption}
+          onSave={saveImage}
+          onCancel={() => setImageTarget(null)}
         />
       )}
     </div>

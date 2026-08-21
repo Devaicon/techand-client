@@ -15,6 +15,9 @@ export default function CloudinaryImageField({
   hint,
   value,
   onChange,
+  // Name to upload under, which becomes the Cloudinary path in the published
+  // <img src>. Falls back to the picked file's own name.
+  filename,
   showCrop = true,
 }) {
   const inputRef = useRef(null);
@@ -31,7 +34,7 @@ export default function CloudinaryImageField({
     setBusy(true);
     setError("");
     try {
-      const { url, publicId } = await uploadToCloudinary(file);
+      const { url, publicId } = await uploadToCloudinary(file, { filename });
       patch({ url, publicId });
     } catch (err) {
       setError(err.message || "Upload failed.");

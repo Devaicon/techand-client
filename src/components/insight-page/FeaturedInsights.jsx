@@ -9,13 +9,17 @@ const SECTION_PILLS = ["Insights", "Tech& Editorial"];
 
 const FeaturedBlogCard = ({ post }) => {
   return (
-    <div className="flex flex-col sm:flex-row items-stretch pb-3">
-      {/* Image Section */}
-      <div className="relative w-full sm:w-[45%] h-[200px] sm:h-auto min-h-[180px] shrink-0">
+    <div className="flex flex-col sm:flex-row sm:items-center pb-3">
+      {/* Image Section — same 16:9 rule as the big card on the list above it:
+          the column is sized by the ratio rather than stretched to the height of
+          the text, so a widescreen thumbnail shows whole instead of being
+          cropped down its sides. */}
+      <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-xl sm:w-[52%]">
         <Image
           src={post.image}
           alt={post.title}
           fill
+          sizes="(max-width: 640px) 100vw, 35vw"
           className="object-cover"
           style={{ objectPosition: post.imageFocus || "center" }}
         />
@@ -29,7 +33,7 @@ const FeaturedBlogCard = ({ post }) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-5 sm:p-6 flex flex-col justify-center flex-1">
+      <div className="p-5 sm:p-6 flex min-w-0 flex-col justify-center flex-1">
         <div className="flex items-center gap-3 mb-3">
           <CategoryBadge category={post.category} variant="secondary" />
           <ReadTime label={post.readTime} onDark />

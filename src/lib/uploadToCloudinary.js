@@ -1,4 +1,5 @@
 import adminApi from "./adminApi";
+import { seoFilename } from "./seoFilename.mjs";
 
 // Signed direct-to-Cloudinary upload.
 //
@@ -35,11 +36,14 @@ const SIGNATURE_ENDPOINT = {
 
 /**
  * @param {File} file
- * @param {{accept?: string[], target?: "media" | "avatar"}} [options]
+ * @param {{accept?: string[], target?: "media" | "avatar", filename?: string}} [options]
+ *   `filename` is a human-readable name to upload under — typically the post
+ *   slug plus the original file name. Slugified here; defaults to the file's
+ *   own name.
  */
 export async function uploadToCloudinary(
   file,
-  { accept = ACCEPTED, target = "media" } = {},
+  { accept = ACCEPTED, target = "media", filename } = {},
 ) {
   if (!file) throw new Error("No file selected.");
   if (!accept.includes(file.type)) {
@@ -55,14 +59,25 @@ export async function uploadToCloudinary(
   const { data } = await adminApi.post(
     SIGNATURE_ENDPOINT[target] || SIGNATURE_ENDPOINT.media,
   );
-  const { cloudName, apiKey, timestamp, signature, folder, uploadUrl } = data.data;
+  const { cloudName, apiKey, signature, params, uploadUrl } = data.data;
+
+  // The client and the API deploy separately, so a build of this file can meet
+  // an API that still returns the signed params flattened. Falling back to those
+  // two keeps uploads working — they just land on a random public id, the
+  // behaviour before SEO filenames existed — instead of throwing.
+  const signed = params || { folder: data.data.folder, timestamp: data.data.timestamp };
 
   const form = new FormData();
-  form.append("file", file);
+  // The third argument is the multipart filename, which is what Cloudinary's
+  // signed `use_filename` reads to build the public id.
+  form.append("file", file, seoFilename(filename || file.name));
   form.append("api_key", apiKey);
-  form.append("timestamp", timestamp);
   form.append("signature", signature);
-  form.append("folder", folder);
+  // Every signed param, verbatim — the signature is over these exact values, so
+  // they cannot be rewritten or dropped here.
+  for (const [key, value] of Object.entries(signed)) {
+    form.append(key, value);
+  }
 
   // Plain fetch, not adminApi: this request goes to Cloudinary, and adminApi
   // would attach our cookies and JSON content-type to a third-party origin.

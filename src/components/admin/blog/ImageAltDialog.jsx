@@ -3,10 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
-// Where an inline body image gets its alt text.
+// Where a body image gets its alt text and its caption.
 //
 // Opened twice over an image's life: once automatically right after it is
 // uploaded, and again whenever the author clicks it in the editor.
+//
+// Alt and caption are two different jobs and both are asked for here. The alt
+// REPLACES the picture for someone who cannot see it; the caption sits under the
+// picture and is read by everyone, so it adds context — a source, a figure
+// number, what to notice — rather than repeating the description.
 //
 // The distinction this dialog exists to capture is empty-vs-missing alt, which
 // are NOT the same thing to a screen reader. `alt=""` says "this is decoration,
@@ -15,13 +20,21 @@ import { X } from "lucide-react";
 // is a deliberate choice the author makes here, not the default they get by
 // closing the dialog.
 //
-// The caller mounts this per image (keyed on the image), so `initialAlt` only
-// ever has to seed state once — there is no reset-on-prop-change to handle.
-export default function ImageAltDialog({ src, initialAlt, onSave, onCancel }) {
+// The caller mounts this per image (keyed on the image), so the initial values
+// only ever have to seed state once — there is no reset-on-prop-change to
+// handle. `onSave` receives { alt, caption }.
+export default function ImageAltDialog({
+  src,
+  initialAlt,
+  initialCaption = "",
+  onSave,
+  onCancel,
+}) {
   // `initialAlt` is a string when the image already carries an alt attribute and
   // null when it carries none — an empty string therefore means "already marked
   // decorative", which is why the checkbox seeds off `=== ""`.
   const [alt, setAlt] = useState(initialAlt || "");
+  const [caption, setCaption] = useState(initialCaption || "");
   const [decorative, setDecorative] = useState(initialAlt === "");
   const inputRef = useRef(null);
 
@@ -45,7 +58,7 @@ export default function ImageAltDialog({ src, initialAlt, onSave, onCancel }) {
   const submit = (e) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave(decorative ? "" : trimmed);
+    onSave({ alt: decorative ? "" : trimmed, caption: caption.trim() });
   };
 
   return (
@@ -55,7 +68,7 @@ export default function ImageAltDialog({ src, initialAlt, onSave, onCancel }) {
         className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl"
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5">
-          <h2 className="text-sm font-semibold text-gray-900">Describe this image</h2>
+          <h2 className="text-sm font-semibold text-gray-900">Image details</h2>
           <button
             type="button"
             onClick={onCancel}
@@ -115,6 +128,28 @@ export default function ImageAltDialog({ src, initialAlt, onSave, onCancel }) {
               </span>
             </span>
           </label>
+
+          <div className="border-t border-gray-100 pt-4">
+            <label
+              htmlFor="image-caption"
+              className="mb-1.5 block text-sm font-medium text-gray-700"
+            >
+              Caption <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+            <textarea
+              id="image-caption"
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              rows={2}
+              maxLength={300}
+              placeholder="Figure 2 — agent runs by outcome, Q3 2026. Source: internal telemetry."
+              className="w-full resize-y rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#37469E] focus:outline-none"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Printed under the image for every reader. Leave it empty and no
+              caption is shown.
+            </p>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 border-t border-gray-100 px-5 py-3.5">

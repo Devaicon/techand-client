@@ -835,6 +835,7 @@ export default function BlogEditor({ initial, blogId }) {
             <QuillEditor
               initialDelta={initial?.contentDelta}
               onChange={handleEditorChange}
+              filenamePrefix={blog.slug || slugify(blog.title)}
               onReady={(api) => {
                 quillApiRef.current = api;
               }}
@@ -939,16 +940,21 @@ export default function BlogEditor({ initial, blogId }) {
 
           <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-gray-900">Images</h2>
+            {/* filename puts the post slug in the Cloudinary path, so the
+                artwork a search engine sees on the article is served from
+                .../my-post-slug-hero_ab12cd.jpg rather than a random id. */}
             <CloudinaryImageField
               label="Hero image"
               hint="Full-width banner at the top of the article."
               value={blog.heroImage}
+              filename={`${blog.slug || slugify(blog.title)}-hero`}
               onChange={(heroImage) => set({ heroImage })}
             />
             <CloudinaryImageField
               label="Card image"
               hint="Used on listing cards. Falls back to the hero image."
               value={blog.cardImage}
+              filename={`${blog.slug || slugify(blog.title)}-card`}
               onChange={(cardImage) => set({ cardImage })}
             />
           </div>
