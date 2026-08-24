@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import SmartLink from "./SmartLink";
 import { PAGE_INSET } from "./layout";
 
@@ -15,6 +15,7 @@ export default function Banner({ props }) {
   const {
     heading,
     body,
+    bullets,
     image,
     link,
     secondaryLink,
@@ -23,6 +24,28 @@ export default function Banner({ props }) {
     layout,
   } = props;
   const centred = align !== "left";
+
+  // White ticks rather than the brand-purple ones the light blocks use: the
+  // band's own background is that purple, and a purple mark on it reads as a
+  // smudge. `centred` is passed in because the split layout's card is always
+  // left-aligned regardless of the block's alignment.
+  const bulletList = (centre) =>
+    bullets?.length > 0 && (
+      <ul
+        className={`mt-6 space-y-2.5 ${centre ? "inline-block text-left" : ""}`}
+      >
+        {bullets.map((bullet, index) => (
+          <li key={index} className="flex items-start gap-2.5">
+            <Check
+              size={18}
+              className="mt-1 shrink-0 text-white/90"
+              aria-hidden="true"
+            />
+            <span className="text-base leading-7 text-white/85">{bullet}</span>
+          </li>
+        ))}
+      </ul>
+    );
 
   const buttons = (justify) => (
     <div className={`mt-8 flex flex-col gap-4 sm:flex-row ${justify}`}>
@@ -71,6 +94,9 @@ export default function Banner({ props }) {
               {body && (
                 <p className="mt-4 text-base leading-8 text-white/85">{body}</p>
               )}
+
+              {bulletList(false)}
+
               {(link?.href || secondaryLink?.href || tertiaryLink?.href) &&
                 buttons("")}
             </div>
@@ -131,6 +157,8 @@ export default function Banner({ props }) {
               {body}
             </p>
           )}
+
+          {bulletList(centred)}
 
           {buttons(centred ? "sm:justify-center" : "")}
         </div>
