@@ -20,20 +20,39 @@ import RelatedArticles from "@/components/insight-page/reader/RelatedArticles";
 // cache. `getInsightBySlug` is uncached to match.
 export const dynamic = "force-dynamic";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getInsightBySlug(slug);
 
-  if (!post) return { title: "Insight not found | Tech&" };
+  if (!post) return { title: { absolute: "Insight not found | Tech&" } };
 
   const image = post.heroImage?.url || post.cardImage?.url;
+  // SEO fields authored in the admin panel, each falling back to the display
+  // copy so an unset field changes nothing.
+  const metaTitle = post.metaTitle?.trim();
+  const metaDescription = post.metaDescription?.trim() || post.subtitle;
+  const keywords = post.metaKeywords?.length ? post.metaKeywords : undefined;
+  // Canonicalise to the post's own URL — without this the page inherits the
+  // root layout's homepage canonical. An explicit override wins when set.
+  const canonical = post.canonicalUrl?.trim() || `${siteUrl}/insights/${slug}`;
+
   return {
-    title: `${post.title} | Tech&`,
-    description: post.subtitle,
+    // A meta title is used verbatim (`absolute`) so the editor owns the exact
+    // ~60-char search-result title, brand included. Without one, the article
+    // title flows through the root layout's `%s | Tech&` template, which appends
+    // the brand exactly once — the bare `${post.title} | Tech&` used before
+    // double-branded because the template ran on top of it.
+    title: metaTitle ? { absolute: metaTitle } : post.title,
+    description: metaDescription,
+    keywords,
+    alternates: { canonical },
     openGraph: {
-      title: post.title,
-      description: post.subtitle,
+      title: metaTitle || post.title,
+      description: metaDescription,
       type: "article",
+      url: canonical,
       publishedTime: post.publishedAt,
       images: image ? [{ url: image }] : undefined,
     },

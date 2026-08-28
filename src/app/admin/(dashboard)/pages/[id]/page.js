@@ -97,6 +97,8 @@ export default function PageEditor() {
         subtitle: bundle.data.data.page.subtitle || "",
         metaTitle: bundle.data.data.page.metaTitle || "",
         metaDescription: bundle.data.data.page.metaDescription || "",
+        metaKeywords: bundle.data.data.page.metaKeywords || [],
+        canonicalUrl: bundle.data.data.page.canonicalUrl || "",
       });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load this page.");
@@ -702,6 +704,7 @@ export default function PageEditor() {
               ["subtitle", "Subtitle", "Falls back to the meta description"],
               ["metaTitle", "Meta title", "Falls back to the page title"],
               ["metaDescription", "Meta description", "Falls back to the subtitle"],
+              ["canonicalUrl", "Canonical URL", "Blank = this page's own URL"],
             ].map(([key, label, hint]) => (
               <label key={key} className="block">
                 <span className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -728,6 +731,28 @@ export default function PageEditor() {
                 )}
               </label>
             ))}
+
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-gray-700">
+                Focus keywords
+              </span>
+              <input
+                type="text"
+                value={(settings.metaKeywords || []).join(", ")}
+                onChange={(e) =>
+                  setSettings((s) => ({
+                    ...s,
+                    metaKeywords: e.target.value
+                      .split(",")
+                      .map((k) => k.trim())
+                      .filter(Boolean),
+                  }))
+                }
+                disabled={!manage}
+                placeholder="Comma separated, close to search intent"
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-50"
+              />
+            </label>
 
             {manage && (
               <div className="space-y-2">

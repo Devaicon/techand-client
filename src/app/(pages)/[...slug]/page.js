@@ -21,6 +21,8 @@ export const dynamic = "force-dynamic";
 
 const slugFrom = (params) => (params?.slug || []).join("/");
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+
 export async function generateMetadata({ params, searchParams }) {
   const { preview } = (await searchParams) || {};
   const data = await getPage(slugFrom(await params), preview);
@@ -28,9 +30,23 @@ export async function generateMetadata({ params, searchParams }) {
   if (!data) return {};
 
   const { page } = data;
+  const metaTitle = page.metaTitle?.trim();
+  const description = page.metaDescription?.trim() || page.subtitle || undefined;
+  const keywords = page.metaKeywords?.length ? page.metaKeywords : undefined;
+  // Canonicalise to the page's own URL — `page.slug` is the full path with no
+  // leading slash. Without this the page inherits the root layout's homepage
+  // canonical. An explicit override wins when set.
+  const canonical = page.canonicalUrl?.trim() || `${siteUrl}/${page.slug}`;
+
   return {
-    title: page.metaTitle || `${page.title} | Tech&`,
-    description: page.metaDescription || page.subtitle || undefined,
+    // A meta title is used verbatim (`absolute`); otherwise the page title runs
+    // through the root layout's `%s | Tech&` template so the brand is appended
+    // exactly once. The old `page.metaTitle || \`${page.title} | Tech&\`` fallback
+    // double-branded, since the template also ran on the resulting string.
+    title: metaTitle ? { absolute: metaTitle } : page.title,
+    description,
+    keywords,
+    alternates: { canonical },
     // A draft is only reachable by token, but a reviewer might still paste the
     // preview URL somewhere a crawler can see it.
     robots: data.isPreview ? { index: false, follow: false } : undefined,

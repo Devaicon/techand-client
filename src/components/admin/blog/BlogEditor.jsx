@@ -49,7 +49,9 @@ const slugify = (s) =>
     .replace(/^-|-$/g, "");
 
 const emptyBlog = {
-  title: "", slug: "", subtitle: "", category: "", categories: [], tags: [],
+  title: "", slug: "", subtitle: "",
+  metaTitle: "", metaDescription: "", metaKeywords: [], canonicalUrl: "",
+  category: "", categories: [], tags: [],
   readTime: "", heroImage: {}, cardImage: {},
   author: { name: "", role: "", avatarUrl: "" },
   contentHtml: "", contentDelta: null, toc: [], ctas: [], externalLinks: [],
@@ -97,6 +99,24 @@ function Field({ label, children, hint }) {
 
 const inputClass =
   "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-[#37469E] focus:outline-none";
+
+// Live length badge for the SEO meta fields. Green inside the recommended
+// window, amber below it, red once the value would be truncated in search
+// results. Guidance only — nothing is blocked on save.
+function CharCounter({ value, min, max }) {
+  const len = (value || "").trim().length;
+  const tone =
+    len > max
+      ? "bg-red-50 text-red-600"
+      : len >= min
+        ? "bg-emerald-50 text-emerald-600"
+        : "bg-gray-100 text-gray-500";
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${tone}`}>
+      {len}/{max}
+    </span>
+  );
+}
 
 // Populated review/activity references arrive as user objects. Prefers the
 // admin-set name, same as displayName() does everywhere else.
@@ -327,6 +347,10 @@ export default function BlogEditor({ initial, blogId }) {
     title: blog.title,
     slug: blog.slug || slugify(blog.title),
     subtitle: blog.subtitle,
+    metaTitle: blog.metaTitle,
+    metaDescription: blog.metaDescription,
+    metaKeywords: blog.metaKeywords,
+    canonicalUrl: blog.canonicalUrl,
     category: blog.category,
     categories: blog.categories,
     tags: blog.tags,
@@ -841,6 +865,82 @@ export default function BlogEditor({ initial, blogId }) {
               }}
             />
           </div>
+
+          <Panel title="SEO">
+            <div className="space-y-4">
+              <Field
+                label={
+                  <span className="flex items-center justify-between gap-2">
+                    <span>Meta title</span>
+                    <CharCounter value={blog.metaTitle} min={50} max={60} />
+                  </span>
+                }
+                hint="Search-result title. Aim for 50–60 characters, brand included. Left blank, the post title is used with “ | Tech&” appended."
+              >
+                <input
+                  type="text"
+                  value={blog.metaTitle}
+                  onChange={(e) => set({ metaTitle: e.target.value })}
+                  placeholder="UAE E-Invoicing Penalties & How to Avoid Them | Tech&"
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field
+                label={
+                  <span className="flex items-center justify-between gap-2">
+                    <span>Meta description</span>
+                    <CharCounter
+                      value={blog.metaDescription}
+                      min={150}
+                      max={160}
+                    />
+                  </span>
+                }
+                hint="Search-result snippet. Aim for 150–160 characters with the primary keyword. Left blank, the summary is used."
+              >
+                <textarea
+                  value={blog.metaDescription}
+                  onChange={(e) => set({ metaDescription: e.target.value })}
+                  rows={3}
+                  className={`${inputClass} resize-y`}
+                />
+              </Field>
+
+              <Field
+                label="Focus keywords"
+                hint="Comma separated. Terms close to the article’s search intent — output as the keywords meta tag."
+              >
+                <input
+                  type="text"
+                  value={blog.metaKeywords.join(", ")}
+                  onChange={(e) =>
+                    set({
+                      metaKeywords: e.target.value
+                        .split(",")
+                        .map((k) => k.trim())
+                        .filter(Boolean),
+                    })
+                  }
+                  placeholder="UAE e-invoicing penalties, Peppol PINT-AE compliance"
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field
+                label="Canonical URL"
+                hint="Leave blank to canonicalise to this post’s own URL (/insights/slug). Set only to point elsewhere."
+              >
+                <input
+                  type="text"
+                  value={blog.canonicalUrl}
+                  onChange={(e) => set({ canonicalUrl: e.target.value })}
+                  placeholder="https://techand.ai/insights/your-slug"
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+          </Panel>
 
           <Panel title="Calls to action" count={blog.ctas.length}>
             <CtaRepeater
