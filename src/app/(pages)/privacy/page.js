@@ -1,6 +1,6 @@
 export const metadata = {
   alternates: { canonical: "/privacy" },
-  title: "Privacy Policy | Tech&",
+  title: "Privacy Policy",
   description:
     "Learn how Tech& collects, uses, and protects your personal data in compliance with UAE data protection laws and international privacy standards.",
 };

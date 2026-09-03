@@ -1,6 +1,6 @@
 export const metadata = {
   alternates: { canonical: "/cookies" },
-  title: "Cookie Policy | Tech&",
+  title: "Cookie Policy",
   description:
     "Learn about how Tech& uses cookies on our website and SaaS platforms to improve functionality, performance, and user experience.",
 };

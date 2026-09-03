@@ -1,6 +1,6 @@
 export const metadata = {
   alternates: { canonical: "/security" },
-  title: "Security Policy | Tech&",
+  title: "Security Policy",
   description:
     "Learn about Tech&'s comprehensive security measures, aligned with ISO/IEC 27001 and SOC 2, protecting our SaaS platforms and client data.",
 };
