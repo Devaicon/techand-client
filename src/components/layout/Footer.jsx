@@ -46,7 +46,7 @@ const FOOTER_SECTIONS = [
   {
     title: "Company",
     links: [
-      { label: "Why Tech&", href: "/whywithtech&" },
+      { label: "Why Tech&", href: "/whywith-techand" },
       { label: "Contact Us", href: "/contact-us" },
       { label: "Insights", href: "/insights" },
       { label: "What We Do", href: "/whatwedo" },

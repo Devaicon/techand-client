@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/global-rollouts" },
   title: "Global Rollouts | What We Do",
   description:
     "We take your business solutions and launch them safely across different countries and many new office locations.",

@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo" },
   title: "What We Do",
   description:
     "We guide your business through every step of technology growth to ensure you stay ahead of competitors.",

@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { Globe, Eye, Lightbulb } from "lucide-react";
-import VitaCoreValues from "./VitaCoreValues";
+import WhyTechandCoreValues from "./WhyTechandCoreValues";
 
-const VitaIntro = () => {
+const WhyTechandIntro = () => {
   const introItems = [
     {
       id: 1,
@@ -126,9 +126,9 @@ const VitaIntro = () => {
         {/* Bottom Divider */}
       </div>
 
-      <VitaCoreValues />
+      <WhyTechandCoreValues />
     </section>
   );
 };
 
-export default VitaIntro;
+export default WhyTechandIntro;

@@ -38,7 +38,7 @@ export default function Navbar({ hasRibbon = false }) {
   const [showIndustriesDropdown, setShowIndustriesDropdown] = useState(false);
   const [showCapabilitiesDropdown, setShowCapabilitiesDropdown] =
     useState(false);
-  const [showWhyVitaDropdown, setShowWhyVitaDropdown] = useState(false);
+  const [showWhyTechandDropdown, setShowWhyTechandDropdown] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState(
     "Banking & Financial Services",
   );
@@ -46,12 +46,12 @@ export default function Navbar({ hasRibbon = false }) {
 
   const industriesTimeoutRef = useRef(null);
   const capabilitiesTimeoutRef = useRef(null);
-  const whyVitaTimeoutRef = useRef(null);
+  const whyTechandTimeoutRef = useRef(null);
 
   // Mobile dropdown states
   const [mobileIndustriesOpen, setMobileIndustriesOpen] = useState(false);
   const [mobileCapabilitiesOpen, setMobileCapabilitiesOpen] = useState(false);
-  const [mobileWhyVitaOpen, setMobileWhyVitaOpen] = useState(false);
+  const [mobileWhyTechandOpen, setMobileWhyTechandOpen] = useState(false);
   const [mobileExpandedIndustry, setMobileExpandedIndustry] = useState(null);
   const [mobileExpandedCapability, setMobileExpandedCapability] =
     useState(null);
@@ -120,16 +120,16 @@ export default function Navbar({ hasRibbon = false }) {
     }, 150);
   };
 
-  const handleWhyVitaEnter = () => {
-    if (whyVitaTimeoutRef.current) {
-      clearTimeout(whyVitaTimeoutRef.current);
+  const handleWhyTechandEnter = () => {
+    if (whyTechandTimeoutRef.current) {
+      clearTimeout(whyTechandTimeoutRef.current);
     }
-    setShowWhyVitaDropdown(true);
+    setShowWhyTechandDropdown(true);
   };
 
-  const handleWhyVitaLeave = () => {
-    whyVitaTimeoutRef.current = setTimeout(() => {
-      setShowWhyVitaDropdown(false);
+  const handleWhyTechandLeave = () => {
+    whyTechandTimeoutRef.current = setTimeout(() => {
+      setShowWhyTechandDropdown(false);
     }, 150);
   };
 
@@ -419,7 +419,7 @@ export default function Navbar({ hasRibbon = false }) {
           } ${
             showIndustriesDropdown ||
             showCapabilitiesDropdown ||
-            showWhyVitaDropdown
+            showWhyTechandDropdown
               ? " border-b-0"
               : "xl:rounded-b-[30px]"
           }`}
@@ -513,8 +513,8 @@ export default function Navbar({ hasRibbon = false }) {
               {/* Why Tech& Dropdown */}
               <li
                 className="relative"
-                onMouseEnter={handleWhyVitaEnter}
-                onMouseLeave={handleWhyVitaLeave}
+                onMouseEnter={handleWhyTechandEnter}
+                onMouseLeave={handleWhyTechandLeave}
               >
                 <Link
                   href="/whywith-techand"
@@ -523,7 +523,7 @@ export default function Navbar({ hasRibbon = false }) {
                   Why Tech&
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${
-                      showWhyVitaDropdown ? "rotate-180" : ""
+                      showWhyTechandDropdown ? "rotate-180" : ""
                     }`}
                   />
                 </Link>
@@ -585,7 +585,7 @@ export default function Navbar({ hasRibbon = false }) {
             className={`absolute top-full right-4 sm:right-8 xl:right-[59px] transition-opacity duration-200 ${
               showIndustriesDropdown ||
               showCapabilitiesDropdown ||
-              showWhyVitaDropdown
+              showWhyTechandDropdown
                 ? "opacity-0 pointer-events-none"
                 : "opacity-100"
             }`}
@@ -814,12 +814,12 @@ export default function Navbar({ hasRibbon = false }) {
       <div
         style={{ top: dropdownTop }}
         className={`fixed left-0 right-0 z-40 flex items-center justify-center transition-all duration-200 ${
-          showWhyVitaDropdown
+          showWhyTechandDropdown
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-2 invisible pointer-events-none"
         }`}
-        onMouseEnter={handleWhyVitaEnter}
-        onMouseLeave={handleWhyVitaLeave}
+        onMouseEnter={handleWhyTechandEnter}
+        onMouseLeave={handleWhyTechandLeave}
       >
         <div className="bg-white shadow-2xl rounded-b-[30px] border-x-2 border-b-2 border-gray-200 overflow-hidden w-full xl:w-[calc(100%-280px)] max-w-[1639px] p-8 px-64">
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -1225,17 +1225,17 @@ export default function Navbar({ hasRibbon = false }) {
                   {/* Why Tech& Dropdown */}
                   <div className="border-b border-gray-100">
                     <button
-                      onClick={() => setMobileWhyVitaOpen(!mobileWhyVitaOpen)}
+                      onClick={() => setMobileWhyTechandOpen(!mobileWhyTechandOpen)}
                       className="w-full flex items-center justify-between text-gray-900 hover:bg-gray-50 px-4 py-3 text-base font-medium transition-colors rounded-lg"
                     >
                       <span>Why Tech&</span>
                       <ChevronDown
                         className={`w-5 h-5 transition-transform duration-300 ${
-                          mobileWhyVitaOpen ? "rotate-180" : ""
+                          mobileWhyTechandOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
-                    {mobileWhyVitaOpen && (
+                    {mobileWhyTechandOpen && (
                       <div className="bg-gray-50 px-2 pb-3 space-y-2 animate-dropdown rounded-lg mt-1">
                         <Link
                           href="/whywith-techand"

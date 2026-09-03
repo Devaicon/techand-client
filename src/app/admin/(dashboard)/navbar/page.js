@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { ExternalLink, Loader2, Save } from "lucide-react";
+import { Download, ExternalLink, Loader2, Save, Upload } from "lucide-react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
 import ControlField from "@/components/admin/pages/controls/ControlField";
@@ -37,6 +37,7 @@ export default function NavbarAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,6 +73,43 @@ export default function NavbarAdminPage() {
     }
   };
 
+  // Download the current menu as a JSON file. Same shape the seed and the PATCH
+  // endpoint use, so a file exported here imports cleanly on any other install.
+  const exportNavbar = () => {
+    const blob = new Blob([JSON.stringify(data ?? {}, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const stamp = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `navbar-${stamp}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast.success("Navigation exported.");
+  };
+
+  // Read a JSON file into the editor. It only loads it — the admin still reviews
+  // and clicks Save to publish, so a wrong file never goes live on its own. The
+  // server re-validates the whole tree on that save.
+  const importNavbar = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = ""; // allow re-importing the same file later
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.items)) {
+        throw new Error('The file is not a navigation export (no "items" list).');
+      }
+      setData(parsed);
+      toast.success("Navigation imported — review it, then Save to publish.");
+    } catch (err) {
+      toast.error(err.message || "That file could not be read as JSON.");
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -102,15 +140,44 @@ export default function NavbarAdminPage() {
             The menu shown at the top of every public page.
           </p>
         </div>
-        <motion.a
-          {...press}
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
-        >
-          <ExternalLink size={15} /> View site
-        </motion.a>
+        <div className="flex flex-wrap items-center gap-2">
+          {manage && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={importNavbar}
+                className="hidden"
+              />
+              <motion.button
+                {...press}
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+              >
+                <Upload size={15} /> Import
+              </motion.button>
+              <motion.button
+                {...press}
+                type="button"
+                onClick={exportNavbar}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+              >
+                <Download size={15} /> Export
+              </motion.button>
+            </>
+          )}
+          <motion.a
+            {...press}
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+          >
+            <ExternalLink size={15} /> View site
+          </motion.a>
+        </div>
       </StaggerItem>
 
       {error && (

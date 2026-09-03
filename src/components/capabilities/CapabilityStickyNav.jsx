@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ICON_REGISTRY } from "@/lib/iconRegistry";
+import { emitSubnavVisibility } from "@/lib/chrome-signals";
 
 /**
  * CapabilityStickyNav Component
@@ -50,6 +51,15 @@ const CapabilityStickyNav = ({ cards = [], activeCardId = "" }) => {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [cards, activeCardId]);
+
+  // Tell the site navbar to slide away while this strip owns the top of the
+  // viewport, and to come back the moment it hides (including on unmount, when
+  // navigating away from the page).
+  useEffect(() => {
+    emitSubnavVisibility(isVisible);
+  }, [isVisible]);
+
+  useEffect(() => () => emitSubnavVisibility(false), []);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {

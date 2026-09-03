@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/build-implement" },
   title: "Build & Implement | What We Do",
   description:
     "Our team develops your custom software and installs the right Microsoft tools to make your work easier.",

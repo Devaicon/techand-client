@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/run-optimize" },
   title: "Run & Optimize | What We Do",
   description:
     "We keep your systems moving quickly and continually find new ways to enhance the performance of your digital tools.",

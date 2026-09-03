@@ -32,7 +32,14 @@ export async function generateMetadata({ params }) {
   // SEO fields authored in the admin panel, each falling back to the display
   // copy so an unset field changes nothing.
   const metaTitle = post.metaTitle?.trim();
-  const metaDescription = post.metaDescription?.trim() || post.subtitle;
+  // Authored copy can run long; search engines truncate around 160 characters
+  // and an SEO audit flags anything past it. Clamp on a word boundary so the
+  // rendered tag stays tidy without changing what the editor typed in the CMS.
+  const rawDescription = post.metaDescription?.trim() || post.subtitle || "";
+  const metaDescription =
+    rawDescription.length > 160
+      ? rawDescription.slice(0, 157).replace(/\s+\S*$/, "") + "…"
+      : rawDescription;
   const keywords = post.metaKeywords?.length ? post.metaKeywords : undefined;
   // Canonicalise to the post's own URL — without this the page inherits the
   // root layout's homepage canonical. An explicit override wins when set.

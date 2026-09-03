@@ -9,6 +9,13 @@ import ScrollToHash from "@/components/capabilities/ScrollToHash";
  * Displays all industries we serve with detailed information
  * Reuses components from capabilities page for consistency
  */
+export const metadata = {
+  title: "Industries We Serve",
+  description:
+    "Industry-specific digital transformation across the UAE & GCC — Tech& helps organizations improve efficiency and drive measurable business outcomes.",
+  alternates: { canonical: "/industries" },
+};
+
 const page = () => {
   const industries = getAllIndustries();
 

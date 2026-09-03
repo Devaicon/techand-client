@@ -89,7 +89,7 @@ const nextConfig = {
     return [
       {
         source: "/whywithtech&",
-        destination: "/whywithvita",
+        destination: "/whywith-techand",
         permanent: true,
       },
       {

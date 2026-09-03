@@ -4,6 +4,13 @@ import ScrollToHash from "@/components/capabilities/ScrollToHash";
 import { CAPABILITIES_CONFIG } from "@/lib/capabilities-data";
 import React, { Suspense } from "react";
 
+export const metadata = {
+  title: "Capabilities",
+  description:
+    "Enterprise platforms, AI, cloud, and data services from Tech& — Microsoft-powered capabilities driving measurable transformation across the UAE & GCC.",
+  alternates: { canonical: "/capabilities" },
+};
+
 const page = () => {
   const aiConfig = CAPABILITIES_CONFIG.ai;
 

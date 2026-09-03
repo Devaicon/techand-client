@@ -1,4 +1,5 @@
 export const metadata = {
+  alternates: { canonical: "/cookies" },
   title: "Cookie Policy | Tech&",
   description:
     "Learn about how Tech& uses cookies on our website and SaaS platforms to improve functionality, performance, and user experience.",
@@ -326,7 +327,7 @@ export default function CookiePolicyPage() {
               Policy, please contact us.
             </p>
             <a
-              href="mailto:privacy@vitaventure.com"
+              href="mailto:privacy@techand.ai"
               className="inline-block bg-white text-[#5B6FB6] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Contact Us

@@ -1,4 +1,5 @@
 export const metadata = {
+  alternates: { canonical: "/security" },
   title: "Security Policy | Tech&",
   description:
     "Learn about Tech&'s comprehensive security measures, aligned with ISO/IEC 27001 and SOC 2, protecting our SaaS platforms and client data.",
@@ -269,7 +270,7 @@ export default function SecurityPolicyPage() {
               security incident, please contact us immediately.
             </p>
             <a
-              href="mailto:security@vitaventure.com"
+              href="mailto:security@techand.ai"
               className="inline-block bg-white text-[#5B6FB6] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Report Security Issue

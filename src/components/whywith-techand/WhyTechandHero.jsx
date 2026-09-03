@@ -1,7 +1,6 @@
 import Image from "next/image";
-import VitaIntro from "./VitaIntro";
 
-const VitaHero = () => {
+const WhyTechandHero = () => {
   return (
     <>
       {/* Hero Section */}
@@ -43,4 +42,4 @@ const VitaHero = () => {
   );
 };
 
-export default VitaHero;
+export default WhyTechandHero;

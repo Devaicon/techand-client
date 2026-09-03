@@ -9,8 +9,9 @@ import ContactSection from "@/components/landing/contact-form/ContactSection";
 import TransformationCTASection from "@/components/landing/TransformationCTASection";
 
 export const metadata = {
-  title:
-    "Tech& | Turning Technology into measurable Business Impact for Digital Transformation",
+  title: {
+    absolute: "Tech& | Turning Technology into measurable Business Impact",
+  },
   description:
     "Empowering businesses with innovative technology solutions for enterprise automation and digital transformation across UAE and GCC.",
   keywords: [

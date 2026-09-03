@@ -7,6 +7,13 @@ import { getAllInsights, getFeaturedInsights, toCardModel } from "@/lib/blogs-ap
 // posts the moment they change in the admin — no ISR window to wait on.
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Insights",
+  description:
+    "Perspectives on AI, Dynamics 365, cloud, and UAE e-invoicing compliance from Tech& — practical guidance for enterprise digital transformation.",
+  alternates: { canonical: "/insights" },
+};
+
 // Server Component: posts are fetched here and passed down as props, so the
 // article list is in the initial HTML (crawlable) while the filter/search UI
 // below stays a client component.

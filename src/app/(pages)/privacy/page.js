@@ -1,4 +1,5 @@
 export const metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Privacy Policy | Tech&",
   description:
     "Learn how Tech& collects, uses, and protects your personal data in compliance with UAE data protection laws and international privacy standards.",
@@ -180,10 +181,10 @@ export default function PrivacyPolicyPage() {
               <p className="text-gray-700 leading-relaxed text-lg">
                 <strong>Contact:</strong> Requests may be sent to:{" "}
                 <a
-                  href="mailto:privacy@vitaventure.com"
+                  href="mailto:privacy@techand.ai"
                   className="text-[#5B6FB6] hover:underline font-medium"
                 >
-                  privacy@vitaventure.com
+                  privacy@techand.ai
                 </a>
               </p>
             </div>
@@ -220,7 +221,7 @@ export default function PrivacyPolicyPage() {
               please contact us.
             </p>
             <a
-              href="mailto:privacy@vitaventure.com"
+              href="mailto:privacy@techand.ai"
               className="inline-block bg-white text-[#5B6FB6] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Contact Us

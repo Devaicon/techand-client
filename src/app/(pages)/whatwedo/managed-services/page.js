@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/managed-services" },
   title: "Managed Services | What We Do",
   description:
     "Our experts handle your daily IT needs, allowing your staff to focus on major projects without technical stress.",

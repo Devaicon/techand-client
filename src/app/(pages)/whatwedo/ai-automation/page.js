@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/ai-automation" },
   title: "AI & Automation | What We Do",
   description:
     "Deliver measurable outcomes using AI agents, intelligent automation, and data-driven insights across enterprise workflows.",

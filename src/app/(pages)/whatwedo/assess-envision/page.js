@@ -5,6 +5,7 @@ import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
 
 export const metadata = {
+  alternates: { canonical: "/whatwedo/assess-envision" },
   title: "Assess & Envision | What We Do",
   description:
     "We analyze your current business challenges and develop a comprehensive plan to achieve your future technology objectives.",
