@@ -37,31 +37,34 @@ const CategoryFilters = ({ activeCategory, onCategoryChange }) => {
 // meanings of "featured", both kept because both match how the site reads.
 const FeaturedCard = ({ post }) => {
   return (
-    <CardWrapper className="mb-8 w-full md:flex md:items-center">
-      {/* The thumbnail is sized BY its 16:9 ratio, not stretched to whatever
-          height the text beside it happens to need. Stretching is what used to
-          crop a widescreen image down its sides: the column was fixed at half
-          the card and then pulled to the card's full height, leaving
-          object-cover a much squarer box than the picture. `aspect-video` +
-          `md:items-center` means the column's height follows its width, so a
-          16:9 thumbnail lands in a 16:9 box and nothing is cut off — the card
-          gets as tall as the picture needs. */}
-      <div className="relative aspect-video w-full shrink-0 md:w-[56%]">
+    // Side-by-side only from `lg`. Between 768px and 1024px the text column is
+    // barely 300px wide, so the title/description stack ends up far taller than
+    // a 16:9 image of that column's width — the picture floated in the middle of
+    // a tall card with dead space above and below it. Stacking through that band
+    // gives the thumbnail the card's full width, and by `lg` the two columns are
+    // close enough in height that nothing floats.
+    <CardWrapper className="mb-8 w-full lg:flex lg:items-center">
+      {/* Sized BY its 16:9 ratio, never stretched to whatever height the text
+          beside it needs — stretching is what used to crop a widescreen image
+          down its sides. 58% is picked so the image's height lands near the
+          text column's at desktop widths, which is what keeps the leftover
+          space small. */}
+      <div className="relative aspect-video w-full shrink-0 lg:w-[58%]">
         <Image
           src={post.image}
           alt={post.title}
           fill
-          sizes="(max-width: 768px) 100vw, 56vw"
+          sizes="(max-width: 1024px) 100vw, 58vw"
           className="object-cover"
           style={{ objectPosition: post.imageFocus || "center" }}
         />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col justify-center p-6 md:p-8">
+      <div className="flex min-w-0 flex-1 flex-col justify-center p-6 lg:p-8">
         <div className="flex items-center gap-3 mb-4">
           <CategoryBadge category={post.category} variant="primary" />
           <ReadTime label={post.readTime} />
         </div>
-        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 line-clamp-2">
+        <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 line-clamp-2">
           {post.title}
         </h3>
         <p className="text-gray-600 text-sm sm:text-base mb-5 line-clamp-3">
