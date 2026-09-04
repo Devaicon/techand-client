@@ -76,11 +76,17 @@ const FeaturedCard = ({ post }) => {
 const BlogPostCard = ({ post }) => {
   return (
     <CardWrapper className="flex flex-col">
-      <div className="relative w-full h-[220px] shrink-0">
+      {/* Sized by the 16:9 ratio, never a fixed pixel height: a fixed height
+          means the box gets wider or narrower with the grid column while its
+          height stands still, so the thumbnail's crop changes at every
+          breakpoint. `aspect-video` keeps the same 16:9 window at 1, 2 or 3
+          columns. */}
+      <div className="relative aspect-video w-full shrink-0">
         <Image
           src={post.image}
           alt={post.title}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"
           style={{ objectPosition: post.imageFocus || "center" }}
         />

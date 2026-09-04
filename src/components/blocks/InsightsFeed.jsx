@@ -41,7 +41,7 @@ export default async function InsightsFeed({ props }) {
               href={card.link}
               className="group flex h-full flex-col overflow-hidden rounded-[16px] bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl"
             >
-              <div className="relative h-[194px] w-full overflow-hidden">
+              <div className="relative aspect-video w-full overflow-hidden">
                 <Image
                   src={card.image}
                   alt={card.title}

@@ -11,11 +11,13 @@ import {
 function RelatedCard({ post }) {
   return (
     <CardWrapper className="flex flex-col">
-      <div className="relative h-[200px] w-full shrink-0">
+      {/* Same 16:9 window as the listing grid — see InsightCard.jsx. */}
+      <div className="relative aspect-video w-full shrink-0">
         <Image
           src={post.image}
           alt={post.title}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"
           style={{ objectPosition: post.imageFocus || "center" }}
         />
