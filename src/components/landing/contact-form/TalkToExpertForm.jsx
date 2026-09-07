@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+import { postJson } from "@/lib/postJson.mjs";
 import { ArrowRight } from "lucide-react";
 
 const TalkToExpertForm = ({ variant = "landing" }) => {
@@ -32,7 +32,7 @@ const TalkToExpertForm = ({ variant = "landing" }) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-      const response = await axios.post(`${apiUrl}/contact-us/expert`, {
+      const response = await postJson(`${apiUrl}/contact-us/expert`, {
         name: formData.name,
         email: formData.email,
         service: formData.service,

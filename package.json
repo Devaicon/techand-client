@@ -31,14 +31,6 @@
     "react-dom": "19.2.3",
     "turndown": "^7.2.4"
   },
-  "browserslist": [
-    "chrome >= 96",
-    "edge >= 96",
-    "firefox >= 95",
-    "safari >= 15.4",
-    "ios_saf >= 15.4",
-    "not dead"
-  ],
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",

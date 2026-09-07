@@ -82,6 +82,26 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Deliberately after the catch-all above: where two rules set the same
+        // header, the later one wins, so this has to come second to override
+        // `max-age=0, must-revalidate`.
+        //
+        // robots.txt, sitemap.xml and llms.txt are static documents with a
+        // single representation, so they are exempt from that rule — it exists
+        // to keep the Accept negotiation in src/proxy.js correct for pages, and
+        // these three are not negotiated. Under it every crawler hit and every
+        // Lighthouse run had to reach the origin, which is what timed out
+        // fetching robots.txt. s-maxage lets the CDN answer instead.
+        source: "/:path(robots.txt|sitemap.xml|llms.txt)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
     ];
   },
 

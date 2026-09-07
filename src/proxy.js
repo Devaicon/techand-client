@@ -136,5 +136,14 @@ export const config = {
   // Extensions are excluded by the runtime guard above instead, which costs one
   // invocation per static file and is worth it for a rule that demonstrably
   // works.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  //
+  // robots.txt, sitemap.xml and llms.txt are excluded by name as well. The
+  // runtime guard above already passes them straight through, but only after
+  // the proxy has been invoked — and being invoked is itself the cost, since it
+  // puts an edge function in front of a file the CDN could serve on its own.
+  // Lighthouse timed out fetching robots.txt; these three have exactly one
+  // representation each, so there is nothing for the negotiator to decide.
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt).*)",
+  ],
 };

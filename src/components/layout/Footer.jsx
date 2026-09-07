@@ -100,9 +100,14 @@ export default function Footer() {
               className="flex flex-col mt-8 lg:mt-8"
               aria-label={section.title}
             >
-              <h4 className="text-white font-semibold mb-4 text-sm">
+              {/* h3, not h4: these column titles and "Our Office" below are
+                  siblings — both are top-level footer sections under the page's
+                  last h2. As h4 they skipped a level, which is what the heading
+                  -order audit flagged. Styling is unchanged; this is the
+                  document outline, not the design. */}
+              <h3 className="text-white font-semibold mb-4 text-sm">
                 {section.title}
-              </h4>
+              </h3>
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>

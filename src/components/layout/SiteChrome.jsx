@@ -7,7 +7,7 @@ import CmsNavbar from "@/components/layout/CmsNavbar";
 import PartnerContactCard from "@/components/layout/PartnerContactCard";
 import Footer from "@/components/layout/Footer";
 import AdminRibbon, { ADMIN_RIBBON_HEIGHT } from "@/components/layout/AdminRibbon";
-import { ADMIN_API_BASE, getAccessToken } from "@/lib/adminApi";
+import { ADMIN_API_BASE, getAccessToken } from "@/lib/adminSession";
 import { getNavbar } from "@/lib/navbar-api";
 
 // Admin routes get a blank, plain layout — no marketing navbar/footer.

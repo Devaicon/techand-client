@@ -1,36 +1,26 @@
 import axios from "axios";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_ADMIN_API || "https://vita-api-fd66c5fd8ec3.herokuapp.com/api/v1/admin";
+// Base URL and token storage live in lib/adminSession.js so that public
+// components can reach them without pulling axios into the public bundle.
+// Re-exported here so every existing `from "@/lib/adminApi"` import still
+// resolves — admin code should not have to care about the split.
+import {
+  ADMIN_API_BASE,
+  getAccessToken,
+  getRefreshToken,
+  setTokens,
+  clearTokens,
+} from "@/lib/adminSession";
 
-// Exposed so public-site components (e.g. the admin ribbon) can probe
-// /auth/me with a plain fetch, bypassing the refresh interceptor below.
-export const ADMIN_API_BASE = baseURL;
-
-// Bearer-token auth. Tokens live in localStorage and ride in the Authorization
-// header, so there are no cross-site cookie rules (SameSite/Secure) to satisfy.
-const ACCESS_KEY = "admin_access_token";
-const REFRESH_KEY = "admin_refresh_token";
-
-export const getAccessToken = () =>
-  typeof window === "undefined" ? null : localStorage.getItem(ACCESS_KEY);
-
-export const getRefreshToken = () =>
-  typeof window === "undefined" ? null : localStorage.getItem(REFRESH_KEY);
-
-// Store the { accessToken, refreshToken } pair returned by /auth/mfa and
-// /auth/refresh. Missing fields are left untouched.
-export const setTokens = (tokens) => {
-  if (typeof window === "undefined" || !tokens) return;
-  if (tokens.accessToken) localStorage.setItem(ACCESS_KEY, tokens.accessToken);
-  if (tokens.refreshToken) localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
+export {
+  ADMIN_API_BASE,
+  getAccessToken,
+  getRefreshToken,
+  setTokens,
+  clearTokens,
 };
 
-export const clearTokens = () => {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(ACCESS_KEY);
-  localStorage.removeItem(REFRESH_KEY);
-};
+const baseURL = ADMIN_API_BASE;
 
 const adminApi = axios.create({
   baseURL,

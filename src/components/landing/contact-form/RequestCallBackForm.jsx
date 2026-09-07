@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+import { postJson } from "@/lib/postJson.mjs";
 import { ArrowRight } from "lucide-react";
 
 const RequestCallBackForm = ({ variant = "landing" }) => {
@@ -33,7 +33,7 @@ const RequestCallBackForm = ({ variant = "landing" }) => {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const response = await axios.post(`${apiUrl}/contact-us/callback`, {
+      const response = await postJson(`${apiUrl}/contact-us/callback`, {
         name: formData.name,
         email: formData.email,
         service: formData.service,

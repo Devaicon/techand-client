@@ -4,7 +4,7 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import ComingSoon from "@/components/coming-soon/ComingSoon";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { getNavbar } from "@/lib/navbar-api";
 
 const geistSans = Geist({
@@ -24,6 +24,8 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+
+const GA_ID = "G-Q6D2L7R28G";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -189,12 +191,17 @@ export default async function RootLayout({ children }) {
           media="(prefers-color-scheme: dark)"
         />
         <link rel="manifest" href="/manifest.json" />
-        {/* Analytics and blog images live on other origins, and the report
-            showed the page opening those connections cold. Warming them here
-            overlaps DNS + TLS with the HTML parse instead of paying for it when
-            the first request goes out. */}
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        {/* Blog images are real page content, so their origin gets a full
+            preconnect — DNS + TLS overlap the HTML parse instead of being paid
+            for at first request.
+            
+            The two analytics origins get dns-prefetch only. Both scripts are
+            now deliberately held until after load (see the GA and Apollo tags
+            at the end of the body); a preconnect would spend a connection
+            during the load it is being kept out of, which is the opposite of
+            the intent. Resolving DNS early is free and still helps. */}
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://assets.apollo.io" />
         <meta name="theme-color" content="#5B6FB6" />
         <script
@@ -212,7 +219,31 @@ export default async function RootLayout({ children }) {
         )}
         <Analytics />
         <SpeedInsights />
-        <GoogleAnalytics gaId="G-Q6D2L7R28G" />
+        {/* Google Analytics, hand-rolled rather than via
+            @next/third-parties' <GoogleAnalytics>, for one reason: that
+            component hardcodes strategy="afterInteractive" and exposes no way
+            to change it. afterInteractive also makes Next emit a
+            <link rel="preload" as="script"> for gtag.js, so 166 KiB of
+            analytics was being fetched at elevated priority alongside the hero
+            image it competes with.
+            
+            Split in two on purpose. The init below is inline and costs no
+            network: it defines dataLayer and pushes the pageview immediately,
+            so the hit is queued from the moment the page is interactive. Only
+            the 166 KiB gtag.js fetch is deferred to lazyOnload (after the
+            window load event) — when it finally arrives it drains the queue,
+            so deferring the download does not drop the pageview. */}
+        <Script id="ga-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+        </Script>
+        <Script
+          id="ga-loader"
+          strategy="lazyOnload"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
         {/* Apollo's visitor tracker used to be injected the moment this script
             parsed, which put a third-party request on the critical path before
             the hero image had finished. Nothing about it needs to run during
