@@ -56,7 +56,12 @@ const FeaturedBlogCard = ({ post }) => {
           {post.description}
         </p>
 
-        <ReadMoreButton href={post.link} onDark disabled={post.comingSoon} />
+        <ReadMoreButton
+          href={post.link}
+          label={post.title}
+          onDark
+          disabled={post.comingSoon}
+        />
       </div>
     </div>
   );

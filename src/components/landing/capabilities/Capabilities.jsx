@@ -338,7 +338,7 @@ export default function Capabilities() {
             alt="Capabilities Icon"
             width={100}
             height={80}
-            priority
+            loading="lazy"
             className="w-[60px2px] h-[48px] sm:w-[80px] sm:h-[64px] md:w-[100px] md:h-[80px]"
           />
 

@@ -64,13 +64,12 @@ export default function InsightCards({
             <ArrowRight className={styles.readMoreIcon} />
           </button>
         ) : (
-          <Link
-            href={`/insights/${slug}`}
-            className={styles.readMore}
-            aria-label={`Read more about ${title}`}
-          >
+          <Link href={`/insights/${slug}`} className={styles.readMore}>
             Read more
-            <ArrowRight className={styles.readMoreIcon} />
+            {/* Article title in the link's own text, not an aria-label — the
+                SEO audit reads text content, so every card read "Read more". */}
+            <span className="sr-only"> about {title}</span>
+            <ArrowRight className={styles.readMoreIcon} aria-hidden="true" />
           </Link>
         )}
       </div>

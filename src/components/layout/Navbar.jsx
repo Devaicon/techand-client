@@ -661,7 +661,10 @@ export default function Navbar({ hasRibbon = false }) {
                       className="bg-transparent border-2 border-[#5B6FB6] text-[#5B6FB6] px-6 py-2.5 rounded-md font-semibold hover:bg-[#5B6FB6] hover:text-white transition-all duration-200 flex items-center gap-2 w-fit"
                     >
                       LEARN MORE
-                      <ChevronRight className="w-4 h-4" />
+                      {/* Every dropdown CTA is the same two words, so the
+                          destination has to be in the link text itself. */}
+                      <span className="sr-only"> about {industry.name}</span>
+                      <ChevronRight className="w-4 h-4" aria-hidden="true" />
                     </Link>
                   </div>
                 ),
@@ -800,7 +803,8 @@ export default function Navbar({ hasRibbon = false }) {
                         type="button"
                       >
                         LEARN MORE
-                        <ChevronRight className="w-4 h-4" />
+                        <span className="sr-only"> about {capability.name}</span>
+                        <ChevronRight className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </Link>
                   </div>
@@ -1027,7 +1031,14 @@ export default function Navbar({ hasRibbon = false }) {
                                       className="inline-flex items-center gap-1 text-xs font-semibold text-[#5B6FB6] hover:underline"
                                     >
                                       Learn More
-                                      <ChevronRight className="w-3 h-3" />
+                                      <span className="sr-only">
+                                        {" "}
+                                        about {industry.name}
+                                      </span>
+                                      <ChevronRight
+                                        className="w-3 h-3"
+                                        aria-hidden="true"
+                                      />
                                     </Link>
                                   </div>
                                 )}
@@ -1192,7 +1203,14 @@ export default function Navbar({ hasRibbon = false }) {
                                       className="inline-flex items-center gap-1 text-xs font-semibold text-[#5B6FB6] hover:underline mt-2"
                                     >
                                       LEARN MORE
-                                      <ChevronRight className="w-3 h-3" />
+                                      <span className="sr-only">
+                                        {" "}
+                                        about {capability.name}
+                                      </span>
+                                      <ChevronRight
+                                        className="w-3 h-3"
+                                        aria-hidden="true"
+                                      />
                                     </Link>
                                   </div>
                                 )}

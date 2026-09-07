@@ -24,6 +24,25 @@ export default function HeroCarousel({
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Every slide stays in the DOM for the document outline (see the comment on
+  // HeroSlide's `headingLevel`), but its background must not. Rendering all four
+  // <img>s up front costs ~440 KB during first paint and pushes the LCP image
+  // down the browser's priority queue, so slides past the first hold their image
+  // back until the page is idle — long before autoplay reaches them at 5s.
+  const [deferredReady, setDeferredReady] = useState(false);
+
+  useEffect(() => {
+    const reveal = () => setDeferredReady(true);
+
+    if (typeof window.requestIdleCallback === "function") {
+      const handle = window.requestIdleCallback(reveal, { timeout: 2500 });
+      return () => window.cancelIdleCallback(handle);
+    }
+
+    const handle = window.setTimeout(reveal, 1500);
+    return () => window.clearTimeout(handle);
+  }, []);
+
   // Auto-advance slides
   useEffect(() => {
     if (!autoplay || slides.length <= 1) return;
@@ -72,6 +91,11 @@ export default function HeroCarousel({
                 : "opacity-0 absolute top-0 left-0 w-full"
             }`}
             aria-hidden={index !== currentSlide}
+            // Same reason as the nav drawer: an inactive slide is only faded to
+            // opacity 0, so its "Read More" and "Talk to Sales" links stayed
+            // tabbable inside an aria-hidden subtree. Three hidden slides meant
+            // six phantom stops in the tab order on the home page.
+            inert={index !== currentSlide}
           >
             {/* Every slide is rendered at once — the inactive ones are
                 stacked underneath at opacity 0 — so the heading level has to be
@@ -81,6 +105,9 @@ export default function HeroCarousel({
                 H2s so the document has a single title. */}
             <HeroSlide
               backgroundImage={slide.backgroundImage}
+              backgroundSrcSet={slide.backgroundSrcSet}
+              priority={index === 0}
+              showImage={index === 0 || deferredReady}
               title={slide.title}
               description={slide.description}
               primaryButton={slide.primaryButton}

@@ -60,9 +60,16 @@ const ContactFormContainer = ({ children, activeTab, setActiveTab }) => {
           <div className="hidden lg:flex items-center justify-center order-2">
             <div className="relative w-full max-w-md lg:max-w-lg">
               <div className="rounded-2xl overflow-hidden shadow-2xl">
+                {/* Bottom of the page and desktop-only. Without the explicit
+                    lazy hint React preloads it during SSR, which put a fourth
+                    image ahead of the hero in the browser's queue. */}
                 <img
                   src="/contact-section.webp"
                   alt="Contact"
+                  width={723}
+                  height={668}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover block"
                 />
               </div>

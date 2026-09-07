@@ -189,6 +189,13 @@ export default async function RootLayout({ children }) {
           media="(prefers-color-scheme: dark)"
         />
         <link rel="manifest" href="/manifest.json" />
+        {/* Analytics and blog images live on other origins, and the report
+            showed the page opening those connections cold. Warming them here
+            overlaps DNS + TLS with the HTML parse instead of paying for it when
+            the first request goes out. */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://assets.apollo.io" />
         <meta name="theme-color" content="#5B6FB6" />
         <script
           type="application/ld+json"
@@ -206,12 +213,20 @@ export default async function RootLayout({ children }) {
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId="G-Q6D2L7R28G" />
+        {/* Apollo's visitor tracker used to be injected the moment this script
+            parsed, which put a third-party request on the critical path before
+            the hero image had finished. Nothing about it needs to run during
+            load, so it is held until the page is idle (or 4s, whichever is
+            first) — the tracker still fires on every visit, just after the
+            content the visitor came for. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
+            __html: `(function(){function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
  o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
  o.onload=function(){window.trackingFunctions.onLoad({appId:"6a2be9e9534633001cb874bd"})},
- document.head.appendChild(o)}initApollo();`,
+ document.head.appendChild(o)}
+ if(typeof window.requestIdleCallback==="function"){window.requestIdleCallback(initApollo,{timeout:4000})}
+ else{window.addEventListener("load",function(){setTimeout(initApollo,1500)},{once:true})}})();`,
           }}
         />
       </body>

@@ -33,12 +33,16 @@ const CapabilitiesCards = ({
         <Link
           href={cardUrl}
           className="relative self-start font-semibold text-[12px] md:text-[13px] mt-1 transition-all duration-500 group inline-flex items-center gap-1 hover:gap-2"
-          aria-label={`Learn more about ${title}`}
         >
-          <span className="relative bg-gradient-to-b from-[#4555A7] to-[#53406B] bg-clip-text text-transparent group-hover:from-[#5266bf] group-hover:to-[#654e7f] transition-all duration-500 whitespace-nowrap">
+          <span
+            className="relative bg-gradient-to-b from-[#4555A7] to-[#53406B] bg-clip-text text-transparent group-hover:from-[#5266bf] group-hover:to-[#654e7f] transition-all duration-500 whitespace-nowrap"
+          >
             Learn more
             <span className="absolute left-0 bottom-0 w-full h-[1px] bg-gradient-to-b from-[#4555A7] to-[#53406B] group-hover:h-[2px] group-hover:from-[#5266bf] group-hover:to-[#654e7f] transition-all duration-300"></span>
           </span>
+          {/* See ServiceCard: the capability name has to be in the link's text,
+              not only in an aria-label, or all eight cards read "Learn more". */}
+          <span className="sr-only"> about {title}</span>
           <svg
             viewBox="0 0 24 24"
             className="w-3 h-3 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:delay-200"

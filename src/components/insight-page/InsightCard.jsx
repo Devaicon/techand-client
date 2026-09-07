@@ -70,7 +70,7 @@ const FeaturedCard = ({ post }) => {
         <p className="text-gray-600 text-sm sm:text-base mb-5 line-clamp-3">
           {post.description}
         </p>
-        <ReadMoreButton href={post.link} />
+        <ReadMoreButton href={post.link} label={post.title} />
       </div>
     </CardWrapper>
   );
@@ -106,7 +106,7 @@ const BlogPostCard = ({ post }) => {
         <p className="text-gray-600 text-sm mb-4 flex-1 line-clamp-3">
           {post.description}
         </p>
-        <ReadMoreButton href={post.link} />
+        <ReadMoreButton href={post.link} label={post.title} />
       </div>
     </CardWrapper>
   );

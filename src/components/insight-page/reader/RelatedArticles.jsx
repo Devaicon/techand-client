@@ -34,7 +34,7 @@ function RelatedCard({ post }) {
         <p className="mb-4 line-clamp-3 flex-1 text-sm text-gray-600">
           {post.description}
         </p>
-        <ReadMoreButton href={post.link} />
+        <ReadMoreButton href={post.link} label={post.title} />
       </div>
     </CardWrapper>
   );

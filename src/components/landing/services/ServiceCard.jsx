@@ -45,15 +45,14 @@ const ServiceCard = ({ tag, title, description, image }) => {
           {description}
         </p>
 
-        <Link
-          href={url}
-          aria-label={`Learn more about ${title}`}
-          className="mt-auto"
-          scroll={true}
-        >
+        <Link href={url} className="mt-auto" scroll={true}>
           <span className="inline-flex items-center justify-center w-full h-11 rounded-[8px] font-semibold text-white bg-gradient-to-b from-[#4555a7] to-[#53406b] hover:shadow-lg hover:from-[#5266bf] hover:to-[#654e7f] transition-all duration-300">
             Learn more
           </span>
+          {/* Real text rather than the aria-label this used to carry: search
+              crawlers read the link's text content, so an aria-label left all
+              six of these cards indistinguishable as "Learn more". */}
+          <span className="sr-only"> about {title}</span>
         </Link>
       </div>
     </div>

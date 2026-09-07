@@ -70,8 +70,8 @@ const IndustriesSection = () => {
       <Image
         src="/orb-1.webp"
         alt=""
-        width={750}
-        height={750}
+        width={885}
+        height={220}
         className="absolute top-0 left-0 -translate-x-[30%] -translate-y-[24%] sm:-translate-x-[28%] sm:-translate-y-[22%] md:-translate-x-[26%] md:-translate-y-[20%] lg:-translate-x-[24%] lg:-translate-y-[18%] opacity-[0.8] pointer-events-none w-[250px] sm:w-[350px] md:w-[450px] lg:w-[550px] xl:w-[650px] 2xl:w-[750px] h-auto border-none"
         aria-hidden="true"
       />
@@ -79,7 +79,7 @@ const IndustriesSection = () => {
         src="/orb-2.webp"
         alt=""
         width={850}
-        height={1850}
+        height={473}
         className="absolute top-0 left-0 -translate-x-[18%] -translate-y-[10%] sm:-translate-x-[16%] sm:-translate-y-[8%] md:-translate-x-[14%] md:-translate-y-[6%] lg:-translate-x-[12%] lg:-translate-y-[4%] pointer-events-none w-[300px] sm:w-[400px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px] h-auto"
         aria-hidden="true"
       />
@@ -118,8 +118,8 @@ const IndustriesSection = () => {
       <Image
         src="/and.png"
         alt=""
-        width={200}
-        height={700}
+        width={450}
+        height={493}
         className="absolute bottom-0 right-0 -translate-x-3 sm:-translate-x-4 md:-translate-x-5 lg:-translate-x-6 2xl:-translate-x-8 [@media(min-width:2560px)]:right-0 [@media(min-width:2560px)]:-translate-x-8 pointer-events-none z-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] 2xl:w-[450px] h-auto"
         aria-hidden="true"
       />

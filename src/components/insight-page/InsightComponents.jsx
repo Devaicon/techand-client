@@ -52,6 +52,10 @@ export const CardWrapper = ({ children, className = "" }) => {
 export const ReadMoreButton = ({
   href,
   children = "Read more",
+  // The article this points at. Appended out of sight so the link's text reads
+  // "Read more about <title>" — "Read more" alone is the same string on every
+  // card, which is what search crawlers see.
+  label,
   onDark = false,
   disabled = false,
   className = "",
@@ -76,7 +80,9 @@ export const ReadMoreButton = ({
 
   return (
     <Link href={href} className={`${base} ${theme} ${className}`}>
-      {children} <ArrowRight size={16} />
+      {children}
+      {label && <span className="sr-only"> about {label}</span>}{" "}
+      <ArrowRight size={16} aria-hidden="true" />
     </Link>
   );
 };

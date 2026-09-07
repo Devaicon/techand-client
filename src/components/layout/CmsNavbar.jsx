@@ -200,6 +200,9 @@ function SpotlightBody({ item, onClose }) {
                 className="inline-flex w-fit items-center gap-2 rounded-md border-2 border-[#5b6fb6] px-5 py-2 text-[12px] font-bold uppercase tracking-wide text-[#5b6fb6] transition-colors hover:bg-[#5b6fb6] hover:text-white"
               >
                 {active.ctaLabel || "Learn more"}
+                {/* An admin-set ctaLabel is usually generic ("Learn more"),
+                    so name the section it opens in the link's own text. */}
+                <span className="sr-only"> about {active.title}</span>
                 <ChevronRight size={15} aria-hidden="true" />
               </Link>
             )}
@@ -503,12 +506,20 @@ export default function CmsNavbar({ menu, hasRibbon = false }) {
       {/* ── mobile drawer ─────────────────────────────────────────────────── */}
       {/* Always mounted so the panel slides in and out. When closed the whole
           layer is click-through (`pointer-events-none`), the scrim is faded and
-          the drawer is parked off-screen to the right. */}
+          the drawer is parked off-screen to the right.
+          
+          `inert` matters as much as `aria-hidden` here: the closed drawer is
+          only translated off-screen, not unmounted, so every link and button
+          inside it stayed in the tab order. That left a keyboard or agent
+          traversal walking a menu marked aria-hidden — the two claims
+          contradicted each other. `inert` takes the whole subtree out of the
+          tab order and the accessibility tree together. */}
       <div
         className={`fixed inset-0 z-[60] lg:hidden ${
           mobileOpen ? "" : "pointer-events-none"
         }`}
         aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
       >
         <div
           className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
