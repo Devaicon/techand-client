@@ -1,4 +1,5 @@
 import { splitCtaSlots } from "@/lib/splitCtaSlots.mjs";
+import { wrapTables } from "@/lib/wrapTables.mjs";
 import BlogCta from "./BlogCta";
 
 // Renders the article, interleaving inline CTAs as real components.
@@ -19,7 +20,9 @@ export default function ArticleBody({ html, ctas = [] }) {
         ) : (
           <div
             key={`html-${idx}`}
-            dangerouslySetInnerHTML={{ __html: segment.html }}
+            // wrapTables only inserts a wrapper div around markup that is
+            // already sanitized; it adds no new content of its own.
+            dangerouslySetInnerHTML={{ __html: wrapTables(segment.html) }}
           />
         ),
       )}

@@ -358,8 +358,15 @@ export default function BlogEditor({ initial, blogId }) {
     heroImage: blog.heroImage,
     cardImage: blog.cardImage,
     author: blog.author,
-    contentHtml: contentRef.current.html,
-    contentDelta: contentRef.current.delta,
+    // Read from Quill first, the way refreshToc does. contentRef is only
+    // written by text-change, and the initial setContents runs silently — so
+    // for a post that was opened and saved without being typed into,
+    // contentRef still holds the HTML as it was stored. That matters when the
+    // stored HTML is older than the current sanitizer allowlist: re-saving
+    // such a post would otherwise write the stale markup straight back
+    // instead of the editor's own render of the delta.
+    contentHtml: quillApiRef.current?.getHtml() || contentRef.current.html,
+    contentDelta: quillApiRef.current?.getDelta() || contentRef.current.delta,
     toc: blog.toc,
     // Normalize URLs one last time before sending — covers a value that was
     // typed but never blurred (e.g. an auto-save firing mid-edit), so a bare

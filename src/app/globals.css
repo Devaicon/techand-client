@@ -231,6 +231,111 @@ body {
 
 .blog-prose blockquote p:last-child { margin-bottom: 0; }
 
+/* Tables.
+   ─────────────────────────────────────────────────────────────────────────
+   The editor stores real table markup (Quill 2's table blots, plus whatever a
+   paste from Word or Docs carries in), and Tailwind's preflight strips tables
+   back to nothing — no borders, no cell padding, `border-collapse: collapse`
+   and column widths that collapse to the text. So the reader has to draw the
+   whole thing itself.
+
+   `.blog-table-scroll` is inserted around each table on read by
+   `lib/wrapTables.mjs`: it is the element that scrolls, because `overflow-x`
+   has to live on an ancestor of the table, not on the table itself. */
+.blog-table-scroll {
+  margin: 2.5rem 0;
+  overflow-x: auto;
+  /* Momentum scrolling on iOS, and a focus ring for keyboard users who reach a
+     scrollable region with no focusable content inside it. */
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.blog-prose table {
+  width: 100%;
+  /* Not `fixed`: cell content should decide column widths, and the wrapper
+     above absorbs the overflow when the natural width exceeds the column. */
+  table-layout: auto;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Keeps a wide table readable instead of squeezing every column to one word
+   per line — past this the wrapper scrolls rather than the cells wrapping. */
+.blog-prose table th,
+.blog-prose table td {
+  min-width: 8rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #f3f4f6;
+  text-align: left;
+  vertical-align: top;
+}
+
+.blog-prose table th:last-child,
+.blog-prose table td:last-child {
+  border-right: 0;
+}
+
+.blog-prose table tr:last-child td {
+  border-bottom: 0;
+}
+
+.blog-prose table thead th {
+  background: #f9fafb;
+  font-weight: 700;
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Quill's own table blot emits no <thead> — a pasted table's header row
+   usually arrives as plain <td>s in the first <tr>. Give that row the same
+   weight so an author who pasted a table still gets a readable header. */
+.blog-prose table:not(:has(thead)) tr:first-child td {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.blog-prose table tbody tr:nth-child(even) td {
+  background: #fcfcfd;
+}
+
+.blog-prose table caption {
+  caption-side: bottom;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: left;
+}
+
+/* Paragraphs inside a cell must not carry the body's 1.5rem bottom margin —
+   Quill wraps cell content in <p> often enough that it would double every
+   row's height. */
+.blog-prose table td p:last-child,
+.blog-prose table th p:last-child {
+  margin-bottom: 0;
+}
+
+/* An image in a cell is a logo or icon, not a full-width body image, so the
+   edge-to-edge rule above must not apply to it. */
+.blog-prose table img {
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  border-radius: 0.25rem;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .blog-prose table { font-size: 0.9375rem; }
+  .blog-prose table th,
+  .blog-prose table td { padding: 0.625rem 0.75rem; }
+}
+
 /* Body images fill the article column edge to edge — no strip of column showing
    down either side of the picture.
    `max-width: none` is what makes that hold: Tailwind's preflight caps every
