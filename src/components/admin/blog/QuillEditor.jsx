@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, AlertTriangle, Maximize2, Minimize2 } from "lucide-react";
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
+import { normalizePastedTables } from "@/lib/normalizePastedTables.mjs";
 import ImageAltDialog from "./ImageAltDialog";
 import "quill/dist/quill.snow.css";
 
@@ -349,6 +350,21 @@ export default function QuillEditor({
           e.target instanceof Element ? e.target.closest("figure, img") : null;
         if (node) openImageDialog(node);
       });
+
+      // Quill's table support is TD-only, so a pasted <th> matches no blot and
+      // the whole header row collapses into one cell with the header text run
+      // together. That happens inside the clipboard converter, so the delta is
+      // already wrong by the time anything else can look at it — the only place
+      // to intervene is in front of `convert`. See normalizePastedTables.
+      const clipboard = quill.getModule("clipboard");
+      const convert = clipboard.convert.bind(clipboard);
+      clipboard.convert = (input, formats) =>
+        convert(
+          input && typeof input.html === "string"
+            ? { ...input, html: normalizePastedTables(input.html) }
+            : input,
+          formats,
+        );
 
       if (initialDelta && initialDelta.ops) {
         quill.setContents(initialDelta, "silent");
