@@ -84,7 +84,7 @@ export const metadata = {
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
-    apple: "/techand1.png",
+    apple: "/apple-touch-icon.png",
   },
   category: "technology",
 };
@@ -176,7 +176,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link
+        {/* <link
           rel="icon"
           href="/favicon/favicon.ico"
           sizes="any"
@@ -189,7 +189,7 @@ export default async function RootLayout({ children }) {
           sizes="any"
           type="image/svg+xml"
           media="(prefers-color-scheme: dark)"
-        />
+        /> */}
         <link rel="manifest" href="/manifest.json" />
         {/* Blog images are real page content, so their origin gets a full
             preconnect — DNS + TLS overlap the HTML parse instead of being paid
@@ -200,7 +200,11 @@ export default async function RootLayout({ children }) {
             at the end of the body); a preconnect would spend a connection
             during the load it is being kept out of, which is the opposite of
             the intent. Resolving DNS early is free and still helps. */}
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://res.cloudinary.com"
+          crossOrigin=""
+        />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://assets.apollo.io" />
         <meta name="theme-color" content="#5B6FB6" />
