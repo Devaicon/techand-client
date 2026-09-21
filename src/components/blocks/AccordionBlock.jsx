@@ -3,6 +3,7 @@ import ImageFrame from "./ImageFrame";
 import SectionHeader from "./SectionHeader";
 import { PAGE_INSET } from "./layout";
 import { toneOf } from "./tone";
+import { useState } from "react";
 
 /**
  * A question-and-answer band.
@@ -49,11 +50,15 @@ export function AccordionBody({ items }) {
 }
 
 export default function AccordionBlock({ props }) {
-  const { heading, subtitle, items, image, align, tone } = props;
+  const { heading, subtitle, items, image, align, tone, tabs } = props;
   const { bg } = toneOf(tone);
 
+  const hasTabs = (tabs || []).filter((t) => !t.hidden).length > 0;
+  const [activeTab, setActiveTab] = useState(0);
+  const visibleTabs = (tabs || []).filter((t) => !t.hidden);
+
   const visible = (items || []).filter((item) => !item.hidden);
-  if (visible.length === 0) return null;
+  if (!hasTabs && visible.length === 0) return null;
 
   // An `image` control is always present in the props; only a `url` means an
   // author actually chose a picture. Without this check every accordion on the
@@ -65,7 +70,28 @@ export default function AccordionBlock({ props }) {
       <section className={`${bg} py-12 md:py-20 ${PAGE_INSET}`}>
         <div className="mx-auto w-full max-w-[880px]">
           <SectionHeader heading={heading} subtitle={subtitle} tone={tone} />
-          <AccordionBody items={items} />
+          {hasTabs && (
+            <div className="mb-6 flex flex-wrap gap-2">
+              {visibleTabs.map((tab, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveTab(i)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+                    i === activeTab
+                      ? "bg-gradient-to-r from-[#4653a2] to-[#683b80] text-white"
+                      : "bg-white text-[#4a5565] border border-gray-100 hover:bg-gray-50"
+                  }`}
+                >
+                  {tab.title}
+                </button>
+              ))}
+            </div>
+          )}
+          {hasTabs ? (
+            <AccordionBody items={visibleTabs[activeTab]?.items || []} />
+          ) : (
+            <AccordionBody items={items} />
+          )}
         </div>
       </section>
     );
@@ -87,7 +113,28 @@ export default function AccordionBlock({ props }) {
             align="left"
             className="mb-6"
           />
-          <AccordionBody items={items} />
+          {hasTabs && (
+            <div className="mb-6 flex flex-wrap gap-2">
+              {visibleTabs.map((tab, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveTab(i)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+                    i === activeTab
+                      ? "bg-gradient-to-r from-[#4653a2] to-[#683b80] text-white"
+                      : "bg-white text-[#4a5565] border border-gray-100 hover:bg-gray-50"
+                  }`}
+                >
+                  {tab.title}
+                </button>
+              ))}
+            </div>
+          )}
+          {hasTabs ? (
+            <AccordionBody items={visibleTabs[activeTab]?.items || []} />
+          ) : (
+            <AccordionBody items={items} />
+          )}
         </div>
 
         <div className={copyFirst ? "lg:order-2" : "lg:order-1"}>
