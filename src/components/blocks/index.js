@@ -8,6 +8,7 @@ import FeatureSplit from "./FeatureSplit";
 import HeaderShort from "./HeaderShort";
 import HeaderTall from "./HeaderTall";
 import HeaderWithPanel from "./HeaderWithPanel";
+import PanelOnly from "./PanelOnly";
 import InsightsFeed from "./InsightsFeed";
 import Logos from "./Logos";
 import Methodology from "./Methodology";
@@ -42,6 +43,7 @@ export const BLOCK_COMPONENTS = {
   "header-tall": HeaderTall,
   "header-short": HeaderShort,
   "header-panel": HeaderWithPanel,
+  "panel-only": PanelOnly,
 
   // Content
   "rich-text": RichText,
