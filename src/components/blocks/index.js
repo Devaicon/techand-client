@@ -9,6 +9,7 @@ import HeaderShort from "./HeaderShort";
 import HeaderTall from "./HeaderTall";
 import HeaderWithPanel from "./HeaderWithPanel";
 import PanelOnly from "./PanelOnly";
+import ExplainerAccordion from "./ExplainerAccordion";
 import InsightsFeed from "./InsightsFeed";
 import Logos from "./Logos";
 import Methodology from "./Methodology";
@@ -44,6 +45,7 @@ export const BLOCK_COMPONENTS = {
   "header-short": HeaderShort,
   "header-panel": HeaderWithPanel,
   "panel-only": PanelOnly,
+  "explainer-accordion": ExplainerAccordion,
 
   // Content
   "rich-text": RichText,
