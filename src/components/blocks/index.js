@@ -45,7 +45,7 @@ export const BLOCK_COMPONENTS = {
   "header-short": HeaderShort,
   "header-panel": HeaderWithPanel,
   "panel-only": PanelOnly,
-  "explainer-accordion": ExplainerAccordion,
+  "explainer-accordion-v2": ExplainerAccordion,
 
   // Content
   "rich-text": RichText,
