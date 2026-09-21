@@ -12,8 +12,12 @@ export default function ExplainerAccordion({ props }) {
   const [activeTab, setActiveTab] = useState(0);
   const visibleTabs = (tabs || []).filter((t) => !t.hidden);
 
-  const currentColumns = hasTabs ? visibleTabs[activeTab]?.columns || columns : columns;
-  const currentAccordion = hasTabs ? visibleTabs[activeTab]?.accordionItems || accordionItems : accordionItems;
+  const currentColumns = hasTabs
+    ? visibleTabs[activeTab]?.columns || columns
+    : columns;
+  const currentAccordion = hasTabs
+    ? visibleTabs[activeTab]?.accordionItems || accordionItems
+    : accordionItems;
 
   return (
     <section className={`${bg} py-12 md:py-20 ${PAGE_INSET}`}>
@@ -22,7 +26,11 @@ export default function ExplainerAccordion({ props }) {
         {hasTabs && (
           <div className="mb-6 flex flex-wrap gap-2">
             {visibleTabs.map((tab, i) => (
-              <button key={i} onClick={() => setActiveTab(i)} className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${i === activeTab ? "bg-gradient-to-r from-[#4653a2] to-[#683b80] text-white" : "bg-white text-[#4a5565] border border-gray-100 hover:bg-gray-50"}`}>
+              <button
+                key={i}
+                onClick={() => setActiveTab(i)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${i === activeTab ? "bg-gradient-to-r from-[#4653a2] to-[#683b80] text-white" : "bg-white text-[#4a5565] border border-gray-100 hover:bg-gray-50"}`}
+              >
                 {tab.title}
               </button>
             ))}
@@ -32,8 +40,16 @@ export default function ExplainerAccordion({ props }) {
           <div>
             {(currentColumns || []).map((col, i) => (
               <div key={i} className="mb-6">
-                {col.heading && <h3 className="text-xl font-bold text-[#0f172a]">{col.heading}</h3>}
-                {col.body && <p className="mt-2 text-[15px] leading-7 text-[#4a5565]">{col.body}</p>}
+                {col.heading && (
+                  <h3 className="text-xl font-bold text-[#0f172a]">
+                    {col.heading}
+                  </h3>
+                )}
+                {col.body && (
+                  <p className="mt-2 text-[15px] leading-7 text-[#4a5565]">
+                    {col.body}
+                  </p>
+                )}
               </div>
             ))}
             <AccordionBody items={currentAccordion || []} />
