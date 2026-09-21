@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SectionHeader from "./SectionHeader";
-import AccordionBody from "./AccordionBlock"; // reuse body
+import { AccordionBody } from "./AccordionBlock";
 import ImageFrame from "./ImageFrame";
 import { PAGE_INSET } from "./layout";
 import { toneOf } from "./tone";
