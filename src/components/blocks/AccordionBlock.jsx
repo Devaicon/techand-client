@@ -1,3 +1,5 @@
+"use client";
+
 import Accordion from "@/components/shared/Accordion";
 import ImageFrame from "./ImageFrame";
 import SectionHeader from "./SectionHeader";
