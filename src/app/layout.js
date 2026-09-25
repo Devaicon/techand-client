@@ -207,6 +207,11 @@ export default async function RootLayout({ children }) {
         />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://assets.apollo.io" />
+        <script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="DHIp7qj+6uI+UV5mz/EEpg"
+          async
+        ></script>
         <meta name="theme-color" content="#5B6FB6" />
         <script
           type="application/ld+json"
