@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { postJson } from "@/lib/postJson.mjs";
+import { attributionFields, sessionStore, trackLead } from "@/lib/leadAttribution.mjs";
 import { ArrowRight } from "lucide-react";
 
 const TalkToExpertForm = ({ variant = "landing" }) => {
@@ -40,9 +41,11 @@ const TalkToExpertForm = ({ variant = "landing" }) => {
           ? `${formData.countryCode}${formData.phone}`
           : undefined,
         description: formData.description,
+        ...attributionFields(window.location, sessionStore()),
       });
 
       if (response.status === 200 || response.status === 201) {
+        trackLead("expert", window);
         setSubmitStatus({
           type: "success",
           message:

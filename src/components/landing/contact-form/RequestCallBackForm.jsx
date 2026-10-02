@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { postJson } from "@/lib/postJson.mjs";
+import { attributionFields, sessionStore, trackLead } from "@/lib/leadAttribution.mjs";
 import { ArrowRight } from "lucide-react";
 
 const RequestCallBackForm = ({ variant = "landing" }) => {
@@ -41,9 +42,11 @@ const RequestCallBackForm = ({ variant = "landing" }) => {
         project_description: formData.project,
         number_of_users: formData.numberOfUsers,
         nda_requested: formData.requestNDA,
+        ...attributionFields(window.location, sessionStore()),
       });
 
       if (response.status === 200 || response.status === 201) {
+        trackLead("callback", window);
         setSubmitStatus({
           type: "success",
           message: "Request submitted successfully! We'll call you back soon.",

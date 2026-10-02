@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import AdminRibbon, { ADMIN_RIBBON_HEIGHT } from "@/components/layout/AdminRibbon";
 import { ADMIN_API_BASE, getAccessToken } from "@/lib/adminSession";
 import { getNavbar } from "@/lib/navbar-api";
+import { recordLanding, sessionStore } from "@/lib/leadAttribution.mjs";
 
 // Admin routes get a blank, plain layout — no marketing navbar/footer.
 // Every other route keeps the full marketing chrome, plus a thin ribbon at the
@@ -26,6 +27,15 @@ export default function SiteChrome({ children, initialMenu = null }) {
   // without running JavaScript — saw the hardcoded fallback menu and could not
   // reach a single CMS page by link.
   const [menu, setMenu] = useState(initialMenu);
+
+  // The first page of the visit, for lead attribution. SiteChrome mounts once
+  // per page load and survives client-side navigation, so this runs on the
+  // landing page only — and recordLanding ignores later calls anyway.
+  useEffect(() => {
+    if (isAdmin) return;
+    recordLanding(window.location, sessionStore());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isAdmin) return undefined;
