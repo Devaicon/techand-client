@@ -9,6 +9,7 @@ import { useBlogQueues } from "../BlogQueuesProvider";
 import ApprovalQueue from "@/components/admin/blog/ApprovalQueue";
 import ArtworkQueue from "@/components/admin/blog/ArtworkQueue";
 import { displayName } from "@/components/admin/UserAvatar";
+import OverviewBand from "@/components/admin/analytics/OverviewBand";
 
 // How many of each queue to show on the dashboard before deferring to its own
 // page. Enough to act on the backlog without the summary becoming the whole
@@ -44,6 +45,10 @@ export default function AdminOverview() {
         Welcome, {displayName(user) || user?.username}
       </h1>
       <p className="mb-8 text-gray-500">Here&apos;s your team at a glance.</p>
+      {/* Analytics first for those who can see it: it answers "how is the site
+          doing", the question this page is opened to answer. Team counts and
+          queues follow unchanged. */}
+      {can("analytics:read") && <OverviewBand />}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard icon={Users} label="Team members" value={stats.members} />
