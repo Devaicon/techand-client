@@ -14,6 +14,8 @@ import TrafficTab from "@/components/admin/analytics/tabs/TrafficTab";
 import SearchTab from "@/components/admin/analytics/tabs/SearchTab";
 import ContentTab from "@/components/admin/analytics/tabs/ContentTab";
 import LeadsTab from "@/components/admin/analytics/tabs/LeadsTab";
+import CompareTab from "@/components/admin/analytics/tabs/CompareTab";
+import GoalsTab from "@/components/admin/analytics/tabs/GoalsTab";
 
 // Indexed by property access, inline — the React Compiler's static-components
 // rule rejects a component resolved through a helper call during render.
@@ -22,6 +24,8 @@ const TAB_COMPONENTS = {
   content: ContentTab,
   search: SearchTab,
   leads: LeadsTab,
+  compare: CompareTab,
+  goals: GoalsTab,
 };
 
 const TABS = [
@@ -29,6 +33,8 @@ const TABS = [
   { key: "content", label: "Content" },
   { key: "search", label: "Search" },
   { key: "leads", label: "Leads" },
+  { key: "compare", label: "Compare" },
+  { key: "goals", label: "Goals & markers" },
 ];
 
 // Tabs that ignore the date range hide the picker.
