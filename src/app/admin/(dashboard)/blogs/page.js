@@ -4,9 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Loader2, Plus, Pencil, Trash2, Star, Search, Send, Eye, SendHorizontal,
+  Upload, Download, FileDown,
 } from "lucide-react";
+import { AnimatePresence } from "motion/react";
 import adminApi from "@/lib/adminApi";
 import { useToast } from "@/components/admin/Toast";
+import ImportBlogsDialog from "@/components/admin/blog/ImportBlogsDialog";
+import {
+  buildBlogExport,
+  downloadJson,
+  exportFileName,
+  fetchAllBlogs,
+  fetchFullPosts,
+} from "@/lib/blogTransfer.mjs";
 import { useAdminAuth } from "../../AdminAuthProvider";
 import { useBlogQueues } from "../../BlogQueuesProvider";
 import { formatDate, statusMeta } from "@/lib/blogStatus";
@@ -33,6 +43,9 @@ export default function BlogsPage() {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
+  const [importing, setImporting] = useState(false);
+  // null when idle; { done, total } while an export is loading post bodies.
+  const [exporting, setExporting] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -133,19 +146,118 @@ export default function BlogsPage() {
     }
   };
 
+  // Exports everything the current filter and search match — across all pages,
+  // not just the rows on screen. The list endpoint omits bodies, so each post is
+  // then loaded in full.
+  const exportFiltered = async () => {
+    setExporting({ done: 0, total: 0 });
+    try {
+      const rows = await fetchAllBlogs(adminApi, { status, q: query });
+      if (rows.length === 0) {
+        toast.warning("Nothing to export — no posts match the current filter.");
+        return;
+      }
+      setExporting({ done: 0, total: rows.length });
+      const posts = await fetchFullPosts(
+        adminApi,
+        rows.map((b) => b.id),
+        { onProgress: (done, total) => setExporting({ done, total }) },
+      );
+      downloadJson(buildBlogExport(posts), exportFileName(posts));
+      toast.success(`Exported ${posts.length} post${posts.length === 1 ? "" : "s"}.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Export failed.");
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const exportOne = async (blog) => {
+    setBusyId(blog.id);
+    try {
+      const [post] = await fetchFullPosts(adminApi, [blog.id]);
+      downloadJson(buildBlogExport([post]), exportFileName([post]));
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Export failed.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // The dialog reports what it created; this decides what to say about it.
+  // Rejections are named — those posts do not exist now, and the author is the
+  // only one who can decide whether that matters.
+  const onImported = async ({ created, failed, skipped, invalid }) => {
+    setImporting(false);
+    await load();
+
+    const parts = [`Imported ${created.length} draft${created.length === 1 ? "" : "s"}.`];
+    if (skipped) parts.push(`${skipped} skipped (URL already in use).`);
+    if (invalid) parts.push(`${invalid} not imported (problems in the file).`);
+    if (failed.length) {
+      parts.push(
+        `${failed.length} rejected: ${failed
+          .map((f) => `"${f.title}" — ${f.message}`)
+          .join("; ")}`,
+      );
+    }
+
+    const message = parts.join(" ");
+    if (failed.length || created.length === 0) toast.warning(message);
+    else toast.success(message);
+  };
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Insights</h1>
-        {can("blog:create") && (
-          <Link
-            href="/admin/blogs/new"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]"
+        <div className="flex flex-wrap items-center gap-2">
+          {can("blog:create") && (
+            <button
+              type="button"
+              onClick={() => setImporting(true)}
+              title="Create draft posts from a .blog.json file"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              <Upload size={16} /> Import
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={exportFiltered}
+            disabled={Boolean(exporting)}
+            title="Download every post matching the current filter and search as JSON"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-60"
           >
-            <Plus size={16} /> New insight
-          </Link>
-        )}
+            {exporting ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
+            {exporting?.total
+              ? `Exporting ${exporting.done}/${exporting.total}…`
+              : "Export"}
+          </button>
+          {can("blog:create") && (
+            <Link
+              href="/admin/blogs/new"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#37469E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2C3A85]"
+            >
+              <Plus size={16} /> New insight
+            </Link>
+          )}
+        </div>
       </div>
+
+      <AnimatePresence>
+        {importing && (
+          <ImportBlogsDialog
+            key="import"
+            onImported={onImported}
+            onClose={() => setImporting(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {error && (
         <p className="mb-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>
@@ -276,6 +388,13 @@ export default function BlogsPage() {
                           </button>
                         )
                       )}
+                      <button
+                        onClick={() => exportOne(b)}
+                        title="Export as JSON"
+                        className="text-gray-400 hover:text-gray-700"
+                      >
+                        <FileDown size={16} />
+                      </button>
                       {can("blog:update") && (
                         <Link
                           href={`/admin/blogs/${b.id}/edit`}

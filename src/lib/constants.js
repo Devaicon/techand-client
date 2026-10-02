@@ -1,4 +1,20 @@
 /**
+ * The site's canonical origin, with no trailing slash.
+ *
+ * `www` is the host Vercel serves; the bare domain 308-redirects to it. Every
+ * canonical tag, sitemap <loc> and schema.org URL is built from this value, so
+ * it has to be the host that answers 200 — when it defaulted to the bare domain,
+ * every page's canonical pointed at a redirect, which an SEO crawl reports as
+ * both "canonical to redirect" and "internal link to redirect" on every URL.
+ *
+ * NEXT_PUBLIC_SITE_URL still overrides it, so it must be set to the www origin
+ * (or left unset) in the Vercel project.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.techand.ai"
+).replace(/\/+$/, "");
+
+/**
  * Site configuration constants
  */
 export const SITE_CONFIG = {
@@ -6,7 +22,7 @@ export const SITE_CONFIG = {
   title: "Enterprise Automation & Digital Transformation Solutions",
   description:
     "Empowering enterprise transformation through cutting-edge technology consulting for the UAE & GCC region.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai",
+  url: SITE_URL,
   ogImage: "/og-image.webp",
   links: {
     twitter: "https://twitter.com/Tech&",

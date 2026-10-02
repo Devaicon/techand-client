@@ -2,6 +2,11 @@ import { notFound } from "next/navigation";
 import { getPage } from "@/lib/pages-api";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import EditModeBridge from "@/components/blocks/EditModeBridge";
+import JsonLd from "@/components/seo/JsonLd";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
+import { SITE_URL } from "@/lib/constants";
+import { resolveCanonical } from "@/lib/canonicalUrl.mjs";
+import { buildFaqSchema, faqItemsFromSections } from "@/lib/structuredData.mjs";
 
 // Every CMS page is served from here.
 //
@@ -21,7 +26,7 @@ export const dynamic = "force-dynamic";
 
 const slugFrom = (params) => (params?.slug || []).join("/");
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+const siteUrl = SITE_URL;
 
 export async function generateMetadata({ params, searchParams }) {
   const { preview } = (await searchParams) || {};
@@ -35,8 +40,9 @@ export async function generateMetadata({ params, searchParams }) {
   const keywords = page.metaKeywords?.length ? page.metaKeywords : undefined;
   // Canonicalise to the page's own URL — `page.slug` is the full path with no
   // leading slash. Without this the page inherits the root layout's homepage
-  // canonical. An explicit override wins when set.
-  const canonical = page.canonicalUrl?.trim() || `${siteUrl}/${page.slug}`;
+  // canonical. An explicit override wins when set — moved onto the www origin if
+  // it names this site under the redirecting bare host.
+  const canonical = resolveCanonical(page.canonicalUrl, `/${page.slug}`, siteUrl);
 
   return {
     // A meta title is used verbatim (`absolute`); otherwise the page title runs
@@ -61,7 +67,7 @@ export default async function CmsPage({ params, searchParams }) {
   // design. A draft page must not be detectable by the shape of its error.
   if (!data) notFound();
 
-  const { sections, isPreview } = data;
+  const { page, sections, isPreview } = data;
 
   // Editor scaffolding is gated on a VALID preview token, not on `edit=1`
   // alone. `isPreview` is only true once the server matched the token, so an
@@ -82,6 +88,17 @@ export default async function CmsPage({ params, searchParams }) {
       )}
 
       {editable && <EditModeBridge />}
+
+      {/* Structured data for the live page only — a draft must not advertise
+          itself to crawlers. The FAQPage is built from the page's own FAQ
+          accordion blocks, so it can only ever describe answers a visitor can
+          actually open on this page. */}
+      {!isPreview && (
+        <>
+          <BreadcrumbSchema path={`/${page.slug}`} currentLabel={page.title} />
+          <JsonLd schema={buildFaqSchema(faqItemsFromSections(sections))} />
+        </>
+      )}
 
       {/* The whole page body, including its header, is assembled in the admin
           panel. Only the navbar and footer above and below are code. */}

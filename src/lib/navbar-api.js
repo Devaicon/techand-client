@@ -10,6 +10,8 @@
 // renders with no navigation because the API blipped is a worse outcome than one
 // showing a slightly stale menu.
 
+import { normalizeNavbarHrefs } from "@/lib/siteHref.mjs";
+
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/public";
 
@@ -27,7 +29,10 @@ export async function getNavbar() {
       return null;
     }
 
-    return navbar;
+    // Link fields are free text. A row typed without its leading slash would
+    // otherwise resolve relative to whatever page the menu is drawn on — see
+    // siteHref for the 404s that caused across the site.
+    return normalizeNavbarHrefs(navbar);
   } catch {
     return null;
   }

@@ -865,6 +865,7 @@ export default function BlogEditor({ initial, blogId }) {
             </label>
             <QuillEditor
               initialDelta={initial?.contentDelta}
+              initialHtml={initial?.contentHtml}
               onChange={handleEditorChange}
               filenamePrefix={blog.slug || slugify(blog.title)}
               onReady={(api) => {
@@ -942,7 +943,7 @@ export default function BlogEditor({ initial, blogId }) {
                   type="text"
                   value={blog.canonicalUrl}
                   onChange={(e) => set({ canonicalUrl: e.target.value })}
-                  placeholder="https://techand.ai/insights/your-slug"
+                  placeholder="https://www.techand.ai/insights/your-slug"
                   className={inputClass}
                 />
               </Field>

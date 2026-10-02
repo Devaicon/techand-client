@@ -3,6 +3,7 @@ import GenericHero from "@/components/shared/GenericHero";
 import ScrollToHash from "@/components/capabilities/ScrollToHash";
 import { CAPABILITIES_CONFIG } from "@/lib/capabilities-data";
 import React, { Suspense } from "react";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Capabilities",
@@ -16,6 +17,7 @@ const page = () => {
 
   return (
     <main>
+      <BreadcrumbSchema path="/capabilities" />
       <Suspense fallback={null}>
         <ScrollToHash />
       </Suspense>

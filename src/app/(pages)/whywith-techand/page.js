@@ -4,6 +4,7 @@ import ContactSection from "@/components/landing/contact-form/ContactSection";
 import WhyTechandHero from "@/components/whywith-techand/WhyTechandHero";
 import WhyTechandIntro from "@/components/whywith-techand/WhyTechandIntro";
 import React from "react";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Why Tech&",
@@ -15,6 +16,7 @@ export const metadata = {
 const page = () => {
   return (
     <main>
+      <BreadcrumbSchema path="/whywith-techand" />
       <WhyTechandHero />
       <WhyTechandIntro />
       <Capabilities />

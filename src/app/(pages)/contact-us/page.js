@@ -1,4 +1,5 @@
 import ContactUsPage from "@/components/contactuspage/ContactUsPage";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Contact Us",
@@ -10,6 +11,7 @@ export const metadata = {
 const page = () => {
   return (
     <main>
+      <BreadcrumbSchema path="/contact-us" />
       <ContactUsPage />
     </main>
   );

@@ -9,6 +9,8 @@
 // is worse than no description, because validators report it as a defect while
 // an absent key is simply absent.
 
+import { LOGO_PATH, organizationId } from "./structuredData.mjs";
+
 // Google stops showing the article rich result when the headline runs long.
 const HEADLINE_MAX = 110;
 
@@ -73,11 +75,15 @@ export function buildArticleSchema(post, { siteUrl } = {}) {
     url: canonical,
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
     inLanguage: "en",
+    // The @id ties this to the site-wide Organization in the root layout, so a
+    // validator sees one publisher, not two. name/logo are restated because
+    // Google's article report reads them off the BlogPosting itself.
     publisher: {
       "@type": "Organization",
+      "@id": organizationId(base),
       name: "Tech&",
       url: base,
-      logo: { "@type": "ImageObject", url: `${base}/logo.webp` },
+      logo: { "@type": "ImageObject", url: `${base}${LOGO_PATH}` },
     },
   };
 

@@ -14,13 +14,16 @@ import ArticleSchema from "@/components/insight-page/reader/ArticleSchema";
 import BlogCta from "@/components/insight-page/reader/BlogCta";
 import FaqSection from "@/components/insight-page/reader/FaqSection";
 import RelatedArticles from "@/components/insight-page/reader/RelatedArticles";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
+import { SITE_URL } from "@/lib/constants";
+import { resolveCanonical } from "@/lib/canonicalUrl.mjs";
 
 // Render on every request so an edited or newly published post is reflected
 // immediately, rather than being served from a build-time snapshot or ISR
 // cache. `getInsightBySlug` is uncached to match.
 export const dynamic = "force-dynamic";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+const siteUrl = SITE_URL;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -42,8 +45,9 @@ export async function generateMetadata({ params }) {
       : rawDescription;
   const keywords = post.metaKeywords?.length ? post.metaKeywords : undefined;
   // Canonicalise to the post's own URL — without this the page inherits the
-  // root layout's homepage canonical. An explicit override wins when set.
-  const canonical = post.canonicalUrl?.trim() || `${siteUrl}/insights/${slug}`;
+  // root layout's homepage canonical. An explicit override wins when set — moved
+  // onto the www origin if it names this site under the redirecting bare host.
+  const canonical = resolveCanonical(post.canonicalUrl, `/insights/${slug}`, siteUrl);
 
   return {
     // A meta title is used verbatim (`absolute`) so the editor owns the exact
@@ -105,6 +109,9 @@ export default async function BlogPostPage({ params, searchParams }) {
       {/* Structured data for the live article only — a draft preview must not
           advertise itself to crawlers as a published piece. */}
       {!preview && <ArticleSchema post={post} />}
+      {!preview && (
+        <BreadcrumbSchema path={`/insights/${slug}`} currentLabel={post.title} />
+      )}
 
       {preview && (
         <div className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white z-1000">

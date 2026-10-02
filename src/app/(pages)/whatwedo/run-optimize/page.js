@@ -3,6 +3,7 @@ import GenericHero from "@/components/shared/GenericHero";
 import ScrollToHash from "@/components/capabilities/ScrollToHash";
 import { WHATWEDO_CONFIG } from "@/lib/whatwedo-data";
 import React, { Suspense } from "react";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   alternates: { canonical: "/whatwedo/run-optimize" },
@@ -16,6 +17,7 @@ const page = () => {
 
   return (
     <main>
+      <BreadcrumbSchema path="/whatwedo/run-optimize" />
       <Suspense fallback={null}>
         <ScrollToHash />
       </Suspense>

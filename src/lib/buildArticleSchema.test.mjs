@@ -100,7 +100,9 @@ test("names Tech& as the publisher", () => {
   const schema = build();
   assert.equal(schema.publisher["@type"], "Organization");
   assert.equal(schema.publisher.name, "Tech&");
-  assert.equal(schema.publisher.logo.url, `${SITE}/logo.webp`);
+  // /logo.webp never existed; the logo has to be a file that answers 200.
+  assert.equal(schema.publisher.logo.url, `${SITE}/logo1.png`);
+  assert.equal(schema.publisher["@id"], `${SITE}/#organization`);
 });
 
 test("counts words from the rendered article body, not its markup", () => {

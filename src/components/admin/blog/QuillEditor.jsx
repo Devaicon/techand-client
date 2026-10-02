@@ -183,6 +183,11 @@ function registerCtaBlot(Quill) {
 
 export default function QuillEditor({
   initialDelta,
+  // Fallback seed for a post that has a body but no editor delta — one imported
+  // from a hand-written JSON file, or created outside the editor. Without it
+  // the editor opened empty, and the next save overwrote the article with an
+  // empty paragraph.
+  initialHtml,
   onChange,
   onReady,
   // Prefixes the uploaded file's name so a body image lands at a readable
@@ -368,6 +373,10 @@ export default function QuillEditor({
 
       if (initialDelta && initialDelta.ops) {
         quill.setContents(initialDelta, "silent");
+      } else if (initialHtml) {
+        // Through the clipboard, so it gets the same conversion (and table
+        // normalisation, patched in above) as HTML pasted by hand.
+        quill.clipboard.dangerouslyPasteHTML(initialHtml, "silent");
       }
 
       quill.on("text-change", () => {

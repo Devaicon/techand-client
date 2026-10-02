@@ -3,6 +3,7 @@ import GenericHero from "@/components/shared/GenericHero";
 import { getAllIndustries } from "@/lib/industries-data";
 import React, { Suspense } from "react";
 import ScrollToHash from "@/components/capabilities/ScrollToHash";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 /**
  * Industries Page
@@ -21,6 +22,7 @@ const page = () => {
 
   return (
     <main>
+      <BreadcrumbSchema path="/industries" />
       <Suspense fallback={null}>
         <ScrollToHash />
       </Suspense>

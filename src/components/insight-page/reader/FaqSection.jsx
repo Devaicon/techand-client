@@ -1,4 +1,6 @@
 import Accordion from "@/components/shared/Accordion";
+import JsonLd from "@/components/seo/JsonLd";
+import { buildFaqSchema } from "@/lib/structuredData.mjs";
 
 // The article's "Frequently asked questions" block. A thin wrapper around the
 // generic Accordion: it maps the post's stored FAQs onto accordion items and,
@@ -8,16 +10,6 @@ import Accordion from "@/components/shared/Accordion";
 export default function FaqSection({ faqs }) {
   const items = (faqs || []).filter((f) => f?.question && f?.answer);
   if (items.length === 0) return null;
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
 
   return (
     <section aria-labelledby="faq-heading" className="mt-12 border-t border-gray-200 pt-8">
@@ -38,10 +30,10 @@ export default function FaqSection({ faqs }) {
         defaultOpen={0}
       />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* Through the shared builder, which escapes `<` — the questions are
+          author-entered text, and the previous inline JSON.stringify let a
+          "</script>" in one close this tag early. */}
+      <JsonLd schema={buildFaqSchema(items)} />
     </section>
   );
 }

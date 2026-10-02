@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { siteHref } from "@/lib/siteHref.mjs";
 
 // Every link on this page comes from the admin panel, so the destination is
 // whatever an author typed: an internal route, a hash anchor, or an outside URL.
@@ -8,7 +9,10 @@ import Link from "next/link";
 // Renders nothing when the label or href is missing. The validator already
 // rejects half-filled links, but a section saved before that rule existed would
 // otherwise render a button that goes nowhere.
-export default function SmartLink({ href, label, className, children }) {
+export default function SmartLink({ href: rawHref, label, className, children }) {
+  // A path typed without its leading slash resolves against the current page
+  // directory and 404s on any nested URL. See siteHref.
+  const href = siteHref(rawHref);
   if (!href || !label) return null;
 
   const external = /^(https?:)?\/\//i.test(href) || href.startsWith("mailto:");

@@ -2,6 +2,7 @@ import InsightHero from "@/components/insight-page/InsightHero";
 import BlogInsights from "@/components/insight-page/BlogInsights";
 import FeaturedInsights from "@/components/insight-page/FeaturedInsights";
 import { getAllInsights, getFeaturedInsights, toCardModel } from "@/lib/blogs-api";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 // Render on every request so the list always reflects the latest published
 // posts the moment they change in the admin — no ISR window to wait on.
@@ -25,6 +26,7 @@ export default async function InsightsPage() {
 
   return (
     <main>
+      <BreadcrumbSchema path="/insights" />
       <InsightHero />
       <BlogInsights posts={all.map(toCardModel)} />
       <FeaturedInsights posts={featured.map(toCardModel)} />

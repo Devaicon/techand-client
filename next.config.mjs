@@ -117,6 +117,17 @@ const nextConfig = {
         destination: "/",
         permanent: true,
       },
+      // A navbar link saved without its leading slash resolved relative to the
+      // current page, so crawlers discovered this page under every section
+      // prefix — /capabilities/…, /insights/…, /whatwedo/… — and recorded each
+      // as a 404. The link itself is fixed (lib/siteHref.mjs); this sends the
+      // URLs already in crawler queues to the real page instead of a dead end.
+      {
+        source:
+          "/:section(capabilities|insights|whatwedo)/dynamics-365-project-operations-uae",
+        destination: "/dynamics-365-project-operations-uae",
+        permanent: true,
+      },
     ];
   },
 

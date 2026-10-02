@@ -6,6 +6,12 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import { getNavbar } from "@/lib/navbar-api";
+import JsonLd from "@/components/seo/JsonLd";
+import { SITE_URL } from "@/lib/constants";
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/structuredData.mjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +29,7 @@ const geistMono = Geist_Mono({
   adjustFontFallback: true,
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://techand.ai";
+const siteUrl = SITE_URL;
 
 const GA_ID = "G-Q6D2L7R28G";
 
@@ -99,45 +105,10 @@ export const viewport = {
   ],
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Tech&",
-  url: siteUrl,
-  logo: `${siteUrl}/logo.webp`,
-  description:
-    "Enterprise automation and digital transformation solutions for UAE & GCC region",
-  foundingDate: "2020",
-  address: {
-    "@type": "PostalAddress",
-    addressCountry: "AE",
-    addressRegion: "Dubai",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "sales",
-    availableLanguage: ["en", "ar"],
-  },
-  sameAs: [
-    "https://www.linkedin.com/company/techand.ai/",
-    "https://twitter.com/Tech&",
-  ],
-  areaServed: [
-    {
-      "@type": "Country",
-      name: "United Arab Emirates",
-    },
-    {
-      "@type": "Place",
-      name: "GCC Region",
-    },
-  ],
-  knowsAbout: [
-    "Enterprise Automation",
-    "Digital Transformation",
-    "Technology Consulting",
-  ],
-};
+// Declared once for the whole site. Article and FAQ documents reference the
+// Organization by its @id rather than restating it. See lib/structuredData.mjs.
+const organizationSchema = buildOrganizationSchema({ siteUrl });
+const websiteSchema = buildWebSiteSchema({ siteUrl });
 
 // If launch date is still in the future, render the global coming-soon page.
 const shouldRenderComingSoon = async () => {
@@ -213,10 +184,8 @@ export default async function RootLayout({ children }) {
           async
         ></script>
         <meta name="theme-color" content="#5B6FB6" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <JsonLd schema={organizationSchema} />
+        <JsonLd schema={websiteSchema} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}

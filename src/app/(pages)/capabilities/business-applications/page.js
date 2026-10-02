@@ -3,6 +3,7 @@ import CapabilitiesHero from "@/components/capabilities/CapabilitiesHero";
 import ScrollToHash from "@/components/capabilities/ScrollToHash";
 import { CAPABILITIES_CONFIG } from "@/lib/capabilities-data";
 import React, { Suspense } from "react";
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
 export const metadata = {
   title: "Business Applications",
@@ -16,6 +17,7 @@ const page = () => {
 
   return (
     <main>
+      <BreadcrumbSchema path="/capabilities/business-applications" />
       <Suspense fallback={null}>
         <ScrollToHash />
       </Suspense>

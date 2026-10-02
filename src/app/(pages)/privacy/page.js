@@ -1,3 +1,5 @@
+import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
+
 export const metadata = {
   alternates: { canonical: "/privacy" },
   title: "Privacy Policy",
@@ -8,6 +10,7 @@ export const metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <BreadcrumbSchema path="/privacy" />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#5B6FB6] to-[#4a5e9d] text-white py-20 lg:py-28">
         <div className="max-w-4xl mx-auto px-6 sm:px-12 md:px-16">
