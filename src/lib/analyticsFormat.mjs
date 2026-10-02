@@ -103,7 +103,11 @@ export const withShare = (slices) => {
   return slices.map((s) => ({ ...s, share: total ? s.value / total : 0 }));
 };
 
-// Categorical series colours, brand indigo first. Checked against the dataviz
-// skill's palette validator in Task 16 (adjacent-contrast and colour-blind
-// separation); replace values there, not here, if it flags any.
-export const PALETTE = ["#37469E", "#E07A3F", "#2A9D8F", "#B5487B", "#8AA1E0", "#C9A227", "#6B7280", "#5E3B8C"];
+// Categorical series colours, brand indigo first, in fixed order (a series
+// keeps its slot; never cycled past 8 — donuts fold their tail into "Other").
+// Validated with the dataviz palette checker on the light surface: lightness
+// band, chroma floor and normal-vision separation pass. Two warnings are
+// carried by design: slots 2, 3, 5 and 8 sit under 3:1 contrast, and slots 6/7
+// are only 7.2 ΔE apart for protan vision — so every chart using them also
+// prints its legend with values (DonutChart) or names (MultiLineChart, ≤ 4).
+export const PALETTE = ["#37469E", "#E07A3F", "#1BAF7A", "#B5487B", "#EDA100", "#008300", "#E34948", "#2A9FD6"];
