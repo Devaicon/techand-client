@@ -12,6 +12,7 @@ export const ALL_PERMISSIONS = [
   "media:upload",
   "pages:read", "pages:manage",
   "navbar:manage",
+  "analytics:read", "analytics:manage",
 ];
 
 // What a permission actually lets someone do. The toggle labels are derived
@@ -28,6 +29,10 @@ export const PERMISSION_HINTS = {
   "team:invite": "Send invitations.",
   "team:manage": "See pending invitations, and change roles and permissions.",
   "users:update": "Rename accounts, suspend them, and reset their passwords.",
+  "analytics:read":
+    "See the Analytics area: visitors, Google search, content performance and leads.",
+  "analytics:manage":
+    "Set monthly targets, add markers to the charts, and start a Google data sync.",
 };
 
 // Group permissions by their resource prefix ("users:read" -> "users"),
@@ -45,7 +50,7 @@ const PERMISSION_GROUPS = ALL_PERMISSIONS.reduce((groups, p) => {
 // a missing entry labels a perfectly standard admin as "(CUSTOM)".
 export const ROLE_PRESETS = {
   super_admin: ["*"],
-  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","blog:approve","blog:illustrate","media:upload","pages:read","pages:manage","navbar:manage"],
+  admin: ["users:read","users:create","users:update","team:invite","team:manage","blog:read","blog:create","blog:update","blog:publish","blog:approve","blog:illustrate","media:upload","pages:read","pages:manage","navbar:manage","analytics:read","analytics:manage"],
   editor: ["users:read","blog:read","blog:create","blog:update","media:upload","pages:read"],
   viewer: ["users:read","blog:read","pages:read"],
 };
