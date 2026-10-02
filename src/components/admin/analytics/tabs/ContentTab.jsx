@@ -63,7 +63,7 @@ const topPageColumns = [
 const rampColumns = [
   { key: "title", label: "Post", sortValue: (r) => r.title, render: (r) => <PageCell row={r} /> },
   { key: "publishedOn", label: "Published", render: (r) => shortDate(r.publishedOn) },
-  { key: "days", label: "Days to 100 visitors", align: "right", render: (r) => (r.days == null ? "not yet" : formatNumber(r.days)) },
+  { key: "days", label: "Days to 100 visitors", align: "right", render: (r) => (r.beforeCoverage ? "before tracking" : r.days == null ? "not yet" : formatNumber(r.days)) },
 ];
 
 const board = (rows) =>

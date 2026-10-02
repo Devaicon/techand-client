@@ -12,7 +12,7 @@ export default function SetupChecklist({ status }) {
     { done: Boolean(status?.serviceAccountEmail), text: "Service-account key added to the server" },
     { done: Boolean(status?.sources?.ga4), text: "Google Analytics (GA4) property connected" },
     { done: Boolean(status?.sources?.gsc), text: "Search Console property connected" },
-    { done: hasData, text: "First sync completed" },
+    { done: hasData, text: "First sync completed — press Sync now; the first one loads up to two years of history" },
   ];
 
   const copy = async () => {
