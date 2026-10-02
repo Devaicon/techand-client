@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, LogOut, Menu, X, ExternalLink, FileText, ShieldCheck, Images } from "lucide-react";
+import { LayoutDashboard, Files, Menu as MenuIcon, PanelLeftClose, PanelLeftOpen, Users, LogOut, Menu, X, ExternalLink, FileText, ShieldCheck, Images, BarChart3 } from "lucide-react";
 import { useAdminAuth } from "@/app/admin/AdminAuthProvider";
 import { useBlogQueues } from "@/app/admin/BlogQueuesProvider";
 import { labelRole } from "@/components/admin/PermissionEditor";
@@ -37,6 +37,7 @@ const websiteHrefFor = (role) =>
 // invitations, which were never really separate jobs.
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, perm: null },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, perm: "analytics:read" },
   { href: "/admin/blogs", label: "Insights", icon: FileText, perm: "blog:read" },
   { href: "/admin/artwork", label: "Artwork", icon: Images, perm: "blog:illustrate", badge: "artwork" },
   { href: "/admin/approvals", label: "Approvals", icon: ShieldCheck, perm: "blog:approve", badge: "approvals" },
