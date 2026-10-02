@@ -12,17 +12,23 @@ import StatusBanner from "@/components/admin/analytics/StatusBanner";
 import { ErrorNote } from "@/components/admin/analytics/TabState";
 import TrafficTab from "@/components/admin/analytics/tabs/TrafficTab";
 import SearchTab from "@/components/admin/analytics/tabs/SearchTab";
+import ContentTab from "@/components/admin/analytics/tabs/ContentTab";
+import LeadsTab from "@/components/admin/analytics/tabs/LeadsTab";
 
 // Indexed by property access, inline — the React Compiler's static-components
 // rule rejects a component resolved through a helper call during render.
 const TAB_COMPONENTS = {
   traffic: TrafficTab,
+  content: ContentTab,
   search: SearchTab,
+  leads: LeadsTab,
 };
 
 const TABS = [
   { key: "traffic", label: "Traffic" },
+  { key: "content", label: "Content" },
   { key: "search", label: "Search" },
+  { key: "leads", label: "Leads" },
 ];
 
 // Tabs that ignore the date range hide the picker.
