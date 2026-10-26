@@ -17,9 +17,9 @@ import { buildNotFoundMarkdown } from "@/lib/agentGuide.mjs";
 // Node runtime because the converter parses a DOM (see htmlToMarkdown.mjs).
 export const runtime = "nodejs";
 
-// Never prerendered or cached. The pages this mirrors are all `force-dynamic`
-// so that a CMS edit is live on the next request; a cached Markdown copy would
-// reintroduce exactly the staleness those pages are written to avoid.
+// Never prerendered or cached here. The HTML it converts is fetched from the
+// site's own (cached) pages, which an admin save purges; a second cache layered
+// on top would keep serving the old Markdown after that purge.
 export const dynamic = "force-dynamic";
 
 const MARKDOWN_HEADERS = {

@@ -282,22 +282,22 @@ export const INDUSTRIES_CONFIG = {
     iconAlt: "Education & Training Icon",
     image: "/images/Education & Training.webp",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      "Schools, universities, and training providers manage admissions, fees, timetables, and learner records for thousands of students. Families and learners expect the same digital experience they get everywhere else.",
     subtitle:
       "Digital platforms for educational institutions and training providers.",
     heroHeading: "Education & Training",
     heroDescription:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Schools, universities, and training providers manage admissions, fees, timetables, and learner records for thousands of students. Families and learners expect the same digital experience they get everywhere else.",
     industryContext:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "Schools, universities, and training providers manage admissions, fees, timetables, and learner records for thousands of students. Families and learners expect the same digital experience they get everywhere else.",
     painPoints: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco",
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse",
+      "Admissions, enrolment, and student records sit in separate systems that don't share data",
+      "Fee collection, scholarships, and payment follow-ups depend on manual reconciliation",
+      "Parents, students, and staff get information through scattered emails and spreadsheets",
+      "Tracking learner progress and reporting to regulators takes significant manual effort",
     ],
     ourApproach:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "Tech& implements Dynamics 365 to connect admissions, student records, finance and communication in one platform. Enrolment workflows, fee invoicing and reminders run automatically. Portals give parents and learners one place for updates, while dashboards show leadership how enrolment, finances and learner outcomes are trending.",
     solutionText: [
       "Student management systems",
       "Learning management platforms",
@@ -306,12 +306,12 @@ export const INDUSTRIES_CONFIG = {
       "Performance analytics",
     ],
     additionalContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Administrative teams spend less time on paperwork. Families get faster, clearer communication. Leaders make decisions with accurate, current data.",
     futureHeading: "Future of Education Technology",
     futurePoints: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-      "Sed do eiusmod tempor incididunt ut labore",
-      "Ut enim ad minim veniam, quis nostrud exercitation",
+      "Digital learning and blended programs keep expanding across the GCC",
+      "Data-driven student support is becoming standard practice",
+      "Cloud platforms are replacing on-premise school management systems",
     ],
   },
 };

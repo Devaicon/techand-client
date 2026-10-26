@@ -11,13 +11,19 @@
 // showing a slightly stale menu.
 
 import { normalizeNavbarHrefs } from "@/lib/siteHref.mjs";
+import { REVALIDATE_CONTENT } from "@/lib/cache";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1/public";
 
 export async function getNavbar() {
   try {
-    const res = await fetch(`${API}/navbar`, { cache: "no-store" });
+    // Cached on the server — this runs in the root layout, so `no-store` here
+    // would make every page on the site uncacheable. An admin save to the
+    // navbar purges it (app/api/revalidate). In the browser `next` is ignored.
+    const res = await fetch(`${API}/navbar`, {
+      next: { revalidate: REVALIDATE_CONTENT },
+    });
     if (!res.ok) return null;
 
     const json = await res.json();

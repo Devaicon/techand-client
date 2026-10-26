@@ -4,9 +4,13 @@ import FeaturedInsights from "@/components/insight-page/FeaturedInsights";
 import { getAllInsights, getFeaturedInsights, toCardModel } from "@/lib/blogs-api";
 import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
 
-// Render on every request so the list always reflects the latest published
-// posts the moment they change in the admin — no ISR window to wait on.
-export const dynamic = "force-dynamic";
+// Cached (ISR) so the CDN can serve the HTML. Publishing or editing a post in
+// the admin purges this page straight away (app/api/revalidate); the window is
+// only a backstop for changes made any other way.
+//
+// A literal because Next reads segment config statically; keep it equal to
+// REVALIDATE_CONTENT in lib/cache.js.
+export const revalidate = 300;
 
 export const metadata = {
   title: "Insights",

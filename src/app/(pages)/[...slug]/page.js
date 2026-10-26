@@ -1,12 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPage } from "@/lib/pages-api";
-import BlockRenderer from "@/components/blocks/BlockRenderer";
-import EditModeBridge from "@/components/blocks/EditModeBridge";
-import JsonLd from "@/components/seo/JsonLd";
-import BreadcrumbSchema from "@/components/seo/BreadcrumbSchema";
-import { SITE_URL } from "@/lib/constants";
-import { resolveCanonical } from "@/lib/canonicalUrl.mjs";
-import { buildFaqSchema, faqItemsFromSections } from "@/lib/structuredData.mjs";
+import CmsPageView, { cmsPageMetadata } from "@/components/blocks/CmsPageView";
 
 // Every CMS page is served from here.
 //
@@ -19,90 +13,37 @@ import { buildFaqSchema, faqItemsFromSections } from "@/lib/structuredData.mjs";
 // server's reserved-slug guard is the other half of that contract: it refuses to
 // create a page at a slug this route could never reach.
 //
-// Rendered on every request so publishing a page, editing a block or reordering
-// the list is reflected immediately rather than served from a build-time
-// snapshot. `getPage` is uncached to match.
-export const dynamic = "force-dynamic";
+// Cached (ISR) so the CDN can serve the HTML. Each page renders on its first
+// request and is then reused until an admin save purges it (see
+// app/api/revalidate) or REVALIDATE_CONTENT elapses, whichever comes first.
+//
+// That is also why this route never reads `searchParams`: doing so makes every
+// request dynamic and the response `private, no-store`. Draft links carry
+// `?preview=`, and the proxy rewrites those to app/(pages)/draft-preview, which
+// renders the same CmsPageView uncached.
+//
+// A literal because Next reads segment config statically; keep it equal to
+// REVALIDATE_CONTENT in lib/cache.js.
+export const revalidate = 300;
+
+// No pages are rendered at build time — the build must not depend on the API —
+// but returning a list at all is what makes unknown slugs cacheable on demand.
+export async function generateStaticParams() {
+  return [];
+}
 
 const slugFrom = (params) => (params?.slug || []).join("/");
 
-const siteUrl = SITE_URL;
-
-export async function generateMetadata({ params, searchParams }) {
-  const { preview } = (await searchParams) || {};
-  const data = await getPage(slugFrom(await params), preview);
-
-  if (!data) return {};
-
-  const { page } = data;
-  const metaTitle = page.metaTitle?.trim();
-  const description = page.metaDescription?.trim() || page.subtitle || undefined;
-  const keywords = page.metaKeywords?.length ? page.metaKeywords : undefined;
-  // Canonicalise to the page's own URL — `page.slug` is the full path with no
-  // leading slash. Without this the page inherits the root layout's homepage
-  // canonical. An explicit override wins when set — moved onto the www origin if
-  // it names this site under the redirecting bare host.
-  const canonical = resolveCanonical(page.canonicalUrl, `/${page.slug}`, siteUrl);
-
-  return {
-    // A meta title is used verbatim (`absolute`); otherwise the page title runs
-    // through the root layout's `%s | Tech&` template so the brand is appended
-    // exactly once. The old `page.metaTitle || \`${page.title} | Tech&\`` fallback
-    // double-branded, since the template also ran on the resulting string.
-    title: metaTitle ? { absolute: metaTitle } : page.title,
-    description,
-    keywords,
-    alternates: { canonical },
-    // A draft is only reachable by token, but a reviewer might still paste the
-    // preview URL somewhere a crawler can see it.
-    robots: data.isPreview ? { index: false, follow: false } : undefined,
-  };
+export async function generateMetadata({ params }) {
+  return cmsPageMetadata(await getPage(slugFrom(await params)));
 }
 
-export default async function CmsPage({ params, searchParams }) {
-  const { preview, edit } = (await searchParams) || {};
-  const data = await getPage(slugFrom(await params), preview);
+export default async function CmsPage({ params }) {
+  const data = await getPage(slugFrom(await params));
 
   // Draft, missing, or API down — all indistinguishable to a visitor, by
   // design. A draft page must not be detectable by the shape of its error.
   if (!data) notFound();
 
-  const { page, sections, isPreview } = data;
-
-  // Editor scaffolding is gated on a VALID preview token, not on `edit=1`
-  // alone. `isPreview` is only true once the server matched the token, so an
-  // anonymous visitor appending `?edit=1` to a live URL gets the ordinary page —
-  // there is nothing to opt into.
-  const editable = isPreview && edit === "1";
-
-  return (
-    <main>
-      {/* The banner is suppressed inside the editor: it would sit at the top of
-          the preview canvas describing something the author already knows, and
-          push the real first block out of view. */}
-      {isPreview && !editable && (
-        <p className="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-white">
-          Draft preview — this page is not published and is only visible with
-          this link.
-        </p>
-      )}
-
-      {editable && <EditModeBridge />}
-
-      {/* Structured data for the live page only — a draft must not advertise
-          itself to crawlers. The FAQPage is built from the page's own FAQ
-          accordion blocks, so it can only ever describe answers a visitor can
-          actually open on this page. */}
-      {!isPreview && (
-        <>
-          <BreadcrumbSchema path={`/${page.slug}`} currentLabel={page.title} />
-          <JsonLd schema={buildFaqSchema(faqItemsFromSections(sections))} />
-        </>
-      )}
-
-      {/* The whole page body, including its header, is assembled in the admin
-          panel. Only the navbar and footer above and below are code. */}
-      <BlockRenderer sections={sections} editable={editable} />
-    </main>
-  );
+  return <CmsPageView data={data} />;
 }

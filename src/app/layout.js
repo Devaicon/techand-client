@@ -8,6 +8,7 @@ import Script from "next/script";
 import { getNavbar } from "@/lib/navbar-api";
 import JsonLd from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/constants";
+import { REVALIDATE_CONTENT } from "@/lib/cache";
 import {
   buildOrganizationSchema,
   buildWebSiteSchema,
@@ -116,7 +117,13 @@ const shouldRenderComingSoon = async () => {
   if (!apiUrl) return false;
 
   try {
-    const response = await fetch(`${apiUrl}/comingsoon`, { cache: "no-store" });
+    // Cached, not `no-store`: this layout wraps every route, and one uncached
+    // fetch here makes the whole site render per request and ship
+    // `private, no-store` — HTML no CDN may keep. The launch check below still
+    // runs on each render; only the stored launch date is reused.
+    const response = await fetch(`${apiUrl}/comingsoon`, {
+      next: { revalidate: REVALIDATE_CONTENT },
+    });
     if (!response.ok) return false;
 
     const data = await response.json();

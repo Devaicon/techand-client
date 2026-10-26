@@ -3,6 +3,17 @@
  */
 
 /**
+ * How long a page and the API data it was built from may be served from cache.
+ *
+ * A backstop, not the main way content goes live: every admin save purges the
+ * whole cache at once (app/api/revalidate). This window only matters for
+ * changes that happen without an admin save (the coming-soon launch date
+ * passing, a write made directly against the API or database) or if that
+ * purge fails.
+ */
+export const REVALIDATE_CONTENT = 300;
+
+/**
  * Revalidate every 1 hour
  */
 export const REVALIDATE_HOUR = 3600;

@@ -1,5 +1,6 @@
 import { splitCtaSlots } from "@/lib/splitCtaSlots.mjs";
 import { wrapTables } from "@/lib/wrapTables.mjs";
+import { relativizeSameSiteLinks } from "@/lib/sameSiteLinks.mjs";
 import BlogCta from "./BlogCta";
 
 // Renders the article, interleaving inline CTAs as real components.
@@ -22,7 +23,10 @@ export default function ArticleBody({ html, ctas = [] }) {
             key={`html-${idx}`}
             // wrapTables only inserts a wrapper div around markup that is
             // already sanitized; it adds no new content of its own.
-            dangerouslySetInnerHTML={{ __html: wrapTables(segment.html) }}
+            // relativizeSameSiteLinks only shortens hrefs that already exist.
+            dangerouslySetInnerHTML={{
+              __html: wrapTables(relativizeSameSiteLinks(segment.html)),
+            }}
           />
         ),
       )}

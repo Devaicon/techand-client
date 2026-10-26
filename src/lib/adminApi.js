@@ -37,12 +37,44 @@ adminApi.interceptors.request.use((config) => {
   return config;
 });
 
+// The public site is cached, so a write here is not visible to visitors until
+// that cache is purged. Every successful write therefore asks the site to purge
+// it (app/api/revalidate) — debounced, because one editor action can be a burst
+// of requests (a page save plus a block reorder, an upload plus a post update)
+// and one purge after the burst covers all of them. Fire-and-forget: a failed
+// purge only means the change waits out REVALIDATE_CONTENT, which must never
+// fail the save that already succeeded.
+const PURGE_DELAY_MS = 1500;
+let purgeTimer = null;
+const schedulePublicPurge = () => {
+  if (typeof window === "undefined") return;
+  clearTimeout(purgeTimer);
+  purgeTimer = setTimeout(() => {
+    const token = getAccessToken();
+    if (!token) return;
+    fetch("/api/revalidate", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      keepalive: true,
+    }).catch(() => {});
+  }, PURGE_DELAY_MS);
+};
+
+const isPublicWrite = (config) => {
+  const method = (config?.method || "get").toLowerCase();
+  if (method === "get" || method === "head" || method === "options") return false;
+  return !(config?.url || "").includes("/auth/");
+};
+
 // On a 401, try one silent refresh with the stored refresh token, then retry
 // the original request once. Auth calls (/auth/*) are excluded so a failed
 // refresh/login/mfa doesn't loop.
 let refreshing = null;
 adminApi.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (isPublicWrite(res.config)) schedulePublicPurge();
+    return res;
+  },
   async (error) => {
     const original = error.config;
     const status = error.response && error.response.status;

@@ -31,6 +31,20 @@ const FOOTER_SECTIONS = [
     ],
   },
   {
+    // Every service detail page is linked from here. /whatwedo itself shows
+    // the cards as on-page anchors, so without this column three of the six
+    // pages had no crawlable link anywhere on the site.
+    title: "What We Do",
+    links: [
+      { label: "Assess & Envision", href: "/whatwedo/assess-envision" },
+      { label: "Build & Implement", href: "/whatwedo/build-implement" },
+      { label: "Run & Optimize", href: "/whatwedo/run-optimize" },
+      { label: "Global Rollouts", href: "/whatwedo/global-rollouts" },
+      { label: "Managed Services", href: "/whatwedo/managed-services" },
+      { label: "AI & Automation", href: "/whatwedo/ai-automation" },
+    ],
+  },
+  {
     title: "Capabilities",
     links: [
       // { label: "Capabilities Overview", href: "/capabilities" },
@@ -72,7 +86,7 @@ export default function Footer() {
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-16">
         {/* Top Section - Logo and Links */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">

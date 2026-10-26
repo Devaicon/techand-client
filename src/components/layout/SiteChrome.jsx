@@ -39,7 +39,7 @@ export default function SiteChrome({ children, initialMenu = null }) {
 
   useEffect(() => {
     if (isAdmin) return undefined;
-    // The server already resolved the menu for this page load, uncached.
+    // The server already resolved the menu for this page load.
     // Re-fetching would not just be redundant: a blip on the second call
     // returns null, which would swap a good menu for the fallback in front of
     // someone already looking at it.

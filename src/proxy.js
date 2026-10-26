@@ -31,6 +31,28 @@ const MARKDOWN_ROUTE = "/api/markdown";
 // /admin is an authenticated application, not a document.
 const SKIP_PREFIXES = ["/_next", "/api", "/admin"];
 
+// Where a draft link is rewritten to — see draftPreview below.
+const PREVIEW_ROUTE = "/draft-preview";
+
+// Draft links (`?preview=<token>`) are served by their own, uncached route.
+//
+// The CMS and article routes are cached so the CDN can serve them, and a page
+// that reads `searchParams` cannot be: Next.js renders it per request and sends
+// `private, no-store`. The preview token is the only query parameter either
+// route ever read, so it is split off here instead — the rewrite is internal,
+// so the reviewer's address bar keeps the URL the admin panel handed out.
+//
+// Returns null for every request that is not a draft link.
+const draftPreview = (request) => {
+  const { pathname } = request.nextUrl;
+  if (!request.nextUrl.searchParams.get("preview")) return null;
+  if (pathname === "/" || pathname.startsWith(`${PREVIEW_ROUTE}/`)) return null;
+
+  const url = request.nextUrl.clone();
+  url.pathname = `${PREVIEW_ROUTE}${pathname}`;
+  return url;
+};
+
 // Adds Accept to Vary without disturbing what is already there.
 //
 // This takes effect on the responses the proxy returns itself — the 406 below,
@@ -41,12 +63,14 @@ const SKIP_PREFIXES = ["/_next", "/api", "/admin"];
 // declared in next.config.mjs. Verified against 16.1.1 in all four
 // combinations.
 //
-// What covers the HTML side meanwhile is Cache-Control: every page is served
-// `max-age=0, must-revalidate` (next.config.mjs), so a shared cache has to
-// revalidate against the origin on every request and this proxy re-runs — a
-// cached HTML page cannot be handed to an agent that asked for Markdown. The
-// declaration in next.config.mjs still applies to everything Next does not
-// manage, such as files under public/.
+// What covers the HTML side meanwhile is where this proxy runs: on Vercel it
+// executes in front of the CDN cache on every request, cached page or not, so
+// a Markdown request is rewritten to its own path — and its own cache entry —
+// before the cache is consulted. A cached HTML page cannot be handed to an
+// agent that asked for Markdown. Downstream of Vercel, browsers and any other
+// shared cache are still told `max-age=0, must-revalidate` (next.config.mjs),
+// so they revalidate rather than reuse. The Vary declaration there still
+// applies to everything Next does not manage, such as files under public/.
 const varyOnAccept = (headers) => {
   const existing = headers.get("Vary");
   if (!existing) {
@@ -85,10 +109,19 @@ export function proxy(request) {
   // arrive as `Accept: */*`, which resolves to HTML — the correct answer — so
   // there is nothing left to special-case.
 
+  // The HTML representation: the page itself, or for a draft link the preview
+  // route standing in for it.
+  const html = () => {
+    const preview = draftPreview(request);
+    return preview ? NextResponse.rewrite(preview) : NextResponse.next();
+  };
+
   // The Markdown route fetches the page back from this same server. That
   // request already asks for HTML, so it would resolve correctly on its own —
-  // this header makes the loop impossible rather than merely unlikely.
-  if (request.headers.get("x-markdown-render")) return NextResponse.next();
+  // this header makes the loop impossible rather than merely unlikely. A draft
+  // link still has to reach the preview route, which is why this is html()
+  // rather than a plain pass-through.
+  if (request.headers.get("x-markdown-render")) return html();
 
   const choice = negotiate(request.headers.get("accept"));
 
@@ -122,7 +155,7 @@ export function proxy(request) {
     return response;
   }
 
-  const response = NextResponse.next();
+  const response = html();
   varyOnAccept(response.headers);
   return response;
 }
