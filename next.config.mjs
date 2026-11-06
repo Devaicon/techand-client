@@ -128,6 +128,15 @@ const nextConfig = {
         destination: "/dynamics-365-project-operations-uae",
         permanent: true,
       },
+      // The original Business Central partner page lived here and was indexed
+      // before it was unpublished. Search Console kept flagging the URL as
+      // "indexed but not in sitemap"; it now 404s, so it can't go in the
+      // sitemap — send its link equity to the page that replaced it instead.
+      {
+        source: "/dynamics-365-business-central-uae",
+        destination: "/business-central-implementation-uae",
+        permanent: true,
+      },
     ];
   },
 
