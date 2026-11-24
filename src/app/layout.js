@@ -198,7 +198,7 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
         {isComingSoon ? (
-          <ComingSoon />
+          <ComingSoon />gW
         ) : (
           <SiteChrome initialMenu={menu}>{children}</SiteChrome>
         )}

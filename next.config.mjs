@@ -137,6 +137,22 @@ const nextConfig = {
         destination: "/business-central-implementation-uae",
         permanent: true,
       },
+      // Two pages were published for "crm service provider in uae" and competed
+      // with each other. The newer guide sends its equity to the original one,
+      // which Google already ranks and AI answers quote. The source page is
+      // unpublished in the admin panel, so the redirect fires before any route.
+      {
+        source: "/crm-service-provider-uae",
+        destination: "/insights/dynamics-365-crm-uae",
+        permanent: true,
+      },
+      // An older copy of the CRM service page, created when an import found the
+      // slug taken and appended -2. The original page is the one to keep.
+      {
+        source: "/dynamics-365-crm-uae-2",
+        destination: "/dynamics-365-crm-uae",
+        permanent: true,
+      },
     ];
   },
 
